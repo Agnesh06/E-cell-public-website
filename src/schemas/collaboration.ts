@@ -1,0 +1,1 @@
+// src/schemas/collaboration.ts

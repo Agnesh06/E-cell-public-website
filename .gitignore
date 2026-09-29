@@ -1,0 +1,139 @@
+# ==============================================================================
+# E-Cell Public Website - Team Git Ignore Configuration
+# Multi-OS (Windows / macOS / Linux) & Multi-Editor Support
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Project Specific
+# ------------------------------------------------------------------------------
+# Requirements & architecture specifications folder
+docs/
+
+# ------------------------------------------------------------------------------
+# Dependencies & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# ------------------------------------------------------------------------------
+# Production & Build Outputs
+# ------------------------------------------------------------------------------
+dist/
+dist-ssr/
+build/
+out/
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+.turbo/
+
+# ------------------------------------------------------------------------------
+# Environment Variables & Secrets (Prevent accidental leaks)
+# ------------------------------------------------------------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Do NOT ignore the example environment file
+!.env.example
+
+# ------------------------------------------------------------------------------
+# Testing & Code Coverage (Vitest / Playwright)
+# ------------------------------------------------------------------------------
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# ------------------------------------------------------------------------------
+# Logs & Debuggers
+# ------------------------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# ------------------------------------------------------------------------------
+# IDEs & Code Editors
+# ------------------------------------------------------------------------------
+# Visual Studio Code & Cursor (keep shared workspace extensions & settings if tracked)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.log
+.history/
+.ionide/
+
+# JetBrains (WebStorm, IntelliJ IDEA, etc.)
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.useroscore
+*.sln.docstates
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project.local
+
+# Vim / Emacs
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+*~
+#*#
+.#*
+
+# ------------------------------------------------------------------------------
+# Operating System Specific Files
+# ------------------------------------------------------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
