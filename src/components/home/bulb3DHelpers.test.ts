@@ -109,9 +109,22 @@ describe('bulb3DHelpers', () => {
   it('particle parameters scale brightness and size with glow', () => {
     const unlit = calculateParticleParams(0.05);
     expect(unlit.opacity).toBe(0);
+    expect(calculateParticleParams(0.12).opacity).toBe(0);
 
     const fullyLit = calculateParticleParams(1.0);
     expect(fullyLit.opacity).toBeGreaterThan(0.7);
     expect(fullyLit.size).toBeGreaterThan(unlit.size);
+  });
+
+  it('reuses supplied result objects for frame-time calculations', () => {
+    const appearance = { opacity: 0, scale: 0 };
+    const camera = { z: 0, y: 0, rotX: 0, rotY: 0 };
+    const particles = { opacity: 0, size: 0 };
+    const bloom = { intensity: 0, luminanceThreshold: 0 };
+
+    expect(calculateBulbAppearance(0.5, appearance)).toBe(appearance);
+    expect(calculateCameraTransform(0.5, false, camera)).toBe(camera);
+    expect(calculateParticleParams(0.5, particles)).toBe(particles);
+    expect(calculateBloomParams(0.5, false, bloom)).toBe(bloom);
   });
 });

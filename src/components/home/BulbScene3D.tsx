@@ -36,6 +36,10 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
   const pointLightRef = useRef<THREE.PointLight>(null);
   const filamentMatRef = useRef<THREE.MeshStandardMaterial>(null);
   const glassMatRef = useRef<THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial>(null);
+  const baseMatRef = useRef<THREE.MeshStandardMaterial>(null);
+  const contactMatRef = useRef<THREE.MeshStandardMaterial>(null);
+  const supportMatRef = useRef<THREE.MeshStandardMaterial>(null);
+  const supportMatRef2 = useRef<THREE.MeshStandardMaterial>(null);
   const raysMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const raysMatRef2 = useRef<THREE.MeshBasicMaterial>(null);
   const raysMatRef3 = useRef<THREE.MeshBasicMaterial>(null);
@@ -170,8 +174,8 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
     // Bulb root group scaling & placement
     if (groupRef.current) {
       groupRef.current.visible = appearance.opacity > 0;
-      groupRef.current.scale.setScalar(appearance.scale);
-      groupRef.current.position.y = isMobile ? 0.65 : 0.05;
+      groupRef.current.scale.setScalar(appearance.scale * (isMobile ? 0.55 : 1));
+      groupRef.current.position.y = isMobile ? 1.9 : 0.05;
       groupRef.current.rotation.x = -0.05 * p;
       groupRef.current.rotation.y = 0.08 * Math.sin(p * Math.PI);
     }
@@ -191,12 +195,17 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
     // Filament emissive intensity & color
     if (filamentMatRef.current) {
       filamentMatRef.current.emissiveIntensity = emissiveVal * 4.5;
+      filamentMatRef.current.opacity = appearance.opacity;
       if (emissiveVal > 0) {
         filamentMatRef.current.color.setRGB(1.0, 0.95, 0.65);
       } else {
         filamentMatRef.current.color.setRGB(0.55, 0.6, 0.65);
       }
     }
+    if (baseMatRef.current) baseMatRef.current.opacity = appearance.opacity;
+    if (contactMatRef.current) contactMatRef.current.opacity = appearance.opacity;
+    if (supportMatRef.current) supportMatRef.current.opacity = appearance.opacity;
+    if (supportMatRef2.current) supportMatRef2.current.opacity = appearance.opacity;
 
     // Keep the light rays deterministic while their additive opacity follows the glow.
     if (raysMatRef.current) raysMatRef.current.opacity = lightVal * 0.65;
@@ -268,20 +277,48 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
 
         {/* 2. Metal Screw Base */}
         <mesh geometry={screwBaseGeometry} position={[0, -1.25, 0]}>
-          <meshStandardMaterial color="#94a3b8" metalness={0.85} roughness={0.3} />
+          <meshStandardMaterial
+            ref={baseMatRef}
+            color="#94a3b8"
+            metalness={0.85}
+            roughness={0.3}
+            transparent
+            opacity={0}
+          />
         </mesh>
 
         {/* 3. Bottom Black Contact */}
         <mesh geometry={contactGeometry} position={[0, -1.55, 0]}>
-          <meshStandardMaterial color="#1e293b" metalness={0.2} roughness={0.6} />
+          <meshStandardMaterial
+            ref={contactMatRef}
+            color="#1e293b"
+            metalness={0.2}
+            roughness={0.6}
+            transparent
+            opacity={0}
+          />
         </mesh>
 
         {/* 4. Support Wires */}
         <mesh geometry={supportWireGeometry} position={[-0.16, -0.4, 0]}>
-          <meshStandardMaterial color="#64748b" metalness={0.8} roughness={0.4} />
+          <meshStandardMaterial
+            ref={supportMatRef}
+            color="#64748b"
+            metalness={0.8}
+            roughness={0.4}
+            transparent
+            opacity={0}
+          />
         </mesh>
         <mesh geometry={supportWireGeometry} position={[0.16, -0.4, 0]}>
-          <meshStandardMaterial color="#64748b" metalness={0.8} roughness={0.4} />
+          <meshStandardMaterial
+            ref={supportMatRef2}
+            color="#64748b"
+            metalness={0.8}
+            roughness={0.4}
+            transparent
+            opacity={0}
+          />
         </mesh>
 
         {/* 5. Glowing Filament */}
@@ -292,6 +329,8 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
             emissive="#fde047"
             emissiveIntensity={0}
             roughness={0.3}
+            transparent
+            opacity={0}
           />
         </mesh>
 

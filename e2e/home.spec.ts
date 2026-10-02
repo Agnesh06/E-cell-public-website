@@ -131,6 +131,7 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
+    await expect(page.locator('canvas')).toHaveCount(0);
 
     // Verify all major headings are rendered simultaneously in document flow
     await expect(
@@ -182,7 +183,7 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
 
     // SVG bulb should be rendered in place of canvas
     await expect(page.locator('canvas')).toHaveCount(0);
-    const svg = page.locator('svg').first();
+    const svg = page.locator('svg[viewBox="0 0 200 300"]');
     await expect(svg).toBeAttached();
 
     // Verify idea cards still function across scroll
@@ -191,11 +192,11 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
       name: 'More than an idea. A place to begin.',
     });
     await expect(aboutHeading).toBeAttached();
-    const aboutOpacity = await getHeadingOpacity(
-      page,
-      'More than an idea. A place to begin.'
-    );
-    expect(aboutOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() =>
+        getHeadingOpacity(page, 'More than an idea. A place to begin.')
+      )
+      .toBeGreaterThan(0.7);
   });
 });
 

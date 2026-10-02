@@ -139,8 +139,8 @@ export function calculateParticleParams(
     return result;
   }
   const t = (p - 0.12) / (1.0 - 0.12);
-  result.opacity = 0.1 + 0.7 * t;
-  result.size = 0.025 + 0.035 * t;
+  result.opacity = 0.8 * t;
+  result.size = 0.02 + 0.04 * t;
   return result;
 }
 
@@ -168,12 +168,10 @@ export function isWebGLAvailable(): boolean {
   if (typeof window === 'undefined') return false;
   try {
     const canvas = document.createElement('canvas');
-    return Boolean(
-      (window.WebGLRenderingContext || window.WebGL2RenderingContext) &&
-        (canvas.getContext('webgl2') ||
-          canvas.getContext('webgl') ||
-          canvas.getContext('experimental-webgl'))
-    );
+    const context = canvas.getContext('webgl2');
+    if (!context) return false;
+    context.getExtension('WEBGL_lose_context')?.loseContext();
+    return true;
   } catch {
     return false;
   }
