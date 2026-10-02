@@ -28,6 +28,11 @@ import { BulbBackground } from './BulbBackground';
 import { IdeaCard } from './IdeaCard';
 import { Button } from '@/components/ui/button';
 import { getHeadingRange, getActiveBeatIndex } from './timelineHelpers';
+import { isWebGLAvailable } from './bulb3DHelpers';
+
+const BulbScene3D = React.lazy(() =>
+  import('./BulbScene3D').then((mod) => ({ default: mod.BulbScene3D }))
+);
 
 interface SectionHeadingProps {
   beat: BeatConfig;
@@ -119,6 +124,15 @@ export const HomeScrollScene: React.FC = () => {
   });
 
   const [activeBeatId, setActiveBeatId] = useState<string>(BEATS[0].id);
+  const [webglSupported, setWebglSupported] = useState(false);
+
+  React.useEffect(() => {
+    setWebglSupported(isWebGLAvailable());
+  }, []);
+
+  const handleContextLost = React.useCallback(() => {
+    setWebglSupported(false);
+  }, []);
 
   // Update active beat React state ONLY on beat boundary changes
   useMotionValueEvent(smoothedProgress, 'change', (latest) => {
@@ -393,8 +407,17 @@ export const HomeScrollScene: React.FC = () => {
         }}
         className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center preserve-3d transition-colors duration-200"
       >
-        {/* Layered Inline SVG Bulb */}
-        <BulbBackground progress={smoothedProgress} />
+        {/* 3D R3F Bulb Canvas with lazy loading and fallback to SVG Bulb */}
+        {webglSupported ? (
+          <React.Suspense fallback={<BulbBackground progress={smoothedProgress} />}>
+            <BulbScene3D
+              progress={smoothedProgress}
+              onContextLost={handleContextLost}
+            />
+          </React.Suspense>
+        ) : (
+          <BulbBackground progress={smoothedProgress} />
+        )}
 
         {/* 1. HERO BEAT (0.00 - 0.10) */}
         <motion.div

@@ -19,16 +19,23 @@ async function getHeadingOpacity(page: Page, headingText: string): Promise<numbe
 
 // Helper to scroll to a specific progress ratio (0 to 1) within the scene
 async function scrollToSceneProgress(page: Page, progressRatio: number) {
-  await page.evaluate((ratio) => {
+  const targetY = await page.evaluate((ratio) => {
     const scene = document.getElementById('about');
-    if (!scene) return;
-    const maxScroll = scene.scrollHeight - window.innerHeight;
-    const targetY = scene.offsetTop + maxScroll * ratio;
+    if (!scene) return window.scrollY;
+    const sceneTop = scene.getBoundingClientRect().top + window.scrollY;
+    const maxScroll = scene.offsetHeight - window.innerHeight;
+    const targetY = sceneTop + maxScroll * ratio;
+    document.documentElement.style.scrollBehavior = 'auto';
     window.scrollTo({ top: targetY, behavior: 'instant' });
+    return targetY;
   }, progressRatio);
 
-  // Wait for spring animation smoothing to settle
-  await page.waitForTimeout(400);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeGreaterThanOrEqual(targetY - 1);
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY))
+    .toBeLessThanOrEqual(targetY + 1);
 }
 
 test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
@@ -39,56 +46,51 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
 
     // Checkpoint 0: Hero beat (progress ~0.02)
     await scrollToSceneProgress(page, 0.02);
-    const heroOpacity = await getHeadingOpacity(
-      page,
-      'Ideas are just the beginning.'
-    );
-    expect(heroOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'Ideas are just the beginning.'))
+      .toBeGreaterThan(0.7);
 
-    const aboutOpacityAtZero = await getHeadingOpacity(
-      page,
-      'More than an idea. A place to begin.'
-    );
-    expect(aboutOpacityAtZero).toBeLessThan(0.3);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'More than an idea. A place to begin.'))
+      .toBeLessThan(0.3);
 
     // Checkpoint 1: About beat (progress ~0.17)
     await scrollToSceneProgress(page, 0.17);
-    const aboutOpacity = await getHeadingOpacity(
-      page,
-      'More than an idea. A place to begin.'
-    );
-    expect(aboutOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'More than an idea. A place to begin.'))
+      .toBeGreaterThan(0.7);
 
     // Checkpoint 2: Our Approach beat (progress ~0.31)
     await scrollToSceneProgress(page, 0.31);
-    const approachOpacity = await getHeadingOpacity(page, 'Our Approach');
-    expect(approachOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'Our Approach'))
+      .toBeGreaterThan(0.7);
 
     // Checkpoint 3: Ecosystem beat (progress ~0.45)
     await scrollToSceneProgress(page, 0.45);
-    const ecosystemOpacity = await getHeadingOpacity(
-      page,
-      'Building an Entrepreneurial Ecosystem'
-    );
-    expect(ecosystemOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() =>
+        getHeadingOpacity(page, 'Building an Entrepreneurial Ecosystem')
+      )
+      .toBeGreaterThan(0.7);
 
     // Checkpoint 4: Student Journey beat (progress ~0.60)
     await scrollToSceneProgress(page, 0.60);
-    const journeyOpacity = await getHeadingOpacity(page, 'Student Journey');
-    expect(journeyOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'Student Journey'))
+      .toBeGreaterThan(0.7);
 
     // Checkpoint 5: Who Is E-Cell For beat (progress ~0.76)
     await scrollToSceneProgress(page, 0.76);
-    const whoIsForOpacity = await getHeadingOpacity(page, 'Who Is E-Cell For?');
-    expect(whoIsForOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'Who Is E-Cell For?'))
+      .toBeGreaterThan(0.7);
 
     // Checkpoint 6: Final CTA beat (progress 1.0)
     await scrollToSceneProgress(page, 1.0);
-    const finalCTAOpacity = await getHeadingOpacity(
-      page,
-      'Your idea deserves a first step.'
-    );
-    expect(finalCTAOpacity).toBeGreaterThan(0.7);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'Your idea deserves a first step.'))
+      .toBeGreaterThan(0.7);
 
     // Assert final CTA button is visible and active at the bottom
     const finalCtaButton = page.getByRole('link', { name: 'Get Involved' }).last();
@@ -152,6 +154,48 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     await expect(
       page.getByRole('heading', { name: 'Your idea deserves a first step.' })
     ).toBeVisible();
+  });
+
+  test('canvas element exists on Home when WebGL works', async ({ page }) => {
+    await page.goto('/');
+    const canvas = page.locator('canvas');
+    await expect(canvas).toBeVisible({ timeout: 10000 });
+  });
+
+  test('with WebGL disabled, the SVG fallback bulb renders and cards still work', async ({
+    page,
+  }) => {
+    await page.addInitScript(`
+      HTMLCanvasElement.prototype.getContext = function(type) {
+        if (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl') {
+          return null;
+        }
+        return null;
+      };
+      // @ts-ignore
+      delete window.WebGLRenderingContext;
+      // @ts-ignore
+      delete window.WebGL2RenderingContext;
+    `);
+
+    await page.goto('/');
+
+    // SVG bulb should be rendered in place of canvas
+    await expect(page.locator('canvas')).toHaveCount(0);
+    const svg = page.locator('svg').first();
+    await expect(svg).toBeAttached();
+
+    // Verify idea cards still function across scroll
+    await scrollToSceneProgress(page, 0.17);
+    const aboutHeading = page.getByRole('heading', {
+      name: 'More than an idea. A place to begin.',
+    });
+    await expect(aboutHeading).toBeAttached();
+    const aboutOpacity = await getHeadingOpacity(
+      page,
+      'More than an idea. A place to begin.'
+    );
+    expect(aboutOpacity).toBeGreaterThan(0.7);
   });
 });
 
