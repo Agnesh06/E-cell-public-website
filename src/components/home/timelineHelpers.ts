@@ -40,8 +40,8 @@ export function validateBeats(beats: readonly BeatConfig[]): boolean {
 export function getHeadingRange(beat: BeatConfig): HeadingTiming {
   const span = beat.end - beat.start;
   const enterStart = beat.start;
-  const enterEnd = beat.start + span * 0.15;
-  const exitStart = beat.hasExit ? beat.end - span * 0.15 : beat.end;
+  const enterEnd = beat.start + span * 0.22;
+  const exitStart = beat.hasExit ? beat.end - span * 0.22 : beat.end;
   const exitEnd = beat.end;
 
   return {
@@ -63,16 +63,16 @@ export function getCardRange(
   totalCards: number
 ): CardTiming {
   const span = beat.end - beat.start;
-  // Card pop-in starts between 15% and 70%
+  // Delay card pop-in a little so the scene feels more natural and editorial.
   const popStartRatio =
     totalCards <= 1
-      ? 0.15
-      : 0.15 + (cardIndex / (totalCards - 1 || 1)) * 0.35; // Staggers start between 15% and 50%
-  const popDurationRatio = 0.15; // 15% pop duration
+      ? 0.22
+      : 0.22 + (cardIndex / (totalCards - 1 || 1)) * 0.28;
+  const popDurationRatio = 0.18;
   const popStart = beat.start + span * popStartRatio;
   const popEnd = Math.min(popStart + span * popDurationRatio, beat.start + span * 0.70);
 
-  const exitStart = beat.hasExit ? beat.end - span * 0.15 : beat.end;
+  const exitStart = beat.hasExit ? beat.end - span * 0.22 : beat.end;
   const exitEnd = beat.end;
 
   return {

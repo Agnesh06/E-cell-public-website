@@ -18,7 +18,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-between bg-background/95 backdrop-blur-xl border-b border-border p-6 pt-24 animate-in fade-in slide-in-from-top-4 duration-200">
+    <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-between bg-background border-b border-border p-6 pt-24 animate-in fade-in slide-in-from-top-4 duration-200">
       <nav className="flex flex-col space-y-6 text-center">
         {NAV_ITEMS.map((item) => {
           const isActive =

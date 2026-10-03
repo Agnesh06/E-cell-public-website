@@ -103,18 +103,14 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
 
   const content = (
     <div
-      className="p-5 md:p-6 rounded-2xl bg-slate-900/95 border border-slate-700/80 shadow-2xl transition-all"
-      style={{
-        // High opacity surface with no backdrop-filter to ensure performance and contrast
-        backgroundColor: '#0f172a',
-      }}
+      className="p-5 md:p-6 rounded-2xl bg-card border border-border theme-card-shadow transition-all"
     >
       {title && (
-        <h4 className="text-lg md:text-xl font-bold text-white mb-2 tracking-tight">
+        <h4 className="text-lg md:text-xl font-bold text-card-foreground mb-2 tracking-tight">
           {title}
         </h4>
       )}
-      <p className="text-sm md:text-base text-slate-200 leading-relaxed font-normal">
+      <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-normal">
         {description || text}
       </p>
     </div>

@@ -9,7 +9,7 @@ export const TeamPreview: React.FC = () => {
   const officeBearers = getOfficeBearers();
 
   return (
-    <section className="py-24 px-6 md:px-12 bg-background border-t border-border/40 relative z-20">
+    <section className="py-24 px-6 md:px-12 theme-gradient border-t border-border relative z-20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">

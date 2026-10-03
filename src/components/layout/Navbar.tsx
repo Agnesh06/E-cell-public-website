@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { NAV_ITEMS, NavItem } from '@/lib/constants';
-import { MobileMenu } from './MobileMenu';
 import { useReducedMotion } from 'framer-motion';
+import { NAV_ITEMS, NavItem, getActiveNavKey } from '@/lib/constants';
+import { JellyNav } from '@/components/ui/JellyNav';
 
 export const Navbar: React.FC = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const prefersReducedMotion = useReducedMotion();
 
-  // Scroll to #about or top if hash is present on mount or route change
+  const activeKey = getActiveNavKey(location.pathname, location.hash);
+
   useEffect(() => {
     if (location.pathname === '/' && location.hash === '#about') {
       const el = document.getElementById('about');
@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
     }
   }, [location, prefersReducedMotion]);
 
-  const handleNavClick = (item: NavItem, e?: React.MouseEvent) => {
+  const handleNavClick = (item: NavItem, e?: React.MouseEvent<HTMLAnchorElement>) => {
     if (e) e.preventDefault();
 
     if (item.href === '/') {
@@ -60,100 +60,44 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Logo / Brand */}
+    <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-3 pt-3 sm:px-5 md:px-6">
+      <div className="w-full max-w-7xl">
+        <div className="flex items-center justify-between gap-3 rounded-full border border-[var(--glass-border)] bg-[var(--glass-bg)] px-2 py-2 shadow-[0_12px_32px_var(--glass-shadow)] backdrop-blur-[var(--glass-blur)] supports-[backdrop-filter]:bg-white/40 sm:px-3 md:mx-auto md:max-w-[72rem] md:px-4" style={{
+          background: 'var(--glass-bg)',
+          borderColor: 'var(--glass-border)',
+          boxShadow: '0 14px 32px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.82)',
+          WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(1.4)',
+          backdropFilter: 'blur(var(--glass-blur)) saturate(1.4)',
+        }}>
           <Link
             to="/"
             onClick={(e) => handleNavClick({ label: 'Home', href: '/' }, e)}
-            className="flex items-center space-x-3 group"
+            className="flex min-w-0 shrink-0 items-center gap-2 rounded-full px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white/60 md:gap-3"
           >
-            <div className="w-8 h-8 rounded-lg bg-primary/20 border border-primary/50 flex items-center justify-center text-primary font-black text-sm group-hover:scale-105 transition-transform">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[color:var(--theme-accent)]/40 bg-[color:var(--theme-accent)]/10 text-sm font-black text-[var(--theme-accent)] md:h-9 md:w-9">
               E
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight text-foreground leading-tight">
+            <div className="flex min-w-0 flex-col leading-none">
+              <span className="truncate text-[0.7rem] font-bold tracking-tight text-slate-900 sm:text-xs md:text-sm">
                 CSEA E-Cell
               </span>
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              <span className="truncate text-[0.55rem] uppercase tracking-[0.18em] text-slate-500 md:text-[0.62rem]">
                 PSG Tech
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
-            {NAV_ITEMS.map((item) => {
-              const isActive =
-                (item.href === '/' &&
-                  location.pathname === '/' &&
-                  !location.hash) ||
-                (item.isHash &&
-                  location.pathname === '/' &&
-                  location.hash === '#about') ||
-                (!item.isHash &&
-                  item.href !== '/' &&
-                  location.pathname === item.href);
-
-              return (
-                <button
-                  key={item.href}
-                  onClick={(e) => handleNavClick(item, e)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive
-                      ? 'text-primary bg-primary/10'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Mobile hamburger toggle */}
-          <div className="flex md:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary"
-              aria-label="Toggle navigation menu"
-              aria-expanded={mobileMenuOpen}
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {mobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
+          <div className="min-w-0 flex-1">
+            <JellyNav
+              items={NAV_ITEMS}
+              activeKey={activeKey}
+              compact={false}
+              onItemClick={handleNavClick}
+            />
           </div>
         </div>
-      </header>
-
-      {/* Mobile Drawer Menu */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        onItemClick={(item) => handleNavClick(item)}
-      />
-    </>
+      </div>
+    </header>
   );
 };
 

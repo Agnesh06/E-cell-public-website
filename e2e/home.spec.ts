@@ -102,13 +102,17 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     await page.goto('/');
 
     // Projects link
-    const projectsLink = page.getByRole('button', { name: 'Projects' });
+    const projectsLink = page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'Projects' });
     await projectsLink.click();
     await expect(page).toHaveURL(/\/projects$/);
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
 
     // Contact Us link
-    const contactLink = page.getByRole('button', { name: 'Contact Us' });
+    const contactLink = page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'Contact Us' });
     await contactLink.click();
     await expect(page).toHaveURL(/\/collaboration$/);
     await expect(
@@ -116,12 +120,16 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     ).toBeVisible();
 
     // About link navigates back to Home with #about
-    const aboutLink = page.getByRole('button', { name: 'About' });
+    const aboutLink = page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'About' });
     await aboutLink.click();
     await expect(page).toHaveURL(/\/#about$/);
 
     // Home link navigates back to /
-    const homeLink = page.getByRole('button', { name: 'Home' });
+    const homeLink = page
+      .getByRole('navigation', { name: 'Primary' })
+      .getByRole('link', { name: 'Home' });
     await homeLink.click();
     await expect(page).toHaveURL(/\/$/);
   });

@@ -55,40 +55,46 @@ describe('timelineHelpers', () => {
         expect(popStart).toBeLessThan(popEnd);
         expect(popEnd).toBeLessThanOrEqual(beat.end);
 
-        // Staggered pop-in must occur between 15% and 70% of beat
+        // Staggered pop-in must occur between 22% and 70% of beat
         const span = beat.end - beat.start;
-        const minAllowedPop = beat.start + span * 0.15;
+        const minAllowedPop = beat.start + span * 0.22;
         const maxAllowedPop = beat.start + span * 0.70;
 
         expect(popStart).toBeGreaterThanOrEqual(minAllowedPop - 1e-6);
         expect(popEnd).toBeLessThanOrEqual(maxAllowedPop + 1e-6);
 
-        // Exit occurs in last 15% if hasExit
+        // Exit occurs in the last 22% if hasExit
         if (beat.hasExit) {
-          expect(exitStart).toBeCloseTo(beat.end - span * 0.15, 5);
+          expect(exitStart).toBeCloseTo(beat.end - span * 0.22, 5);
           expect(exitEnd).toBe(beat.end);
         }
       }
     }
   });
 
-  it('heading enter range is within the first 15% and exit is in last 15% when hasExit is true', () => {
+  it('heading and cards reveal later so the motion feels more natural and less abrupt', () => {
     for (const beat of BEATS) {
       const { enterStart, enterEnd, exitStart, exitEnd, hasExit } =
         getHeadingRange(beat);
       const span = beat.end - beat.start;
 
       expect(enterStart).toBe(beat.start);
-      expect(enterEnd).toBeCloseTo(beat.start + span * 0.15, 5);
+      expect(enterEnd).toBeCloseTo(beat.start + span * 0.22, 5);
 
       if (hasExit) {
-        expect(exitStart).toBeCloseTo(beat.end - span * 0.15, 5);
+        expect(exitStart).toBeCloseTo(beat.end - span * 0.22, 5);
         expect(exitEnd).toBe(beat.end);
       } else {
         expect(exitStart).toBe(beat.end);
         expect(exitEnd).toBe(beat.end);
       }
     }
+
+    const beat = BEATS[1];
+    const { popStart, popEnd } = getCardRange(beat, 0, beat.totalCards);
+    const span = beat.end - beat.start;
+    expect(popStart).toBeGreaterThanOrEqual(beat.start + span * 0.2);
+    expect(popEnd).toBeLessThanOrEqual(beat.start + span * 0.7);
   });
 
   it('correctly identifies the active beat for given progress values', () => {

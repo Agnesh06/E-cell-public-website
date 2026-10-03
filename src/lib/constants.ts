@@ -19,8 +19,56 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Contact Us', href: '/collaboration' },
 ] as const;
 
+export const NAV_KEY_BY_ROUTE = {
+  home: 'home',
+  about: 'about',
+  projects: 'projects',
+  contact: 'contact',
+} as const;
+
+export function getActiveNavKey(
+  path: string,
+  hash: string
+): (typeof NAV_KEY_BY_ROUTE)[keyof typeof NAV_KEY_BY_ROUTE] {
+  if (path === '/' && (!hash || hash === '#home')) return NAV_KEY_BY_ROUTE.home;
+  if (path === '/' && hash === '#about') return NAV_KEY_BY_ROUTE.about;
+  if (path.startsWith('/projects')) return NAV_KEY_BY_ROUTE.projects;
+  if (path === '/collaboration') return NAV_KEY_BY_ROUTE.contact;
+  return NAV_KEY_BY_ROUTE.home;
+}
+
 // TODO: Point to dedicated application page once created
 export const GET_INVOLVED_PATH = '/collaboration';
+
+export const COLOR_TOKENS = {
+  theme: {
+    background: '0 0% 100%',
+    backgroundEnd: '212 100% 94.5%',
+    text: '218 72% 15%',
+    mutedText: '215 39% 30%',
+    accent: '214 81% 42%',
+    accentForeground: '0 0% 100%',
+    secondary: '210 82% 96%',
+    muted: '210 82% 96%',
+    card: '0 0% 100%',
+    cardBorder: '211 67% 84%',
+    cardShadow: '0 14px 34px rgba(35, 82, 136, 0.14)',
+    destructive: '0 70% 45%',
+  },
+  bulb: {
+    glass: '#DCE3EA',
+    glassEdge: '#64748B',
+    metal: '#778392',
+    metalShadow: '#485463',
+    filamentUnlit: '#374151',
+    filamentLit: '#FFB52E',
+    core: '#FFF0B3',
+    midHalo: '#FFC247',
+    outerHalo: '#F39A38',
+    particle: '#F2A52E',
+    ray: '#E88926',
+  },
+} as const;
 
 export const SCENE_CONFIG = {
   DESKTOP_HEIGHT: '700vh',
@@ -28,8 +76,6 @@ export const SCENE_CONFIG = {
   PERSPECTIVE: '1200px',
   BULB_FADE_IN_START: 0.03,
   BULB_FADE_IN_END: 0.12,
-  STAGE_BG_START: 'rgb(3, 7, 18)',      // Deep navy #030712
-  STAGE_BG_END: 'rgb(240, 246, 255)',   // Bright white-blue
 } as const;
 
 export interface BeatConfig {

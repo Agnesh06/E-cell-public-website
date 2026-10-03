@@ -4,36 +4,69 @@
 
 @layer base {
   :root {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: var(--theme-background);
+    --foreground: var(--theme-text);
+    --card: var(--theme-card);
+    --card-foreground: var(--theme-text);
+    --popover: var(--theme-background);
+    --popover-foreground: var(--theme-text);
+    --primary: var(--theme-accent);
+    --primary-foreground: var(--theme-accent-foreground);
+    --secondary: var(--theme-secondary);
+    --secondary-foreground: var(--theme-text);
+    --muted: var(--theme-muted);
+    --muted-foreground: var(--theme-muted-text);
+    --accent: var(--theme-secondary);
+    --accent-foreground: var(--theme-text);
+    --destructive: var(--theme-destructive);
+    --destructive-foreground: var(--theme-accent-foreground);
+    --border: var(--theme-card-border);
+    --input: var(--theme-card-border);
+    --ring: var(--theme-accent);
 
-    --card: 222.2 84% 6.5%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 100% 50%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.8 100% 47.1%;
-
+    --glass-bg: rgba(255, 255, 255, 0.46);
+    --glass-border: rgba(255, 255, 255, 0.82);
+    --glass-shadow: rgba(96, 140, 197, 0.18);
+    --glass-blur: 14px;
+    --nav-h: 4.5rem;
+    --nav-pad: 0.85rem;
     --radius: 0.5rem;
   }
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--theme-background)) 0%,
+    hsl(var(--theme-background-end)) 100%
+  );
+  color: hsl(var(--theme-text));
+  overflow-x: hidden;
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(194, 213, 236, 0.8);
+  }
+}
+
+.theme-gradient {
+  background: linear-gradient(
+    135deg,
+    hsl(var(--theme-background)) 0%,
+    hsl(var(--theme-background-end)) 100%
+  );
+}
+
+.theme-card-shadow {
+  box-shadow: var(--theme-card-shadow);
 }
 
 @layer utilities {

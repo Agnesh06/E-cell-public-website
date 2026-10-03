@@ -1,17 +1,16 @@
 import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { MotionValue } from 'framer-motion';
+import { COLOR_TOKENS } from '@/lib/constants';
 import {
   calculateBulbAppearance,
   calculateLightIntensity,
   calculateFilamentEmissive,
-  calculateBloomParams,
   calculateCameraTransform,
   calculateParticleParams,
+  calculateBreathingPulse,
   checkIsLowTier,
-  type BloomParams,
   type BulbAppearance,
   type CameraTransform,
   type ParticleParams,
@@ -32,10 +31,12 @@ interface BulbModelProps {
 }
 
 const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) => {
+  const { bulb } = COLOR_TOKENS;
   const groupRef = useRef<THREE.Group>(null);
   const pointLightRef = useRef<THREE.PointLight>(null);
   const filamentMatRef = useRef<THREE.MeshStandardMaterial>(null);
   const glassMatRef = useRef<THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial>(null);
+  const glassOutlineMatRef = useRef<THREE.LineBasicMaterial>(null);
   const baseMatRef = useRef<THREE.MeshStandardMaterial>(null);
   const contactMatRef = useRef<THREE.MeshStandardMaterial>(null);
   const supportMatRef = useRef<THREE.MeshStandardMaterial>(null);
@@ -43,8 +44,12 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
   const raysMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const raysMatRef2 = useRef<THREE.MeshBasicMaterial>(null);
   const raysMatRef3 = useRef<THREE.MeshBasicMaterial>(null);
+  const coreHaloMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const midHaloMatRef = useRef<THREE.MeshBasicMaterial>(null);
+  const outerHaloMatRef = useRef<THREE.MeshBasicMaterial>(null);
   const particlesRef = useRef<THREE.Points>(null);
   const particlesMatRef = useRef<THREE.PointsMaterial>(null);
+  const haloGroupRef = useRef<THREE.Group>(null);
   const appearanceRef = useRef<BulbAppearance>({ opacity: 0, scale: 0.85 });
   const cameraTransformRef = useRef<CameraTransform>({ z: 0, y: 0, rotX: 0, rotY: 0 });
   const particleParamsRef = useRef<ParticleParams>({ opacity: 0, size: 0.02 });
@@ -66,6 +71,15 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
   }, []);
 
   const glassGeometry = useMemo(() => new THREE.LatheGeometry(bulbPoints, 36), [bulbPoints]);
+  const glassOutlineGeometry = useMemo(() => {
+    const outlinePoints = [
+      ...bulbPoints,
+      ...[...bulbPoints].reverse().map((point) => new THREE.Vector2(-point.x, point.y)),
+    ].map((point) => new THREE.Vector3(point.x, point.y, 0));
+    const geometry = new THREE.BufferGeometry();
+    geometry.setFromPoints(outlinePoints);
+    return geometry;
+  }, [bulbPoints]);
 
   // 2. Base & Solder Contacts
   const screwBaseGeometry = useMemo(() => new THREE.CylinderGeometry(0.44, 0.41, 0.5, 32), []);
@@ -95,9 +109,9 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
     const ctx = canvas.getContext('2d');
     if (ctx) {
       const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-      grad.addColorStop(0, 'rgba(254, 240, 138, 0.85)');
-      grad.addColorStop(0.35, 'rgba(147, 197, 253, 0.4)');
-      grad.addColorStop(0.75, 'rgba(59, 130, 246, 0.12)');
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0.72)');
+      grad.addColorStop(0.35, 'rgba(255, 255, 255, 0.38)');
+      grad.addColorStop(0.75, 'rgba(255, 255, 255, 0.1)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 256, 256);
@@ -137,6 +151,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
   useEffect(() => {
     return () => {
       glassGeometry.dispose();
+      glassOutlineGeometry.dispose();
       screwBaseGeometry.dispose();
       contactGeometry.dispose();
       supportWireGeometry.dispose();
@@ -147,6 +162,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
     };
   }, [
     glassGeometry,
+    glassOutlineGeometry,
     screwBaseGeometry,
     contactGeometry,
     supportWireGeometry,
@@ -164,57 +180,71 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
     const emissiveVal = calculateFilamentEmissive(p);
     const cam = calculateCameraTransform(p, isMobile, cameraTransformRef.current);
     const particleParams = calculateParticleParams(p, particleParamsRef.current);
+    const breathing = calculateBreathingPulse(p, state.clock.getElapsedTime());
 
     // Camera updates
     state.camera.position.z = cam.z;
     state.camera.position.y = cam.y;
     state.camera.rotation.x = cam.rotX;
-    state.camera.rotation.y = cam.rotY;
+    state.camera.rotation.y = cam.rotY + Math.sin(state.clock.elapsedTime * 0.35) * 0.03;
 
     // Bulb root group scaling & placement
     if (groupRef.current) {
       groupRef.current.visible = appearance.opacity > 0;
-      groupRef.current.scale.setScalar(appearance.scale * (isMobile ? 0.55 : 1));
-      groupRef.current.position.y = isMobile ? 1.9 : 0.05;
-      groupRef.current.rotation.x = -0.05 * p;
-      groupRef.current.rotation.y = 0.08 * Math.sin(p * Math.PI);
+      const baseScale = appearance.scale * (isMobile ? 0.55 : 1);
+      groupRef.current.scale.setScalar(baseScale * breathing.pulse);
+      groupRef.current.position.y = (isMobile ? 1.9 : 0.05) + breathing.driftY * 0.65;
+      groupRef.current.position.x = breathing.driftX * 0.9;
+      groupRef.current.rotation.x = -0.05 * p + breathing.driftY * 0.35;
+      groupRef.current.rotation.y = 0.08 * Math.sin(p * Math.PI) + breathing.driftX * 0.5;
+      groupRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.6) * 0.03;
+    }
+
+    if (haloGroupRef.current) {
+      haloGroupRef.current.rotation.z = state.clock.elapsedTime * 0.18 + p * 1.2;
+      haloGroupRef.current.scale.setScalar(1 + Math.sin(state.clock.elapsedTime * 1.2) * 0.04);
     }
 
     // Glass material opacity & visibility
     if (glassMatRef.current) {
-      glassMatRef.current.opacity = isLowTier
-        ? 0.35 * appearance.opacity
-        : 0.95 * appearance.opacity;
+      glassMatRef.current.opacity = 0.1 * appearance.opacity;
+    }
+    if (glassOutlineMatRef.current) {
+      glassOutlineMatRef.current.opacity = 0.42 * appearance.opacity;
     }
 
     // Point Light intensity
     if (pointLightRef.current) {
-      pointLightRef.current.intensity = lightVal * 3.5;
+      pointLightRef.current.intensity = lightVal * 3.8;
+      pointLightRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.8) * 0.18;
+      pointLightRef.current.position.y = 0.3 + Math.cos(state.clock.elapsedTime * 1.1) * 0.12;
     }
 
     // Filament emissive intensity & color
     if (filamentMatRef.current) {
-      filamentMatRef.current.emissiveIntensity = emissiveVal * 4.5;
+      filamentMatRef.current.emissiveIntensity = emissiveVal * 4.8;
       filamentMatRef.current.opacity = appearance.opacity;
-      if (emissiveVal > 0) {
-        filamentMatRef.current.color.setRGB(1.0, 0.95, 0.65);
-      } else {
-        filamentMatRef.current.color.setRGB(0.55, 0.6, 0.65);
-      }
+      filamentMatRef.current.color.set(
+        emissiveVal > 0 ? bulb.filamentLit : bulb.filamentUnlit
+      );
     }
     if (baseMatRef.current) baseMatRef.current.opacity = appearance.opacity;
     if (contactMatRef.current) contactMatRef.current.opacity = appearance.opacity;
     if (supportMatRef.current) supportMatRef.current.opacity = appearance.opacity;
     if (supportMatRef2.current) supportMatRef2.current.opacity = appearance.opacity;
 
-    // Keep the light rays deterministic while their additive opacity follows the glow.
-    if (raysMatRef.current) raysMatRef.current.opacity = lightVal * 0.65;
-    if (raysMatRef2.current) raysMatRef2.current.opacity = lightVal * 0.65;
-    if (raysMatRef3.current) raysMatRef3.current.opacity = lightVal * 0.65;
+    // Warm alpha layers and rays grow with a softer, more layered glow response.
+    const haloPulse = 0.8 + 0.35 * Math.sin(state.clock.elapsedTime * 1.4 + p * 3.2);
+    if (raysMatRef.current) raysMatRef.current.opacity = lightVal * 0.72 * haloPulse;
+    if (raysMatRef2.current) raysMatRef2.current.opacity = lightVal * 0.68 * (1.15 + 0.22 * Math.sin(state.clock.elapsedTime * 1.3));
+    if (raysMatRef3.current) raysMatRef3.current.opacity = lightVal * 0.64 * haloPulse;
+    if (coreHaloMatRef.current) coreHaloMatRef.current.opacity = lightVal * 0.42 * haloPulse;
+    if (midHaloMatRef.current) midHaloMatRef.current.opacity = lightVal * 0.28 * (1.1 + 0.12 * Math.sin(state.clock.elapsedTime * 1.05));
+    if (outerHaloMatRef.current) outerHaloMatRef.current.opacity = lightVal * 0.18 * (1.2 + 0.18 * Math.sin(state.clock.elapsedTime * 0.85));
 
     // Particles animation
     if (particlesRef.current && particlesMatRef.current) {
-      particlesMatRef.current.opacity = particleParams.opacity;
+      particlesMatRef.current.opacity = particleParams.opacity * (0.8 + 0.2 * Math.sin(state.clock.elapsedTime * 1.5));
       particlesMatRef.current.size = particleParams.size;
 
       // Update positions
@@ -243,7 +273,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <pointLight
           ref={pointLightRef}
           position={[0, 0.3, 0]}
-          color="#fff3b0"
+          color={bulb.core}
           distance={14}
           decay={2}
         />
@@ -253,8 +283,8 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
           {isLowTier ? (
             <meshStandardMaterial
               ref={glassMatRef as React.Ref<THREE.MeshStandardMaterial>}
-              color="#dbeafe"
-              roughness={0.15}
+              color={bulb.glass}
+              roughness={0.22}
               metalness={0.1}
               transparent
               opacity={0}
@@ -263,10 +293,10 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
           ) : (
             <meshPhysicalMaterial
               ref={glassMatRef as React.Ref<THREE.MeshPhysicalMaterial>}
-              color="#ffffff"
-              roughness={0.08}
+              color={bulb.glass}
+              roughness={0.22}
               metalness={0.05}
-              transmission={0.92}
+              transmission={0.08}
               ior={1.5}
               transparent
               opacity={0}
@@ -274,12 +304,21 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
             />
           )}
         </mesh>
+        <lineLoop geometry={glassOutlineGeometry} position={[0, 0, 0.02]}>
+          <lineBasicMaterial
+            ref={glassOutlineMatRef}
+            color={bulb.glassEdge}
+            transparent
+            opacity={0}
+            depthTest={false}
+          />
+        </lineLoop>
 
         {/* 2. Metal Screw Base */}
         <mesh geometry={screwBaseGeometry} position={[0, -1.25, 0]}>
           <meshStandardMaterial
             ref={baseMatRef}
-            color="#94a3b8"
+            color={bulb.metal}
             metalness={0.85}
             roughness={0.3}
             transparent
@@ -291,7 +330,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <mesh geometry={contactGeometry} position={[0, -1.55, 0]}>
           <meshStandardMaterial
             ref={contactMatRef}
-            color="#1e293b"
+            color={bulb.metalShadow}
             metalness={0.2}
             roughness={0.6}
             transparent
@@ -303,7 +342,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <mesh geometry={supportWireGeometry} position={[-0.16, -0.4, 0]}>
           <meshStandardMaterial
             ref={supportMatRef}
-            color="#64748b"
+            color={bulb.glassEdge}
             metalness={0.8}
             roughness={0.4}
             transparent
@@ -313,7 +352,7 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <mesh geometry={supportWireGeometry} position={[0.16, -0.4, 0]}>
           <meshStandardMaterial
             ref={supportMatRef2}
-            color="#64748b"
+            color={bulb.glassEdge}
             metalness={0.8}
             roughness={0.4}
             transparent
@@ -325,8 +364,8 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <mesh geometry={filamentGeometry}>
           <meshStandardMaterial
             ref={filamentMatRef}
-            color="#64748b"
-            emissive="#fde047"
+            color={bulb.filamentUnlit}
+            emissive={bulb.filamentLit}
             emissiveIntensity={0}
             roughness={0.3}
             transparent
@@ -339,30 +378,70 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
           <mesh geometry={rayPlaneGeometry}>
             <meshBasicMaterial
               ref={raysMatRef}
+              color={bulb.ray}
               map={rayTexture}
               transparent
               opacity={0}
-              blending={THREE.AdditiveBlending}
+              blending={THREE.NormalBlending}
               depthWrite={false}
             />
           </mesh>
           <mesh geometry={rayPlaneGeometry} rotation={[0, 0, Math.PI / 3]}>
             <meshBasicMaterial
               ref={raysMatRef2}
+              color={bulb.ray}
               map={rayTexture}
               transparent
               opacity={0}
-              blending={THREE.AdditiveBlending}
+              blending={THREE.NormalBlending}
               depthWrite={false}
             />
           </mesh>
           <mesh geometry={rayPlaneGeometry} rotation={[0, 0, (2 * Math.PI) / 3]}>
             <meshBasicMaterial
               ref={raysMatRef3}
+              color={bulb.ray}
               map={rayTexture}
               transparent
               opacity={0}
-              blending={THREE.AdditiveBlending}
+              blending={THREE.NormalBlending}
+              depthWrite={false}
+            />
+          </mesh>
+        </group>
+
+        {/* Warm translucent halos use normal alpha blending on the light background. */}
+        <group ref={haloGroupRef} position={[0, 0.3, -0.3]}>
+          <mesh geometry={rayPlaneGeometry} scale={[0.8, 0.8, 1]}>
+            <meshBasicMaterial
+              ref={outerHaloMatRef}
+              color={bulb.outerHalo}
+              map={rayTexture}
+              transparent
+              opacity={0}
+              blending={THREE.NormalBlending}
+              depthWrite={false}
+            />
+          </mesh>
+          <mesh geometry={rayPlaneGeometry} scale={[0.48, 0.48, 1]}>
+            <meshBasicMaterial
+              ref={midHaloMatRef}
+              color={bulb.midHalo}
+              map={rayTexture}
+              transparent
+              opacity={0}
+              blending={THREE.NormalBlending}
+              depthWrite={false}
+            />
+          </mesh>
+          <mesh geometry={rayPlaneGeometry} scale={[0.22, 0.22, 1]}>
+            <meshBasicMaterial
+              ref={coreHaloMatRef}
+              color={bulb.core}
+              map={rayTexture}
+              transparent
+              opacity={0}
+              blending={THREE.NormalBlending}
               depthWrite={false}
             />
           </mesh>
@@ -372,55 +451,16 @@ const BulbModel: React.FC<BulbModelProps> = ({ progress, isLowTier, isMobile }) 
         <points ref={particlesRef} geometry={particleGeometry}>
           <pointsMaterial
             ref={particlesMatRef}
-            color="#93c5fd"
+            color={bulb.particle}
             size={0.03}
             transparent
             opacity={0}
-            blending={THREE.AdditiveBlending}
+            blending={THREE.NormalBlending}
             depthWrite={false}
           />
         </points>
       </group>
     </>
-  );
-};
-
-// -------------------------------------------------------------
-// Bloom Post-Processing Controller
-// -------------------------------------------------------------
-interface BloomControllerProps {
-  progress: MotionValue<number>;
-  isLowTier: boolean;
-}
-
-import type { BloomEffect } from 'postprocessing';
-
-const BloomController: React.FC<BloomControllerProps> = ({ progress, isLowTier }) => {
-  const bloomRef = useRef<InstanceType<typeof BloomEffect>>(null);
-  const paramsRef = useRef<BloomParams>({ intensity: 0, luminanceThreshold: 1 });
-
-  useFrame(() => {
-    if (isLowTier || !bloomRef.current) return;
-    const p = progress.get();
-    const params = calculateBloomParams(p, false, paramsRef.current);
-    bloomRef.current.intensity = params.intensity;
-    if (bloomRef.current.luminanceMaterial) {
-      bloomRef.current.luminanceMaterial.threshold = params.luminanceThreshold;
-    }
-  });
-
-  if (isLowTier) return null;
-
-  return (
-    <EffectComposer multisampling={0}>
-      <Bloom
-        ref={bloomRef as unknown as React.ComponentProps<typeof Bloom>['ref']}
-        intensity={0}
-        luminanceThreshold={0.85}
-        luminanceSmoothing={0.9}
-        mipmapBlur
-      />
-    </EffectComposer>
   );
 };
 
@@ -517,7 +557,6 @@ export const BulbScene3D: React.FC<BulbScene3DProps> = ({ progress, onContextLos
       >
         <ProgressFrameScheduler progress={progress} enabled={isActive} />
         <BulbModel progress={progress} isLowTier={isLowTier} isMobile={isMobile} />
-        <BloomController progress={progress} isLowTier={isLowTier} />
       </Canvas>
     </div>
   );

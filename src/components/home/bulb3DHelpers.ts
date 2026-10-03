@@ -20,6 +20,12 @@ export interface ParticleParams {
   size: number;
 }
 
+export interface BreathingPulse {
+  pulse: number;
+  driftX: number;
+  driftY: number;
+}
+
 /**
  * Clamps a number to [min, max].
  */
@@ -141,6 +147,27 @@ export function calculateParticleParams(
   const t = (p - 0.12) / (1.0 - 0.12);
   result.opacity = 0.8 * t;
   result.size = 0.02 + 0.04 * t;
+  return result;
+}
+
+/**
+ * A restrained breathing pulse that keeps the bulb alive without becoming noisy.
+ * The animation stays gentle and bounded while preserving the existing scroll story.
+ */
+export function calculateBreathingPulse(
+  progress: number,
+  elapsedSeconds: number,
+  result: BreathingPulse = { pulse: 1, driftX: 0, driftY: 0 }
+): BreathingPulse {
+  const p = clamp(progress, 0, 1);
+  const breathe = 0.5 + 0.5 * Math.sin(elapsedSeconds * 0.9 + p * 2.4);
+  const pulseStrength = 0.04 + (1 - p) * 0.03;
+  const driftStrength = 0.08 + (1 - p) * 0.04;
+
+  result.pulse = 1 + pulseStrength * breathe;
+  result.driftX = Math.sin(elapsedSeconds * 0.7 + p * 1.8) * driftStrength;
+  result.driftY = Math.cos(elapsedSeconds * 1.1 + p * 2.1) * (driftStrength * 0.7);
+
   return result;
 }
 

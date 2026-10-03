@@ -40,8 +40,6 @@ interface SectionHeadingProps {
   title: string;
   subtitle?: string;
   eyebrow?: string;
-  textColor: MotionValue<string>;
-  mutedTextColor: MotionValue<string>;
 }
 
 const SectionHeading: React.FC<SectionHeadingProps> = ({
@@ -50,8 +48,6 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
   title,
   subtitle,
   eyebrow,
-  textColor,
-  mutedTextColor,
 }) => {
   const { enterStart, enterEnd, exitStart, exitEnd, hasExit } =
     getHeadingRange(beat);
@@ -81,24 +77,15 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       className="absolute top-16 md:top-20 inset-x-0 mx-auto px-6 max-w-3xl text-center pointer-events-none z-10"
     >
       {eyebrow && (
-        <motion.p
-          style={{ color: mutedTextColor }}
-          className="text-xs md:text-sm font-semibold uppercase tracking-widest mb-1.5"
-        >
+        <motion.p className="text-xs md:text-sm font-semibold uppercase tracking-widest mb-1.5 text-primary">
           {eyebrow}
         </motion.p>
       )}
-      <motion.h2
-        style={{ color: textColor }}
-        className="text-2xl md:text-4xl font-extrabold tracking-tight"
-      >
+      <motion.h2 className="text-2xl md:text-4xl font-extrabold tracking-tight text-foreground">
         {title}
       </motion.h2>
       {subtitle && (
-        <motion.p
-          style={{ color: mutedTextColor }}
-          className="mt-2 text-sm md:text-base font-normal max-w-xl mx-auto"
-        >
+        <motion.p className="mt-2 text-sm md:text-base font-normal max-w-xl mx-auto text-muted-foreground">
           {subtitle}
         </motion.p>
       )}
@@ -143,25 +130,6 @@ export const HomeScrollScene: React.FC = () => {
     }
   });
 
-  // Stage background interpolation from deep navy to bright white-blue
-  const stageBg = useTransform(
-    smoothedProgress,
-    [0, 1],
-    [SCENE_CONFIG.STAGE_BG_START, SCENE_CONFIG.STAGE_BG_END]
-  );
-
-  // Dynamic text color interpolation ensuring WCAG AA contrast against stage background
-  const textColor = useTransform(
-    smoothedProgress,
-    [0, 0.5, 1],
-    ['rgb(248, 250, 252)', 'rgb(148, 163, 184)', 'rgb(15, 23, 42)']
-  );
-  const mutedTextColor = useTransform(
-    smoothedProgress,
-    [0, 0.5, 1],
-    ['rgb(203, 213, 225)', 'rgb(100, 116, 139)', 'rgb(51, 65, 85)']
-  );
-
   // Data sets
   const heroData = getHeroData();
   const aboutData = getAboutData();
@@ -174,11 +142,15 @@ export const HomeScrollScene: React.FC = () => {
   // Smooth scroll handler for "Explore Our Vision"
   const handleScrollToAbout = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!outerRef.current) return;
-    const outerTop = outerRef.current.offsetTop;
-    const scrollableHeight =
-      outerRef.current.scrollHeight - window.innerHeight;
-    const targetY = outerTop + scrollableHeight * BEATS[1].start;
+
+    const aboutEl = document.getElementById('about');
+    if (!aboutEl) return;
+
+    const rect = aboutEl.getBoundingClientRect();
+    const targetY = Math.max(
+      window.scrollY + rect.top + window.innerHeight * 0.18,
+      0
+    );
 
     window.scrollTo({
       top: targetY,
@@ -402,10 +374,9 @@ export const HomeScrollScene: React.FC = () => {
       {/* Sticky 100vh Stage */}
       <motion.div
         style={{
-          backgroundColor: stageBg,
           perspective: SCENE_CONFIG.PERSPECTIVE,
         }}
-        className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center preserve-3d transition-colors duration-200"
+        className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center preserve-3d theme-gradient"
       >
         {/* 3D R3F Bulb Canvas with lazy loading and fallback to SVG Bulb */}
         {webglSupported ? (
@@ -431,14 +402,12 @@ export const HomeScrollScene: React.FC = () => {
           {...(activeBeatId !== 'hero' ? { inert: '' } : {})}
         >
           <motion.h1
-            style={{ color: textColor }}
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight"
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-foreground"
           >
             {heroData.title}
           </motion.h1>
           <motion.p
-            style={{ color: mutedTextColor }}
-            className="mt-6 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-6 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto text-muted-foreground"
           >
             {heroData.description}
           </motion.p>
@@ -463,8 +432,6 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={aboutData.title}
           eyebrow={aboutData.eyebrow}
-          textColor={textColor}
-          mutedTextColor={mutedTextColor}
         />
         {aboutData.cards.map((card, i) => (
           <IdeaCard
@@ -483,8 +450,6 @@ export const HomeScrollScene: React.FC = () => {
           beat={BEATS[2]}
           progress={smoothedProgress}
           title={approachData.title}
-          textColor={textColor}
-          mutedTextColor={mutedTextColor}
         />
         {approachData.cards.map((card, i) => (
           <IdeaCard
@@ -505,8 +470,6 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={ecosystemData.title}
           subtitle={ecosystemData.subtitle}
-          textColor={textColor}
-          mutedTextColor={mutedTextColor}
         />
         {ecosystemData.cards.map((card, i) => (
           <IdeaCard
@@ -526,8 +489,6 @@ export const HomeScrollScene: React.FC = () => {
           beat={BEATS[4]}
           progress={smoothedProgress}
           title={studentJourneyData.title}
-          textColor={textColor}
-          mutedTextColor={mutedTextColor}
         />
         {studentJourneyData.cards.map((card, i) => (
           <IdeaCard
@@ -548,8 +509,6 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={whoIsECellForData.title}
           subtitle={whoIsECellForData.subtitle}
-          textColor={textColor}
-          mutedTextColor={mutedTextColor}
         />
         {whoIsECellForData.cards.map((card, i) => (
           <IdeaCard
@@ -576,14 +535,12 @@ export const HomeScrollScene: React.FC = () => {
           {...(activeBeatId !== 'final-cta' ? { inert: '' } : {})}
         >
           <motion.h2
-            style={{ color: textColor }}
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-tight text-foreground"
           >
             {finalCTAData.title}
           </motion.h2>
           <motion.p
-            style={{ color: mutedTextColor }}
-            className="mt-6 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto"
+            className="mt-6 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto text-muted-foreground"
           >
             {finalCTAData.description}
           </motion.p>

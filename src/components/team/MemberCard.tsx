@@ -7,7 +7,7 @@ interface MemberCardProps {
 
 export const MemberCard: React.FC<MemberCardProps> = ({ member }) => {
   return (
-    <div className="flex flex-col items-center p-6 rounded-xl bg-card border border-border text-center transition-transform hover:-translate-y-1 shadow-md">
+    <div className="flex flex-col items-center p-6 rounded-xl bg-card border border-border text-center transition-transform hover:-translate-y-1 theme-card-shadow">
       <div className="w-24 h-24 mb-4 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-primary/30">
         {member.image ? (
           <img
