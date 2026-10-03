@@ -4,7 +4,6 @@ import {
   validateBeats,
   getHeadingRange,
   getCardRange,
-  calculateGlowIntensity,
   getActiveBeatIndex,
 } from './timelineHelpers';
 
@@ -20,22 +19,6 @@ describe('timelineHelpers', () => {
       if (i > 0) {
         expect(BEATS[i].start).toBeCloseTo(BEATS[i - 1].end, 5);
       }
-    }
-  });
-
-  it('glow is strictly monotonic from 0.12 to 1.0 and equals max (1) at progress 1', () => {
-    expect(calculateGlowIntensity(0.0)).toBe(0);
-    expect(calculateGlowIntensity(0.03)).toBe(0);
-    expect(calculateGlowIntensity(0.12)).toBe(0);
-    expect(calculateGlowIntensity(1.0)).toBe(1);
-
-    // Monotonicity check across 100 steps
-    let prev = 0;
-    for (let p = 0.13; p <= 1.0; p += 0.01) {
-      const current = calculateGlowIntensity(p);
-      expect(current).toBeGreaterThan(prev);
-      expect(current).toBeLessThanOrEqual(1.0);
-      prev = current;
     }
   });
 

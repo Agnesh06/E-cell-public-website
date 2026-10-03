@@ -1,3 +1,4 @@
+// Inspired by React Bits JellyRadio.
 import React, { useRef, useState } from 'react';
 import { motion, useReducedMotion, useMotionValueEvent, useScroll } from 'framer-motion';
 import { Link } from 'react-router-dom';

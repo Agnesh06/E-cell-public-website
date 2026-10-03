@@ -43,7 +43,7 @@ export const GET_INVOLVED_PATH = '/collaboration';
 export const COLOR_TOKENS = {
   theme: {
     background: '0 0% 100%',
-    backgroundEnd: '212 100% 94.5%',
+    backgroundEnd: '212.3 100% 97.45%',
     text: '218 72% 15%',
     mutedText: '215 39% 30%',
     accent: '214 81% 42%',
@@ -53,20 +53,7 @@ export const COLOR_TOKENS = {
     card: '0 0% 100%',
     cardBorder: '211 67% 84%',
     cardShadow: '0 14px 34px rgba(35, 82, 136, 0.14)',
-    destructive: '0 70% 45%',
-  },
-  bulb: {
-    glass: '#DCE3EA',
-    glassEdge: '#64748B',
-    metal: '#778392',
-    metalShadow: '#485463',
-    filamentUnlit: '#374151',
-    filamentLit: '#FFB52E',
-    core: '#FFF0B3',
-    midHalo: '#FFC247',
-    outerHalo: '#F39A38',
-    particle: '#F2A52E',
-    ray: '#E88926',
+    destructive: '214 81% 42%',
   },
 } as const;
 
@@ -74,8 +61,6 @@ export const SCENE_CONFIG = {
   DESKTOP_HEIGHT: '700vh',
   MOBILE_HEIGHT: '500vh',
   PERSPECTIVE: '1200px',
-  BULB_FADE_IN_START: 0.03,
-  BULB_FADE_IN_END: 0.12,
 } as const;
 
 export interface BeatConfig {

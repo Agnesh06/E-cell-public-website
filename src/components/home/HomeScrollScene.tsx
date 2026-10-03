@@ -24,15 +24,11 @@ import {
   getWhoIsECellForData,
   getFinalCTAData,
 } from '@/data/home';
-import { BulbBackground } from './BulbBackground';
 import { IdeaCard } from './IdeaCard';
+import TrueFocus from './TrueFocus';
+import EchoText from './EchoText';
 import { Button } from '@/components/ui/button';
 import { getHeadingRange, getActiveBeatIndex } from './timelineHelpers';
-import { isWebGLAvailable } from './bulb3DHelpers';
-
-const BulbScene3D = React.lazy(() =>
-  import('./BulbScene3D').then((mod) => ({ default: mod.BulbScene3D }))
-);
 
 interface SectionHeadingProps {
   beat: BeatConfig;
@@ -111,16 +107,6 @@ export const HomeScrollScene: React.FC = () => {
   });
 
   const [activeBeatId, setActiveBeatId] = useState<string>(BEATS[0].id);
-  const [webglSupported, setWebglSupported] = useState(false);
-
-  React.useEffect(() => {
-    setWebglSupported(isWebGLAvailable());
-  }, []);
-
-  const handleContextLost = React.useCallback(() => {
-    setWebglSupported(false);
-  }, []);
-
   // Update active beat React state ONLY on beat boundary changes
   useMotionValueEvent(smoothedProgress, 'change', (latest) => {
     const activeIdx = getActiveBeatIndex(latest, BEATS);
@@ -183,22 +169,54 @@ export const HomeScrollScene: React.FC = () => {
   );
 
   // -------------------------------------------------------------
-  // Reduced Motion Fallback: normal stacked layout with static bulb
+  // Reduced motion uses a static stacked layout.
   // -------------------------------------------------------------
   if (prefersReducedMotion) {
     return (
-      <div id="about" className="w-full bg-background text-foreground py-16 px-6">
-        <div className="max-w-4xl mx-auto space-y-24">
-          {/* Static Bulb */}
-          <BulbBackground progress={smoothedProgress} isReducedMotion={true} />
-
+      <div id="about" className="relative w-full theme-gradient text-foreground py-16 px-6">
+        <div className="absolute top-24 inset-x-0 z-10 px-6 pointer-events-none">
+          <TrueFocus
+            sentence="CSEA E-CELL"
+            manualMode
+            blurAmount={2.5}
+            borderColor="hsl(var(--primary))"
+            focusColor="hsl(var(--primary) / 0.6)"
+            animationDuration={0}
+          />
+        </div>
+        <div className="max-w-4xl mx-auto space-y-24 pt-16">
           {/* Hero */}
           <section className="text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-              {heroData.title}
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-primary">
+              <EchoText
+                text={heroData.title}
+                className="hero-title-echo"
+                echoes={6}
+                offset={12}
+                fade={0.55}
+                blur={1.5}
+                duration={900}
+                mode="entrance"
+                fontSize="inherit"
+                fontWeight="inherit"
+                color="inherit"
+              />
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              {heroData.description}
+              <EchoText
+                text={heroData.description}
+                className="hero-description-echo"
+                echoes={3}
+                lag={0.2}
+                offset={6}
+                fade={0.42}
+                blur={0.8}
+                duration={900}
+                mode="entrance"
+                fontSize="inherit"
+                fontWeight="inherit"
+                color="inherit"
+              />
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <Button asChild size="lg">
@@ -362,7 +380,7 @@ export const HomeScrollScene: React.FC = () => {
   }
 
   // -------------------------------------------------------------
-  // Full 3D Scroll-Driven Scene
+  // Scroll-driven story scene
   // -------------------------------------------------------------
   return (
     <div
@@ -378,17 +396,19 @@ export const HomeScrollScene: React.FC = () => {
         }}
         className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center preserve-3d theme-gradient"
       >
-        {/* 3D R3F Bulb Canvas with lazy loading and fallback to SVG Bulb */}
-        {webglSupported ? (
-          <React.Suspense fallback={<BulbBackground progress={smoothedProgress} />}>
-            <BulbScene3D
-              progress={smoothedProgress}
-              onContextLost={handleContextLost}
-            />
-          </React.Suspense>
-        ) : (
-          <BulbBackground progress={smoothedProgress} />
-        )}
+        <motion.div
+          style={{ opacity: heroOpacity }}
+          className="absolute top-6 inset-x-0 z-30 px-6 pointer-events-none"
+        >
+          <TrueFocus
+            sentence="CSEA E-CELL"
+            blurAmount={2.5}
+            borderColor="hsl(var(--primary))"
+            focusColor="hsl(var(--primary) / 0.6)"
+            animationDuration={2.5}
+            pauseBetweenAnimations={0.8}
+          />
+        </motion.div>
 
         {/* 1. HERO BEAT (0.00 - 0.10) */}
         <motion.div
@@ -402,14 +422,41 @@ export const HomeScrollScene: React.FC = () => {
           {...(activeBeatId !== 'hero' ? { inert: '' } : {})}
         >
           <motion.h1
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-foreground"
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight text-primary"
           >
-            {heroData.title}
+            <EchoText
+              key={activeBeatId === 'hero' ? 'hero-active' : 'hero-inactive'}
+              text={heroData.title}
+              className="hero-title-echo"
+              echoes={6}
+              offset={12}
+              fade={0.55}
+              blur={1.5}
+              duration={900}
+              mode="entrance"
+              fontSize="inherit"
+              fontWeight="inherit"
+              color="inherit"
+            />
           </motion.h1>
           <motion.p
             className="mt-6 text-base sm:text-lg md:text-xl font-normal leading-relaxed max-w-2xl mx-auto text-muted-foreground"
           >
-            {heroData.description}
+            <EchoText
+              key={activeBeatId === 'hero' ? 'hero-active' : 'hero-inactive'}
+              text={heroData.description}
+              className="hero-description-echo"
+              echoes={3}
+              lag={0.2}
+              offset={6}
+              fade={0.42}
+              blur={0.8}
+              duration={900}
+              mode="entrance"
+              fontSize="inherit"
+              fontWeight="inherit"
+              color="inherit"
+            />
           </motion.p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Button asChild size="lg" tabIndex={activeBeatId === 'hero' ? 0 : -1}>

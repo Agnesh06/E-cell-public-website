@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, MotionValue, useTransform } from 'framer-motion';
 import { BeatConfig } from '@/lib/constants';
 import { getCardRange } from './timelineHelpers';
+import SpotlightCard from './SpotlightCard';
 
 export interface IdeaCardProps {
   id: string;
@@ -66,7 +67,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
     beat.hasExit ? [12, 12, 0, 0, -8, -8] : [12, 12, 0, 0]
   );
 
-  // Desktop positioning around the bulb
+  // Keep the card groups balanced around the center of the stage.
   const getDesktopPlacement = () => {
     if (totalCards === 3) {
       if (cardIndex === 0) {
@@ -102,8 +103,9 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   };
 
   const content = (
-    <div
+    <SpotlightCard
       className="p-5 md:p-6 rounded-2xl bg-card border border-border theme-card-shadow transition-all"
+      spotlightColor="rgba(59, 130, 246, 0.16)"
     >
       {title && (
         <h4 className="text-lg md:text-xl font-bold text-card-foreground mb-2 tracking-tight">
@@ -113,7 +115,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
       <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-normal">
         {description || text}
       </p>
-    </div>
+    </SpotlightCard>
   );
 
   if (isReducedMotion) {

@@ -42,7 +42,7 @@ body,
 
 body {
   background: linear-gradient(
-    135deg,
+    180deg,
     hsl(var(--theme-background)) 0%,
     hsl(var(--theme-background-end)) 100%
   );
@@ -59,7 +59,7 @@ body {
 
 .theme-gradient {
   background: linear-gradient(
-    135deg,
+    180deg,
     hsl(var(--theme-background)) 0%,
     hsl(var(--theme-background-end)) 100%
   );

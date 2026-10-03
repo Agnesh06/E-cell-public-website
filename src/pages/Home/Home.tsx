@@ -4,8 +4,8 @@ import { TeamPreview } from '@/components/home/TeamPreview';
 
 export const Home: React.FC = () => {
   return (
-    <div className="w-full relative">
-      {/* Scroll-driven bulb story */}
+    <div className="w-full relative theme-gradient">
+      {/* Scroll-driven home story */}
       <HomeScrollScene />
 
       {/* Normal page flow: Team preview */}

@@ -15,7 +15,6 @@ const setTokenGroup = (
 };
 
 setTokenGroup('theme', COLOR_TOKENS.theme);
-setTokenGroup('bulb', COLOR_TOKENS.bulb);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -98,6 +98,35 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     await expect(finalCtaButton).toHaveAttribute('href', '/collaboration');
   });
 
+  test('hero text entrance animation replays when returning to the hero beat', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const firstEcho = page
+      .getByRole('heading', { name: 'Ideas are just the beginning.' })
+      .locator('[data-echo-index="1"]');
+    await firstEcho.evaluate((element) => {
+      (window as Window & { initialEcho?: Element }).initialEcho = element;
+    });
+
+    await scrollToSceneProgress(page, 0.17);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'More than an idea. A place to begin.'))
+      .toBeGreaterThan(0.7);
+    await scrollToSceneProgress(page, 0.02);
+    await expect
+      .poll(() =>
+        firstEcho.evaluate(
+          (element) =>
+            element !== (window as Window & { initialEcho?: Element }).initialEcho
+        )
+      )
+      .toBe(true);
+    await expect
+      .poll(() => firstEcho.evaluate((element) => Number(element.style.opacity)))
+      .toBeGreaterThan(0.05);
+  });
+
   test('navigation links route correctly', async ({ page }) => {
     await page.goto('/');
 
@@ -165,46 +194,5 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     ).toBeVisible();
   });
 
-  test('canvas element exists on Home when WebGL works', async ({ page }) => {
-    await page.goto('/');
-    const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible({ timeout: 10000 });
-  });
-
-  test('with WebGL disabled, the SVG fallback bulb renders and cards still work', async ({
-    page,
-  }) => {
-    await page.addInitScript(`
-      HTMLCanvasElement.prototype.getContext = function(type) {
-        if (type === 'webgl' || type === 'webgl2' || type === 'experimental-webgl') {
-          return null;
-        }
-        return null;
-      };
-      // @ts-ignore
-      delete window.WebGLRenderingContext;
-      // @ts-ignore
-      delete window.WebGL2RenderingContext;
-    `);
-
-    await page.goto('/');
-
-    // SVG bulb should be rendered in place of canvas
-    await expect(page.locator('canvas')).toHaveCount(0);
-    const svg = page.locator('svg[viewBox="0 0 200 300"]');
-    await expect(svg).toBeAttached();
-
-    // Verify idea cards still function across scroll
-    await scrollToSceneProgress(page, 0.17);
-    const aboutHeading = page.getByRole('heading', {
-      name: 'More than an idea. A place to begin.',
-    });
-    await expect(aboutHeading).toBeAttached();
-    await expect
-      .poll(() =>
-        getHeadingOpacity(page, 'More than an idea. A place to begin.')
-      )
-      .toBeGreaterThan(0.7);
-  });
 });
 

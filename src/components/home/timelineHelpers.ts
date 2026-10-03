@@ -84,19 +84,6 @@ export function getCardRange(
 }
 
 /**
- * Strict monotonic bulb glow intensity calculation.
- * 0 to 0.12: 0 (unlit)
- * 0.12 to 1.0: strictly monotonically increasing up to exactly 1.0 at progress 1.0.
- */
-export function calculateGlowIntensity(progress: number): number {
-  if (progress <= 0.12) return 0;
-  if (progress >= 1.0) return 1;
-  const normalized = (progress - 0.12) / (1.0 - 0.12);
-  // Strictly monotonic curve (smooth cubic-bezier style or ease-in-out)
-  return Math.min(1, Math.max(0, Math.pow(normalized, 1.2)));
-}
-
-/**
  * Returns the index of the currently active beat.
  */
 export function getActiveBeatIndex(
