@@ -28,7 +28,7 @@ describe('LineWaves helpers', () => {
       hasCoarsePointer: false,
       hardwareConcurrency: 8,
     });
-    expect(desktop).toEqual({ tier: 'desktop', dpr: 1.5 });
+    expect(desktop).toEqual({ tier: 'desktop', dpr: 1.25 });
 
     expect(selectRendererQuality({
       viewportWidth: 390,

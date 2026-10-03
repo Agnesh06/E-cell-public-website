@@ -28,8 +28,14 @@ import { IdeaCard } from './IdeaCard';
 import TrueFocus from './TrueFocus';
 import EchoText from './EchoText';
 import { Button } from '@/components/ui/button';
-import { getHeadingRange, getActiveBeatIndex } from './timelineHelpers';
+import { getHeadingRange } from './timelineHelpers';
 import { HomeBackground } from './HomeBackground';
+import {
+  ENTER_EASE,
+  EXIT_EASE,
+  LINEAR_EASE,
+  getActiveBeatIndexWithHysteresis,
+} from './timelineHelpers';
 
 interface SectionHeadingProps {
   beat: BeatConfig;
@@ -37,6 +43,7 @@ interface SectionHeadingProps {
   title: string;
   subtitle?: string;
   eyebrow?: string;
+  isActiveBeat: boolean;
 }
 
 const SectionHeading: React.FC<SectionHeadingProps> = ({
@@ -45,24 +52,53 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
   title,
   subtitle,
   eyebrow,
+  isActiveBeat,
 }) => {
-  const { enterStart, enterEnd, exitStart, exitEnd, hasExit } =
-    getHeadingRange(beat);
+  const { enterStart, enterEnd, exitStart, exitEnd, hasExit } = getHeadingRange(beat);
+  const span = beat.end - beat.start;
+  const subtitleStart = enterStart + span * 0.025;
+  const subtitleEnd = enterStart + span * 0.17;
 
   const opacity = useTransform(
     progress,
     hasExit
-      ? [beat.start, enterStart, enterEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, enterStart, enterEnd, beat.end],
-    hasExit ? [0, 0, 1, 1, 0, 0] : [0, 0, 1, 1]
+      ? [enterStart, enterEnd, exitStart, exitEnd]
+      : [enterStart, enterEnd],
+    hasExit ? [0, 1, 1, 0] : [0, 1],
+    hasExit
+      ? { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+      : { ease: ENTER_EASE }
   );
 
   const translateY = useTransform(
     progress,
     hasExit
-      ? [beat.start, enterStart, enterEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, enterStart, enterEnd, beat.end],
-    hasExit ? [30, 30, 0, 0, -25, -25] : [30, 30, 0, 0]
+      ? [enterStart, enterEnd, exitStart, exitEnd]
+      : [enterStart, enterEnd],
+    hasExit ? [24, 0, 0, -24] : [24, 0],
+    hasExit
+      ? { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+      : { ease: ENTER_EASE }
+  );
+  const subtitleOpacity = useTransform(
+    progress,
+    hasExit
+      ? [subtitleStart, subtitleEnd, exitStart, exitEnd]
+      : [subtitleStart, subtitleEnd],
+    hasExit ? [0, 1, 1, 0] : [0, 1],
+    hasExit
+      ? { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+      : { ease: ENTER_EASE }
+  );
+  const subtitleY = useTransform(
+    progress,
+    hasExit
+      ? [subtitleStart, subtitleEnd, exitStart, exitEnd]
+      : [subtitleStart, subtitleEnd],
+    hasExit ? [12, 0, 0, -18] : [12, 0],
+    hasExit
+      ? { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+      : { ease: ENTER_EASE }
   );
 
   return (
@@ -70,19 +106,25 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
       style={{
         opacity,
         y: translateY,
+        visibility: isActiveBeat ? 'visible' : 'hidden',
+        pointerEvents: isActiveBeat ? 'none' : 'none',
       }}
-      className="absolute top-16 md:top-20 inset-x-0 mx-auto px-6 max-w-3xl text-center pointer-events-none z-10"
+      {...(!isActiveBeat ? { inert: '' } : {})}
+      className="absolute top-16 md:top-[4.625rem] inset-x-0 mx-auto px-6 max-w-3xl text-center pointer-events-none z-10"
     >
       {eyebrow && (
-        <motion.p className="text-xs md:text-sm font-semibold uppercase tracking-widest mb-1.5 text-primary">
+        <motion.p className="text-xs md:text-sm font-semibold uppercase tracking-widest mb-0 text-primary">
           {eyebrow}
         </motion.p>
       )}
-      <motion.h2 className="text-2xl md:text-4xl font-extrabold tracking-tight text-foreground">
+      <motion.h2 className="text-2xl md:text-4xl md:leading-9 font-extrabold tracking-tight text-foreground">
         {title}
       </motion.h2>
       {subtitle && (
-        <motion.p className="mt-2 text-sm md:text-base font-normal max-w-xl mx-auto text-muted-foreground">
+        <motion.p
+          style={{ opacity: subtitleOpacity, y: subtitleY }}
+          className="mt-2 text-sm md:text-base font-normal max-w-xl mx-auto text-muted-foreground"
+        >
           {subtitle}
         </motion.p>
       )}
@@ -102,17 +144,38 @@ export const HomeScrollScene: React.FC = () => {
 
   // Smoothed once with a light spring
   const smoothedProgress = useSpring(scrollYProgress, {
-    stiffness: 280,
-    damping: 32,
-    restDelta: 0.001,
+    stiffness: 140,
+    damping: 28,
+    mass: 0.35,
+    restDelta: 0.0004,
   });
 
   const [activeBeatId, setActiveBeatId] = useState<string>(BEATS[0].id);
-  // Update active beat React state ONLY on beat boundary changes
+  const activeBeatIndexRef = useRef(0);
+  const [compactMotion, setCompactMotion] = useState(false);
+
+  React.useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const updateCompactMotion = () => setCompactMotion(media.matches);
+    updateCompactMotion();
+    media.addEventListener('change', updateCompactMotion);
+    return () => media.removeEventListener('change', updateCompactMotion);
+  }, []);
+
+  const activeBeatIndex = activeBeatIndexRef.current;
+  const isBeatActive = (beatIndex: number) => activeBeatId === BEATS[beatIndex].id;
+  const isBeatNearActive = (beatIndex: number) => Math.abs(activeBeatIndex - beatIndex) <= 1;
+
   useMotionValueEvent(smoothedProgress, 'change', (latest) => {
-    const activeIdx = getActiveBeatIndex(latest, BEATS);
-    const newBeatId = BEATS[activeIdx].id;
-    if (newBeatId !== activeBeatId) {
+    const activeIdx = getActiveBeatIndexWithHysteresis(
+      latest,
+      BEATS,
+      activeBeatIndexRef.current,
+      0.01
+    );
+    if (activeIdx !== activeBeatIndexRef.current) {
+      activeBeatIndexRef.current = activeIdx;
+      const newBeatId = BEATS[activeIdx].id;
       setActiveBeatId(newBeatId);
     }
   });
@@ -148,25 +211,29 @@ export const HomeScrollScene: React.FC = () => {
   // Hero transforms
   const heroOpacity = useTransform(
     smoothedProgress,
-    [BEATS[0].start, 0.08, BEATS[0].end],
-    [1, 1, 0]
+    [BEATS[0].start, BEATS[0].end],
+    [1, 0],
+    { ease: EXIT_EASE }
   );
   const heroTranslateY = useTransform(
     smoothedProgress,
-    [BEATS[0].start, 0.08, BEATS[0].end],
-    [0, 0, -35]
+    [BEATS[0].start, BEATS[0].end],
+    [0, -80],
+    { ease: EXIT_EASE }
   );
 
   // Final CTA transforms
   const finalCTAOpacity = useTransform(
     smoothedProgress,
-    [BEATS[6].start, BEATS[6].start + 0.06, 1.0],
-    [0, 1, 1]
+    [BEATS[6].start, BEATS[6].start + (BEATS[6].end - BEATS[6].start) * 0.14, BEATS[6].end],
+    [0, 1, 1],
+    { ease: [ENTER_EASE, LINEAR_EASE] }
   );
   const finalCTATranslateY = useTransform(
     smoothedProgress,
-    [BEATS[6].start, BEATS[6].start + 0.06, 1.0],
-    [30, 0, 0]
+    [BEATS[6].start, BEATS[6].start + (BEATS[6].end - BEATS[6].start) * 0.14, BEATS[6].end],
+    [24, 0, 0],
+    { ease: [ENTER_EASE, LINEAR_EASE] }
   );
 
   // -------------------------------------------------------------
@@ -400,7 +467,12 @@ export const HomeScrollScene: React.FC = () => {
       >
         <HomeBackground />
         <motion.div
-          style={{ opacity: heroOpacity }}
+          style={{
+            opacity: heroOpacity,
+            visibility: isBeatActive(0) ? 'visible' : 'hidden',
+            willChange: isBeatNearActive(0) ? 'transform, opacity' : 'auto',
+          }}
+          {...(!isBeatActive(0) ? { inert: '' } : {})}
           className="absolute top-6 inset-x-0 z-30 px-6 pointer-events-none"
         >
           <TrueFocus
@@ -418,6 +490,8 @@ export const HomeScrollScene: React.FC = () => {
           style={{
             opacity: heroOpacity,
             y: heroTranslateY,
+            visibility: isBeatActive(0) ? 'visible' : 'hidden',
+            willChange: isBeatNearActive(0) ? 'transform, opacity' : 'auto',
           }}
           className={`absolute top-1/2 -translate-y-1/2 inset-x-0 mx-auto px-6 max-w-3xl text-center z-30 ${
             activeBeatId !== 'hero' ? 'pointer-events-none' : ''
@@ -482,6 +556,7 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={aboutData.title}
           eyebrow={aboutData.eyebrow}
+          isActiveBeat={isBeatActive(1)}
         />
         {aboutData.cards.map((card, i) => (
           <IdeaCard
@@ -492,6 +567,9 @@ export const HomeScrollScene: React.FC = () => {
             totalCards={aboutData.cards.length}
             beat={BEATS[1]}
             progress={smoothedProgress}
+            compactMotion={compactMotion}
+            isActiveBeat={isBeatActive(1)}
+            isNearActiveBeat={isBeatNearActive(1)}
           />
         ))}
 
@@ -500,6 +578,7 @@ export const HomeScrollScene: React.FC = () => {
           beat={BEATS[2]}
           progress={smoothedProgress}
           title={approachData.title}
+          isActiveBeat={isBeatActive(2)}
         />
         {approachData.cards.map((card, i) => (
           <IdeaCard
@@ -511,6 +590,9 @@ export const HomeScrollScene: React.FC = () => {
             totalCards={approachData.cards.length}
             beat={BEATS[2]}
             progress={smoothedProgress}
+            compactMotion={compactMotion}
+            isActiveBeat={isBeatActive(2)}
+            isNearActiveBeat={isBeatNearActive(2)}
           />
         ))}
 
@@ -520,6 +602,7 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={ecosystemData.title}
           subtitle={ecosystemData.subtitle}
+          isActiveBeat={isBeatActive(3)}
         />
         {ecosystemData.cards.map((card, i) => (
           <IdeaCard
@@ -531,6 +614,9 @@ export const HomeScrollScene: React.FC = () => {
             totalCards={ecosystemData.cards.length}
             beat={BEATS[3]}
             progress={smoothedProgress}
+            compactMotion={compactMotion}
+            isActiveBeat={isBeatActive(3)}
+            isNearActiveBeat={isBeatNearActive(3)}
           />
         ))}
 
@@ -539,6 +625,7 @@ export const HomeScrollScene: React.FC = () => {
           beat={BEATS[4]}
           progress={smoothedProgress}
           title={studentJourneyData.title}
+          isActiveBeat={isBeatActive(4)}
         />
         {studentJourneyData.cards.map((card, i) => (
           <IdeaCard
@@ -550,6 +637,9 @@ export const HomeScrollScene: React.FC = () => {
             totalCards={studentJourneyData.cards.length}
             beat={BEATS[4]}
             progress={smoothedProgress}
+            compactMotion={compactMotion}
+            isActiveBeat={isBeatActive(4)}
+            isNearActiveBeat={isBeatNearActive(4)}
           />
         ))}
 
@@ -559,6 +649,7 @@ export const HomeScrollScene: React.FC = () => {
           progress={smoothedProgress}
           title={whoIsECellForData.title}
           subtitle={whoIsECellForData.subtitle}
+          isActiveBeat={isBeatActive(5)}
         />
         {whoIsECellForData.cards.map((card, i) => (
           <IdeaCard
@@ -570,6 +661,9 @@ export const HomeScrollScene: React.FC = () => {
             totalCards={whoIsECellForData.cards.length}
             beat={BEATS[5]}
             progress={smoothedProgress}
+            compactMotion={compactMotion}
+            isActiveBeat={isBeatActive(5)}
+            isNearActiveBeat={isBeatNearActive(5)}
           />
         ))}
 
@@ -578,6 +672,8 @@ export const HomeScrollScene: React.FC = () => {
           style={{
             opacity: finalCTAOpacity,
             y: finalCTATranslateY,
+            visibility: isBeatActive(6) ? 'visible' : 'hidden',
+            willChange: isBeatNearActive(6) ? 'transform, opacity' : 'auto',
           }}
           className={`absolute top-1/2 -translate-y-1/2 inset-x-0 mx-auto px-6 max-w-3xl text-center z-30 ${
             activeBeatId !== 'final-cta' ? 'pointer-events-none' : ''

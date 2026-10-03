@@ -53,6 +53,6 @@ export function selectRendererQuality({
 
   return {
     tier: isLowEnd ? 'low-end' : 'desktop',
-    dpr: isLowEnd ? 1 : Math.min(1.5, Math.max(1, devicePixelRatio)),
+    dpr: isLowEnd ? 1 : Math.min(1.25, Math.max(1, devicePixelRatio)),
   };
 }

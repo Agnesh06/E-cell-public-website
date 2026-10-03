@@ -1,7 +1,12 @@
 import React from 'react';
 import { motion, MotionValue, useTransform } from 'framer-motion';
 import { BeatConfig } from '@/lib/constants';
-import { getCardRange } from './timelineHelpers';
+import {
+  ENTER_EASE,
+  EXIT_EASE,
+  LINEAR_EASE,
+  getCardRange,
+} from './timelineHelpers';
 import SpotlightCard from './SpotlightCard';
 
 export interface IdeaCardProps {
@@ -15,6 +20,9 @@ export interface IdeaCardProps {
   beat: BeatConfig;
   progress: MotionValue<number>;
   isReducedMotion?: boolean;
+  compactMotion?: boolean;
+  isActiveBeat?: boolean;
+  isNearActiveBeat?: boolean;
 }
 
 export const IdeaCard: React.FC<IdeaCardProps> = ({
@@ -27,44 +35,87 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   beat,
   progress,
   isReducedMotion = false,
+  compactMotion = false,
+  isActiveBeat = true,
+  isNearActiveBeat = true,
 }) => {
-  const { popStart, popEnd, exitStart, exitEnd } = getCardRange(
+  const timing = getCardRange(
     beat,
     cardIndex,
     totalCards
   );
-
-  // Compute 3D pop-in and recede exit transforms
-  const opacity = useTransform(
-    progress,
-    beat.hasExit
-      ? [beat.start, popStart, popEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, popStart, popEnd, beat.end],
-    beat.hasExit ? [0, 0, 1, 1, 0, 0] : [0, 0, 1, 1]
+  const enterDistance = compactMotion ? 32 : 56;
+  const enterRotation = compactMotion ? 0 : 10;
+  const drift = (cardIndex % 2 === 0 ? 1 : -1) * Math.min(8, (cardIndex + 1) * 2);
+  const firstDriftMid = (timing.holdStart + timing.holdMid) / 2;
+  const secondDriftMid = (timing.holdMid + timing.holdEnd) / 2;
+  const isLastCardEntering = timing.enterEnd === timing.holdStart;
+  const yInput = isLastCardEntering
+    ? [
+        timing.enterStart,
+        timing.enterEnd,
+        firstDriftMid,
+        timing.holdMid,
+        secondDriftMid,
+        timing.holdEnd,
+        timing.exitStart,
+        timing.exitEnd,
+      ]
+    : [
+        timing.enterStart,
+        timing.enterEnd,
+        timing.holdStart,
+        firstDriftMid,
+        timing.holdMid,
+        secondDriftMid,
+        timing.holdEnd,
+        timing.exitStart,
+        timing.exitEnd,
+      ];
+  const yOutput = isLastCardEntering
+    ? [enterDistance, 0, drift, 0, -drift, 0, 0, -36]
+    : [enterDistance, 0, 0, drift, 0, -drift, 0, 0, -36];
+  const yEase = Array.from({ length: yInput.length - 1 }, (_, index) =>
+    index === 0 ? ENTER_EASE : index === yInput.length - 2 ? EXIT_EASE : LINEAR_EASE
   );
-
+  const y = useTransform(progress, yInput, yOutput, { ease: yEase });
   const scale = useTransform(
     progress,
-    beat.hasExit
-      ? [beat.start, popStart, popEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, popStart, popEnd, beat.end],
-    beat.hasExit ? [0.7, 0.7, 1.0, 1.0, 0.85, 0.85] : [0.7, 0.7, 1.0, 1.0]
+    [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd],
+    [0.94, 1, 1, 0.97],
+    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
   );
-
-  const translateZ = useTransform(
-    progress,
-    beat.hasExit
-      ? [beat.start, popStart, popEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, popStart, popEnd, beat.end],
-    beat.hasExit ? [-200, -200, 0, 0, -150, -150] : [-200, -200, 0, 0]
-  );
-
   const rotateX = useTransform(
     progress,
-    beat.hasExit
-      ? [beat.start, popStart, popEnd, exitStart, exitEnd, beat.end]
-      : [beat.start, popStart, popEnd, beat.end],
-    beat.hasExit ? [12, 12, 0, 0, -8, -8] : [12, 12, 0, 0]
+    [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd],
+    [enterRotation, 0, 0, -6],
+    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+  );
+  const opacity = useTransform(
+    progress,
+    [timing.enterStart, timing.opacityEnd, timing.exitStart, timing.exitEnd],
+    [0, 1, 1, 0],
+    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+  );
+  const accentScale = useTransform(
+    progress,
+    [timing.enterStart, timing.enterEnd],
+    [0, 1],
+    { ease: ENTER_EASE }
+  );
+  const sheenStart = timing.enterStart + (timing.enterEnd - timing.enterStart) * 0.65;
+  const sheenMiddle = (sheenStart + timing.enterEnd) / 2;
+  const sheenOpacity = useTransform(
+    progress,
+    [sheenStart, sheenMiddle, timing.enterEnd],
+    [0, 0.7, 0],
+    { ease: LINEAR_EASE }
+  );
+  const sheenX = useTransform(
+    progress,
+    [sheenStart, timing.enterEnd],
+    ['-160%', '260%'],
+    { ease: LINEAR_EASE }
   );
 
   // Keep the card groups balanced around the center of the stage.
@@ -104,7 +155,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
 
   const content = (
     <SpotlightCard
-      className="p-5 md:p-6 rounded-2xl bg-card border border-border theme-card-shadow transition-all"
+      className="relative p-5 md:p-6 rounded-2xl bg-card border border-border theme-card-shadow"
       spotlightColor="rgba(59, 130, 246, 0.16)"
     >
       {title && (
@@ -115,6 +166,18 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
       <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-normal">
         {description || text}
       </p>
+      {!compactMotion && (
+        <motion.div
+          aria-hidden="true"
+          className="card-spotlight__overlay pointer-events-none absolute -inset-y-1 left-1/2 top-0 z-0 h-[130%] w-1/2 bg-gradient-to-r from-transparent via-white/80 to-sky-100/20"
+          style={{ opacity: sheenOpacity, x: sheenX, rotate: 18 }}
+        />
+      )}
+      <motion.div
+        aria-hidden="true"
+        className="card-spotlight__overlay pointer-events-none absolute inset-x-0 top-0 z-10 h-[2px] origin-left rounded-full bg-gradient-to-r from-blue-700 via-blue-500 to-sky-300"
+        style={{ scaleX: accentScale }}
+      />
     </SpotlightCard>
   );
 
@@ -127,18 +190,41 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   }
 
   return (
-    <motion.div
+    <div
+      key={id}
+      style={{
+        visibility: isActiveBeat ? 'visible' : 'hidden',
+        pointerEvents: isActiveBeat ? 'auto' : 'none',
+      }}
+      {...(!isActiveBeat ? { inert: '' } : {})}
+      className={`absolute w-[88%] left-[6%] md:w-auto md:left-auto transform-gpu preserve-3d ${getDesktopPlacement()}`}
+    >
+      <motion.div
       key={id}
       style={{
         opacity,
         scale,
-        z: translateZ,
+        y,
         rotateX,
+        transformOrigin: 'top center',
+        willChange: isNearActiveBeat ? 'transform, opacity' : 'auto',
       }}
-      className={`absolute w-[88%] left-[6%] md:w-auto md:left-auto transform-gpu preserve-3d z-20 ${getDesktopPlacement()}`}
+      data-testid={`idea-card-${beat.id}-${cardIndex}`}
+      data-beat-id={beat.id}
+      data-card-index={cardIndex}
+      className="relative z-20 transform-gpu preserve-3d"
     >
+      <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-y-2 inset-x-1 rounded-2xl"
+        style={{
+          opacity,
+          boxShadow: '0 16px 32px rgba(35, 82, 136, 0.18)',
+        }}
+      />
       {content}
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 

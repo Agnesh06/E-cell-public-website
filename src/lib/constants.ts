@@ -68,7 +68,7 @@ export const COLOR_TOKENS = {
 export const SCENE_CONFIG = {
   DESKTOP_HEIGHT: '700vh',
   MOBILE_HEIGHT: '500vh',
-  PERSPECTIVE: '1200px',
+  PERSPECTIVE: '1000px',
 } as const;
 
 export interface BeatConfig {
