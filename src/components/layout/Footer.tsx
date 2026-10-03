@@ -4,7 +4,7 @@ import { ROUTES } from '@/lib/constants';
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="w-full theme-gradient border-t border-border text-muted-foreground py-12 px-6 md:px-12 relative z-20">
+    <footer className="w-full bg-background border-t border-border text-muted-foreground py-12 px-6 md:px-12 relative z-20">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-center md:text-left space-y-1">
           <p className="text-base font-semibold text-foreground tracking-tight">

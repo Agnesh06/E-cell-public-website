@@ -15,6 +15,7 @@ const setTokenGroup = (
 };
 
 setTokenGroup('theme', COLOR_TOKENS.theme);
+setTokenGroup('line-waves', COLOR_TOKENS.lineWaves);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

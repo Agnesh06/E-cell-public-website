@@ -163,12 +163,67 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
+  test('renders LineWaves in animated mode when WebGL is available', async ({
+    page,
+  }) => {
+    await page.goto('/');
+    const webglAvailable = await page.evaluate(() => {
+      const canvas = document.createElement('canvas');
+      return Boolean(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+    });
+    test.skip(!webglAvailable, 'WebGL is unavailable in this browser environment');
+
+    await expect(page.getByTestId('home-background')).toHaveAttribute(
+      'data-mode',
+      'animated'
+    );
+  });
+
+  test('uses the CSS background fallback when WebGL is unavailable', async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      HTMLCanvasElement.prototype.getContext = function () {
+        return null;
+      };
+    });
+    await page.goto('/');
+
+    const background = page.getByTestId('home-background');
+    await expect(background).toHaveAttribute('data-mode', 'fallback');
+    await expect
+      .poll(() => background.evaluate((element) => getComputedStyle(element).backgroundImage))
+      .toContain('linear-gradient');
+
+    await scrollToSceneProgress(page, 0.17);
+    await expect
+      .poll(() => getHeadingOpacity(page, 'More than an idea. A place to begin.'))
+      .toBeGreaterThan(0.7);
+    const ideaCardText = page.getByText('Every meaningful venture starts with an idea.', {
+      exact: false,
+    });
+    await expect
+      .poll(() => ideaCardText.evaluate((element) => {
+        let current: Element | null = element;
+        while (current && current !== document.body) {
+          const opacity = Number(getComputedStyle(current).opacity);
+          if (opacity < 1) return opacity;
+          current = current.parentElement;
+        }
+        return 1;
+      }))
+      .toBeGreaterThan(0.7);
+  });
+
   test('renders static layout when reducedMotion is emulated', async ({
     page,
   }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
-    await expect(page.locator('canvas')).toHaveCount(0);
+    await expect(page.getByTestId('home-background')).toHaveAttribute(
+      'data-mode',
+      'static'
+    );
 
     // Verify all major headings are rendered simultaneously in document flow
     await expect(

@@ -29,6 +29,7 @@ import TrueFocus from './TrueFocus';
 import EchoText from './EchoText';
 import { Button } from '@/components/ui/button';
 import { getHeadingRange, getActiveBeatIndex } from './timelineHelpers';
+import { HomeBackground } from './HomeBackground';
 
 interface SectionHeadingProps {
   beat: BeatConfig;
@@ -174,6 +175,7 @@ export const HomeScrollScene: React.FC = () => {
   if (prefersReducedMotion) {
     return (
       <div id="about" className="relative w-full theme-gradient text-foreground py-16 px-6">
+        <HomeBackground />
         <div className="absolute top-24 inset-x-0 z-10 px-6 pointer-events-none">
           <TrueFocus
             sentence="CSEA E-CELL"
@@ -184,7 +186,7 @@ export const HomeScrollScene: React.FC = () => {
             animationDuration={0}
           />
         </div>
-        <div className="max-w-4xl mx-auto space-y-24 pt-16">
+        <div className="relative z-10 max-w-4xl mx-auto space-y-24 pt-16">
           {/* Hero */}
           <section className="text-center space-y-6">
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-primary">
@@ -396,6 +398,7 @@ export const HomeScrollScene: React.FC = () => {
         }}
         className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center preserve-3d theme-gradient"
       >
+        <HomeBackground />
         <motion.div
           style={{ opacity: heroOpacity }}
           className="absolute top-6 inset-x-0 z-30 px-6 pointer-events-none"

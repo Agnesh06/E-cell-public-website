@@ -65,6 +65,22 @@ body {
   );
 }
 
+.line-waves-background {
+  background: linear-gradient(
+    180deg,
+    var(--line-waves-bg-top) 0%,
+    var(--line-waves-bg-bottom) 100%
+  );
+}
+
+.line-waves-readability-wash {
+  background: radial-gradient(
+    ellipse 100% 62% at 50% 45%,
+    var(--line-waves-wash) 0%,
+    transparent 78%
+  );
+}
+
 .theme-card-shadow {
   box-shadow: var(--theme-card-shadow);
 }

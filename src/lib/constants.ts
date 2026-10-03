@@ -55,6 +55,14 @@ export const COLOR_TOKENS = {
     cardShadow: '0 14px 34px rgba(35, 82, 136, 0.14)',
     destructive: '214 81% 42%',
   },
+  lineWaves: {
+    bgTop: '#FFFFFF',
+    bgBottom: '#F2F8FF',
+    lineBlue1: '#2F7BF5',
+    lineBlue2: '#5AA2FF',
+    lineBlue3: '#1E5FD8',
+    wash: 'rgba(255, 255, 255, 0.92)',
+  },
 } as const;
 
 export const SCENE_CONFIG = {
