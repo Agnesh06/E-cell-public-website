@@ -1,1 +1,1 @@
-// src/schemas/additionalDetails.ts
+export * from "./collaboration";

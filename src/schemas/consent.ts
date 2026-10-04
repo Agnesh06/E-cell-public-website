@@ -1,1 +1,1 @@
-// src/schemas/consent.ts
+export * from "./collaboration";
