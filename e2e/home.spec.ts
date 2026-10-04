@@ -2,6 +2,28 @@ import { test, expect, Page } from '@playwright/test';
 import { cubicBezier } from 'framer-motion';
 
 const cardEnterEase = cubicBezier(0.22, 1, 0.36, 1);
+const layoutViewports = [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+  { width: 768, height: 1024 },
+  { width: 800, height: 600 },
+  { width: 990, height: 600 },
+  { width: 1024, height: 768 },
+  { width: 1280, height: 720 },
+  { width: 1366, height: 768 },
+  { width: 1440, height: 900 },
+  { width: 1536, height: 864 },
+  { width: 1920, height: 1080 },
+  { width: 2560, height: 1440 },
+  { width: 1280, height: 640 },
+];
+const cardBeats = [
+  { id: 'about', start: 0.10, end: 0.24, count: 3 },
+  { id: 'approach', start: 0.24, end: 0.38, count: 3 },
+  { id: 'ecosystem', start: 0.38, end: 0.52, count: 3 },
+  { id: 'journey', start: 0.52, end: 0.68, count: 4 },
+  { id: 'who-is-it-for', start: 0.68, end: 0.84, count: 4 },
+];
 
 // Helper to retrieve computed opacity of a heading or its motion wrapper
 async function getHeadingOpacity(page: Page, headingText: string): Promise<number> {
@@ -192,43 +214,138 @@ test.describe('Home Page - Scroll Beats and Story Checkpoints', () => {
     ).toBeLessThanOrEqual(0.35);
   });
 
-  test('cards are settled and non-overlapping at 3-card and 4-card hold midpoints', async ({
+  test('cards fit and align through every beat at enter and hold midpoints across viewport sizes', async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
+    test.setTimeout(120_000);
+    await page.addInitScript(() => {
+      HTMLCanvasElement.prototype.getContext = function () {
+        return null;
+      };
+    });
+    await page.setViewportSize(layoutViewports[0]);
     await page.goto('/');
-    const holdCases = [
-      { beatId: 'about', progress: 0.10 + 0.14 * 0.61, count: 3 },
-      { beatId: 'journey', progress: 0.52 + 0.16 * 0.64, count: 4 },
-    ];
 
-    for (const holdCase of holdCases) {
-      await scrollToSceneProgress(page, holdCase.progress);
-      const selector = `[data-beat-id="${holdCase.beatId}"][data-card-index="0"]`;
-      await waitForStableMotion(page, selector);
-      const cards = page.locator(`[data-beat-id="${holdCase.beatId}"][data-card-index]`);
-      await expect(cards).toHaveCount(holdCase.count);
-      const rects = await cards.evaluateAll((elements) => elements.map((element) => {
-        const rect = element.getBoundingClientRect();
-        return {
-          left: rect.left,
-          right: rect.right,
-          top: rect.top,
-          bottom: rect.bottom,
-          opacity: Number(getComputedStyle(element).opacity),
-          visibility: getComputedStyle(element).visibility,
-        };
-      }));
+    for (const viewport of layoutViewports) {
+      await page.setViewportSize(viewport);
+      const singleSlot = viewport.width < 640;
 
-      expect(rects.every((rect) => rect.opacity > 0.99 && rect.visibility === 'visible')).toBe(true);
-      for (let first = 0; first < rects.length; first += 1) {
-        for (let second = first + 1; second < rects.length; second += 1) {
-          const overlaps =
-            rects[first].left < rects[second].right &&
-            rects[first].right > rects[second].left &&
-            rects[first].top < rects[second].bottom &&
-            rects[first].bottom > rects[second].top;
-          expect(overlaps).toBe(false);
+      for (const beat of cardBeats) {
+        const beatLocator = page.getByTestId(`beat-${beat.id}`);
+        await expect(beatLocator).toHaveAttribute(
+          'data-layout-mode',
+          singleSlot ? 'single-slot' : 'grid'
+        );
+
+        const span = beat.end - beat.start;
+        const segment = 0.68 / beat.count;
+        const firstEnterStart = beat.start + span * (singleSlot ? 0.12 : 0.12);
+        const firstOpacityEnd = singleSlot
+          ? firstEnterStart + span * segment * 0.12
+          : firstEnterStart + span * 0.18 * 0.6;
+        const holdStart = singleSlot
+          ? beat.start + span * (0.12 + segment * (beat.count - 1) + segment * 0.2)
+          : beat.start + span * (0.12 + (beat.count - 1) * 0.06 + 0.18);
+        const holdEnd = singleSlot ? beat.end : beat.start + span * 0.80;
+        const phases = [
+          {
+            name: 'enter',
+            progress: (firstEnterStart + firstOpacityEnd) / 2,
+            visibleCardIndex: 0,
+            minOpacity: 0.35,
+          },
+          {
+            name: 'hold',
+            progress: (holdStart + holdEnd) / 2,
+            visibleCardIndex: singleSlot ? beat.count - 1 : 0,
+            minOpacity: 0.99,
+          },
+        ];
+
+        for (const phase of phases) {
+          await scrollToSceneProgress(page, phase.progress);
+          const animatedCard = page.getByTestId(
+            `idea-card-motion-${beat.id}-${phase.visibleCardIndex}`
+          );
+          await expect
+            .poll(() => animatedCard.evaluate((element) => Number(getComputedStyle(element).opacity)))
+            .toBeGreaterThan(phase.minOpacity);
+          await waitForStableMotion(page, `[data-testid="idea-card-motion-${beat.id}-${phase.visibleCardIndex}"]`);
+
+          const layout = await page.getByTestId(`beat-${beat.id}`).evaluate((beatElement) => {
+            const title = beatElement.querySelector<HTMLElement>('[data-testid^="beat-title-"]');
+            const nav = document.querySelector<HTMLElement>('header');
+            if (!title || !nav) throw new Error('Missing beat title or navbar');
+            const box = (element: Element) => {
+              const { left, right, top, bottom, width, height } = element.getBoundingClientRect();
+              return { left, right, top, bottom, width, height };
+            };
+            const cards = [...beatElement.querySelectorAll<HTMLElement>('[data-card-index]')].map((wrapper) => {
+              const motion = wrapper.querySelector<HTMLElement>('[data-testid^="idea-card-motion-"]');
+              const surface = wrapper.querySelector<HTMLElement>('.card-spotlight');
+              if (!motion || !surface) throw new Error('Missing card motion or surface');
+              const textElements = [...surface.querySelectorAll<HTMLElement>('h4, p')];
+              return {
+                wrapper: box(wrapper),
+                visual: box(motion),
+                opacity: Number(getComputedStyle(motion).opacity),
+                textAlign: getComputedStyle(surface).textAlign,
+                textFits: textElements.every((element) => element.scrollHeight <= element.clientHeight + 1),
+                textHeights: textElements.map((element) => `${element.scrollHeight}/${element.clientHeight}`),
+              };
+            });
+            return {
+              title: box(title),
+              navbar: box(nav),
+              viewport: { width: innerWidth, height: innerHeight },
+              cards,
+            };
+          });
+
+          const rowWidths = layout.cards.map((card) => card.wrapper.width);
+          const rowHeights = layout.cards.map((card) => card.wrapper.height);
+          expect(
+            Math.max(...rowWidths) - Math.min(...rowWidths),
+            `${beat.id} ${phase.name} widths differ at ${viewport.width}x${viewport.height}: ${rowWidths.join(', ')}`
+          ).toBeLessThanOrEqual(2);
+          expect(
+            Math.max(...rowHeights) - Math.min(...rowHeights),
+            `${beat.id} ${phase.name} heights differ at ${viewport.width}x${viewport.height}: ${rowHeights.join(', ')}`
+          ).toBeLessThanOrEqual(2);
+          expect(new Set(layout.cards.map((card) => card.textAlign))).toEqual(new Set(['left']));
+          expect(
+            layout.cards.every((card) => card.textFits),
+            `${beat.id} ${phase.name} text clipped at ${viewport.width}x${viewport.height}: ${layout.cards.map((card) => card.textHeights.join('+')).join(', ')}`
+          ).toBe(true);
+          expect(layout.cards.every((card) =>
+            card.wrapper.left >= -1 &&
+            card.wrapper.right <= layout.viewport.width + 1 &&
+            card.wrapper.top >= layout.navbar.bottom - 1 &&
+            card.wrapper.bottom <= layout.viewport.height + 1
+          )).toBe(true);
+
+          const visibleCards = layout.cards.filter((card) => card.opacity > 0.35);
+          for (const card of visibleCards) {
+            const titleOverlap = card.visual.left < layout.title.right &&
+              card.visual.right > layout.title.left &&
+              card.visual.top < layout.title.bottom &&
+              card.visual.bottom > layout.title.top;
+            const navOverlap = card.visual.left < layout.navbar.right &&
+              card.visual.right > layout.navbar.left &&
+              card.visual.top < layout.navbar.bottom &&
+              card.visual.bottom > layout.navbar.top;
+            expect(titleOverlap, `${beat.id} ${phase.name} intersects title at ${viewport.width}x${viewport.height}`).toBe(false);
+            expect(navOverlap, `${beat.id} ${phase.name} intersects navbar at ${viewport.width}x${viewport.height}`).toBe(false);
+          }
+
+          for (let first = 0; first < visibleCards.length; first += 1) {
+            for (let second = first + 1; second < visibleCards.length; second += 1) {
+              const a = visibleCards[first].visual;
+              const b = visibleCards[second].visual;
+              const intersects = a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+              expect(intersects, `${beat.id} ${phase.name} cards intersect at ${viewport.width}x${viewport.height}`).toBe(false);
+            }
+          }
         }
       }
     }

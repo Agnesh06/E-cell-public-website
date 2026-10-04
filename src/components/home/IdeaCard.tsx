@@ -21,6 +21,7 @@ export interface IdeaCardProps {
   progress: MotionValue<number>;
   isReducedMotion?: boolean;
   compactMotion?: boolean;
+  singleSlot?: boolean;
   isActiveBeat?: boolean;
   isNearActiveBeat?: boolean;
 }
@@ -36,21 +37,23 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   progress,
   isReducedMotion = false,
   compactMotion = false,
+  singleSlot = false,
   isActiveBeat = true,
   isNearActiveBeat = true,
 }) => {
-  const timing = getCardRange(
-    beat,
-    cardIndex,
-    totalCards
-  );
+  const timing = getCardRange(beat, cardIndex, totalCards, singleSlot);
   const enterDistance = compactMotion ? 32 : 56;
   const enterRotation = compactMotion ? 0 : 10;
   const drift = (cardIndex % 2 === 0 ? 1 : -1) * Math.min(8, (cardIndex + 1) * 2);
   const firstDriftMid = (timing.holdStart + timing.holdMid) / 2;
   const secondDriftMid = (timing.holdMid + timing.holdEnd) / 2;
-  const isLastCardEntering = timing.enterEnd === timing.holdStart;
-  const yInput = isLastCardEntering
+  const hasExit = timing.hasExit && timing.exitEnd > timing.exitStart;
+  const isLastCardEntering = !singleSlot && timing.enterEnd === timing.holdStart;
+  const yInput = singleSlot
+    ? hasExit
+      ? [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd]
+      : [timing.enterStart, timing.enterEnd]
+    : isLastCardEntering
     ? [
         timing.enterStart,
         timing.enterEnd,
@@ -72,30 +75,42 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
         timing.exitStart,
         timing.exitEnd,
       ];
-  const yOutput = isLastCardEntering
+  const yOutput = singleSlot
+    ? hasExit
+      ? [enterDistance, 0, 0, -36]
+      : [enterDistance, 0]
+    : isLastCardEntering
     ? [enterDistance, 0, drift, 0, -drift, 0, 0, -36]
     : [enterDistance, 0, 0, drift, 0, -drift, 0, 0, -36];
-  const yEase = Array.from({ length: yInput.length - 1 }, (_, index) =>
-    index === 0 ? ENTER_EASE : index === yInput.length - 2 ? EXIT_EASE : LINEAR_EASE
-  );
+  const yEase = singleSlot
+    ? hasExit ? [ENTER_EASE, LINEAR_EASE, EXIT_EASE] : [ENTER_EASE]
+    : Array.from({ length: yInput.length - 1 }, (_, index) =>
+        index === 0 ? ENTER_EASE : index === yInput.length - 2 ? EXIT_EASE : LINEAR_EASE
+      );
   const y = useTransform(progress, yInput, yOutput, { ease: yEase });
   const scale = useTransform(
     progress,
-    [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd],
-    [0.94, 1, 1, 0.97],
-    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+    hasExit
+      ? [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd]
+      : [timing.enterStart, timing.enterEnd],
+    hasExit ? [0.94, 1, 1, 0.97] : [0.94, 1],
+    { ease: hasExit ? [ENTER_EASE, LINEAR_EASE, EXIT_EASE] : [ENTER_EASE] }
   );
   const rotateX = useTransform(
     progress,
-    [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd],
-    [enterRotation, 0, 0, -6],
-    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+    hasExit
+      ? [timing.enterStart, timing.enterEnd, timing.exitStart, timing.exitEnd]
+      : [timing.enterStart, timing.enterEnd],
+    hasExit ? [enterRotation, 0, 0, -6] : [enterRotation, 0],
+    { ease: hasExit ? [ENTER_EASE, LINEAR_EASE, EXIT_EASE] : [ENTER_EASE] }
   );
   const opacity = useTransform(
     progress,
-    [timing.enterStart, timing.opacityEnd, timing.exitStart, timing.exitEnd],
-    [0, 1, 1, 0],
-    { ease: [ENTER_EASE, LINEAR_EASE, EXIT_EASE] }
+    hasExit
+      ? [timing.enterStart, timing.opacityEnd, timing.exitStart, timing.exitEnd]
+      : [timing.enterStart, timing.opacityEnd],
+    hasExit ? [0, 1, 1, 0] : [0, 1],
+    { ease: hasExit ? [ENTER_EASE, LINEAR_EASE, EXIT_EASE] : [ENTER_EASE] }
   );
   const accentScale = useTransform(
     progress,
@@ -118,52 +133,30 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
     { ease: LINEAR_EASE }
   );
 
-  // Keep the card groups balanced around the center of the stage.
-  const getDesktopPlacement = () => {
-    if (totalCards === 3) {
-      if (cardIndex === 0) {
-        // Left arc
-        return 'md:top-[38%] md:left-8 lg:md:left-16 md:-translate-y-1/2 md:max-w-xs lg:max-w-sm';
-      }
-      if (cardIndex === 1) {
-        // Bottom-center arc
-        return 'md:bottom-10 md:left-1/2 md:-translate-x-1/2 md:max-w-md text-center';
-      }
-      // Right arc
-      return 'md:top-[38%] md:right-8 lg:md:right-16 md:-translate-y-1/2 md:max-w-xs lg:max-w-sm';
-    }
-
-    if (totalCards === 4) {
-      if (cardIndex === 0) {
-        // Flank top-left
-        return 'md:top-[22%] md:left-6 lg:md:left-16 md:max-w-xs lg:max-w-sm';
-      }
-      if (cardIndex === 1) {
-        // Flank bottom-left
-        return 'md:bottom-12 md:left-6 lg:md:left-16 md:max-w-xs lg:max-w-sm';
-      }
-      if (cardIndex === 2) {
-        // Flank top-right
-        return 'md:top-[22%] md:right-6 lg:md:right-16 md:max-w-xs lg:max-w-sm';
-      }
-      // Flank bottom-right
-      return 'md:bottom-12 md:right-6 lg:md:right-16 md:max-w-xs lg:max-w-sm';
-    }
-
-    return 'md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:max-w-md';
-  };
-
   const content = (
     <SpotlightCard
-      className="relative p-5 md:p-6 rounded-2xl bg-card border border-border theme-card-shadow"
+      className="relative flex h-full min-w-0 flex-col items-start overflow-hidden rounded-lg border border-border bg-card text-left theme-card-shadow"
+      style={{ padding: 'var(--card-pad, clamp(0.75rem, 1.8vh, 1.25rem))' }}
       spotlightColor="rgba(59, 130, 246, 0.16)"
     >
       {title && (
-        <h4 className="text-lg md:text-xl font-bold text-card-foreground mb-2 tracking-tight">
+        <h4
+          className="mb-[0.4em] leading-[1.2] font-bold tracking-[-0.01em] text-foreground"
+          style={{
+            fontSize: 'var(--card-title-size, clamp(0.9rem, 1.8vw + 0.5rem, 1.35rem))',
+            textWrap: 'balance' as React.CSSProperties['textWrap'],
+          }}
+        >
           {title}
         </h4>
       )}
-      <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-normal">
+      <p
+        className="leading-[1.55] font-medium text-foreground/75"
+        style={{
+          fontSize: 'var(--card-body-size, clamp(0.875rem, 1.4vw + 0.35rem, 1.1rem))',
+          textWrap: 'pretty' as React.CSSProperties['textWrap'],
+        }}
+      >
         {description || text}
       </p>
       {!compactMotion && (
@@ -183,7 +176,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
 
   if (isReducedMotion) {
     return (
-      <div key={id} className="w-full my-3">
+      <div key={id} data-testid={`idea-card-${beat.id}-${cardIndex}`} data-beat-id={beat.id} data-card-index={cardIndex} className="h-full min-w-0 w-full">
         {content}
       </div>
     );
@@ -197,32 +190,24 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
         pointerEvents: isActiveBeat ? 'auto' : 'none',
       }}
       {...(!isActiveBeat ? { inert: '' } : {})}
-      className={`absolute w-[88%] left-[6%] md:w-auto md:left-auto transform-gpu preserve-3d ${getDesktopPlacement()}`}
-    >
-      <motion.div
-      key={id}
-      style={{
-        opacity,
-        scale,
-        y,
-        rotateX,
-        transformOrigin: 'top center',
-        willChange: isNearActiveBeat ? 'transform, opacity' : 'auto',
-      }}
       data-testid={`idea-card-${beat.id}-${cardIndex}`}
       data-beat-id={beat.id}
       data-card-index={cardIndex}
-      className="relative z-20 transform-gpu preserve-3d"
+      className={`h-full min-w-0 w-full ${singleSlot ? 'col-start-1 row-start-1' : ''}`}
     >
       <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-y-2 inset-x-1 rounded-2xl"
+        data-testid={`idea-card-motion-${beat.id}-${cardIndex}`}
         style={{
           opacity,
-          boxShadow: '0 16px 32px rgba(35, 82, 136, 0.18)',
+          scale,
+          y,
+          rotateX,
+          transformOrigin: 'top center',
+          willChange: isNearActiveBeat ? 'transform, opacity' : 'auto',
         }}
-      />
-      {content}
+        className="h-full min-w-0 w-full transform-gpu preserve-3d"
+      >
+        {content}
       </motion.div>
     </div>
   );

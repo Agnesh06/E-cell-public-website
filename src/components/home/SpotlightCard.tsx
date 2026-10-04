@@ -1,15 +1,17 @@
-import { useRef, type MouseEvent, type ReactNode } from 'react';
+import React, { useRef, type MouseEvent, type ReactNode } from 'react';
 import './SpotlightCard.css';
 
 interface SpotlightCardProps {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   spotlightColor?: string;
 }
 
 const SpotlightCard = ({
   children,
   className = '',
+  style,
   spotlightColor = 'rgba(255, 255, 255, 0.25)',
 }: SpotlightCardProps) => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -29,6 +31,7 @@ const SpotlightCard = ({
       ref={cardRef}
       onMouseMove={handleMouseMove}
       className={`card-spotlight ${className}`}
+      style={style}
     >
       {children}
     </div>

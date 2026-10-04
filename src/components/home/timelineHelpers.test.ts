@@ -137,6 +137,23 @@ describe('timelineHelpers', () => {
     }
   });
 
+  it('sequences narrow single-slot cards without overlap and holds the last card to beat end', () => {
+    for (const beat of BEATS.filter((item) => item.totalCards > 0)) {
+      for (let sampleIndex = 0; sampleIndex <= 1000; sampleIndex += 1) {
+        const progress = beat.start + (beat.end - beat.start) * sampleIndex / 1000;
+        const visible = Array.from({ length: beat.totalCards }, (_, cardIndex) =>
+          getCardPose(progress, beat, cardIndex, beat.totalCards, true, true).opacity
+        ).filter((opacity) => opacity > 0.35);
+        expect(visible.length).toBeLessThanOrEqual(1);
+      }
+
+      const lastCard = beat.totalCards - 1;
+      const lastRange = getCardRange(beat, lastCard, beat.totalCards, true);
+      expect(lastRange.hasExit).toBe(false);
+      expect(getCardPose(beat.end, beat, lastCard, beat.totalCards, true, true).opacity).toBe(1);
+    }
+  });
+
   it('keeps the hero visible at zero and the final heading settled at progress one', () => {
     expect(getHeroPose(0, BEATS[0])).toEqual({ y: 0, opacity: 1 });
     expect(getHeadingPose(1, BEATS[6])).toEqual({ y: 0, opacity: 1 });

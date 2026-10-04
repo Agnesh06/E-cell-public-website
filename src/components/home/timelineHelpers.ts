@@ -10,6 +10,7 @@ export interface CardTiming {
   holdMid: number;
   exitStart: number;
   exitEnd: number;
+  hasExit: boolean;
 }
 
 export interface HeadingTiming {
@@ -106,9 +107,33 @@ export function getHeadingPose(progress: number, beat: BeatConfig): HeadingPose 
 export function getCardRange(
   beat: BeatConfig,
   cardIndex: number,
-  totalCards: number
+  totalCards: number,
+  singleSlot = false
 ): CardTiming {
   const span = beat.end - beat.start;
+  if (singleSlot) {
+    const segment = 0.68 / totalCards;
+    const enterStart = beat.start + span * (0.12 + segment * cardIndex);
+    const enterEnd = enterStart + span * segment * 0.2;
+    const isLastCard = cardIndex === totalCards - 1;
+    const exitStart = isLastCard ? beat.end : enterStart + span * segment * 0.66;
+    const exitEnd = isLastCard ? beat.end : enterStart + span * segment * 0.94;
+    const holdStart = enterEnd;
+    const holdEnd = exitStart;
+
+    return {
+      enterStart,
+      enterEnd,
+      opacityEnd: enterStart + span * segment * 0.12,
+      holdStart,
+      holdEnd,
+      holdMid: (holdStart + holdEnd) / 2,
+      exitStart,
+      exitEnd,
+      hasExit: !isLastCard && beat.hasExit,
+    };
+  }
+
   const enterStart = beat.start + span * (CARD_ENTER_START + cardIndex * CARD_ENTER_STAGGER);
   const enterEnd = enterStart + span * CARD_ENTER_DURATION;
   const holdStart = beat.start + span * (
@@ -129,6 +154,7 @@ export function getCardRange(
     holdMid: (holdStart + holdEnd) / 2,
     exitStart,
     exitEnd,
+    hasExit: beat.hasExit,
   };
 }
 
@@ -137,9 +163,10 @@ export function getCardPose(
   beat: BeatConfig,
   cardIndex: number,
   totalCards: number,
-  compactMotion = false
+  compactMotion = false,
+  singleSlot = false
 ): CardPose {
-  const timing = getCardRange(beat, cardIndex, totalCards);
+  const timing = getCardRange(beat, cardIndex, totalCards, singleSlot);
   const distance = compactMotion ? 32 : 56;
   const rotation = compactMotion ? 0 : 10;
   const drift = (cardIndex % 2 === 0 ? 1 : -1) * Math.min(8, (cardIndex + 1) * 2);

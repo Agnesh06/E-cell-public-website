@@ -36,6 +36,7 @@ import {
   LINEAR_EASE,
   getActiveBeatIndexWithHysteresis,
 } from './timelineHelpers';
+import { useFitCardText } from '@/hooks/useFitCardText';
 
 interface SectionHeadingProps {
   beat: BeatConfig;
@@ -44,6 +45,18 @@ interface SectionHeadingProps {
   subtitle?: string;
   eyebrow?: string;
   isActiveBeat: boolean;
+}
+
+interface BeatContentProps {
+  beat: BeatConfig;
+  progress: MotionValue<number>;
+  title: string;
+  subtitle?: string;
+  eyebrow?: string;
+  isActiveBeat: boolean;
+  singleSlot: boolean;
+  beatRef?: React.RefObject<HTMLElement | null>;
+  children: React.ReactNode;
 }
 
 const SectionHeading: React.FC<SectionHeadingProps> = ({
@@ -107,23 +120,38 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
         opacity,
         y: translateY,
         visibility: isActiveBeat ? 'visible' : 'hidden',
-        pointerEvents: isActiveBeat ? 'none' : 'none',
       }}
       {...(!isActiveBeat ? { inert: '' } : {})}
-      className="absolute top-16 md:top-[4.625rem] inset-x-0 mx-auto px-6 max-w-3xl text-center pointer-events-none z-10"
+      data-testid={`beat-title-${beat.id}`}
+      className="mb-[clamp(24px,5vh,56px)] w-full shrink-0 px-2 text-center pointer-events-none"
     >
       {eyebrow && (
-        <motion.p className="text-xs md:text-sm font-semibold uppercase tracking-widest mb-0 text-primary">
+        <motion.p className="mb-1 text-[clamp(0.65rem,1.5vh,0.875rem)] font-semibold uppercase tracking-widest text-primary">
           {eyebrow}
         </motion.p>
       )}
-      <motion.h2 className="text-2xl md:text-4xl md:leading-9 font-extrabold tracking-tight text-foreground">
+      <motion.h2
+        className="font-extrabold text-foreground"
+        style={{
+          fontSize: 'clamp(1.75rem, 1.1rem + 2.4vw, 3.25rem)',
+          fontWeight: 800,
+          lineHeight: 1.1,
+          letterSpacing: '-0.02em',
+          textWrap: 'balance' as React.CSSProperties['textWrap'],
+        }}
+      >
         {title}
       </motion.h2>
       {subtitle && (
         <motion.p
-          style={{ opacity: subtitleOpacity, y: subtitleY }}
-          className="mt-2 text-sm md:text-base font-normal max-w-xl mx-auto text-muted-foreground"
+          style={{
+            opacity: subtitleOpacity,
+            y: subtitleY,
+            fontSize: 'clamp(1rem, 0.9rem + 0.5vw, 1.4rem)',
+            fontWeight: 550,
+            textWrap: 'balance' as React.CSSProperties['textWrap'],
+          }}
+          className="mx-auto mt-2 max-w-3xl leading-snug text-primary"
         >
           {subtitle}
         </motion.p>
@@ -132,9 +160,64 @@ const SectionHeading: React.FC<SectionHeadingProps> = ({
   );
 };
 
+const BeatContent: React.FC<BeatContentProps> = ({
+  beat,
+  progress,
+  title,
+  subtitle,
+  eyebrow,
+  isActiveBeat,
+  singleSlot,
+  beatRef,
+  children,
+}) => {
+  const cardGridColumns = singleSlot
+    ? 'grid-cols-1 grid-rows-1 content-center'
+    : beat.totalCards === 3
+      ? 'grid-cols-1 min-[640px]:grid-cols-2 min-[900px]:grid-cols-3 min-[640px]:[&>*:last-child]:col-span-2 min-[640px]:[&>*:last-child]:w-[calc(50%_-_0.5rem)] min-[768px]:[&>*:last-child]:w-[calc(50%_-_0.625rem)] min-[640px]:[&>*:last-child]:justify-self-center min-[900px]:[&>*:last-child]:col-span-1 min-[900px]:[&>*:last-child]:w-full'
+      : 'grid-cols-1 min-[640px]:grid-cols-2 min-[1280px]:grid-cols-4';
+
+  return (
+    <motion.section
+      ref={beatRef as React.RefObject<HTMLElement>}
+      style={{ visibility: isActiveBeat ? 'visible' : 'hidden' }}
+      {...(!isActiveBeat ? { inert: '' } : {})}
+      data-layout-mode={singleSlot ? 'single-slot' : 'grid'}
+      data-beat-grid
+      className="absolute inset-0 z-20 flex min-h-0 flex-col items-center justify-center px-4 pb-4 pt-[calc(var(--nav-h)+24px)] sm:px-6"
+      data-testid={`beat-${beat.id}`}
+    >
+      <SectionHeading
+        beat={beat}
+        progress={progress}
+        title={title}
+        subtitle={subtitle}
+        eyebrow={eyebrow}
+        isActiveBeat={isActiveBeat}
+      />
+      <div className={`mx-auto grid min-h-0 w-full max-w-6xl auto-rows-auto content-center items-stretch justify-center gap-4 md:gap-5 ${cardGridColumns}`}>
+        {children}
+      </div>
+    </motion.section>
+  );
+};
+
 export const HomeScrollScene: React.FC = () => {
   const outerRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+
+  // One beat ref per card-bearing beat (about, approach, ecosystem, journey, who-is-it-for)
+  const beatAboutRef = useRef<HTMLElement | null>(null);
+  const beatApproachRef = useRef<HTMLElement | null>(null);
+  const beatEcosystemRef = useRef<HTMLElement | null>(null);
+  const beatJourneyRef = useRef<HTMLElement | null>(null);
+  const beatWhoRef = useRef<HTMLElement | null>(null);
+
+  useFitCardText({
+    stageRef: stageRef as React.RefObject<HTMLElement | null>,
+    beatRefs: [beatAboutRef, beatApproachRef, beatEcosystemRef, beatJourneyRef, beatWhoRef],
+  });
 
   // One progress MotionValue via useScroll
   const { scrollYProgress } = useScroll({
@@ -153,13 +236,22 @@ export const HomeScrollScene: React.FC = () => {
   const [activeBeatId, setActiveBeatId] = useState<string>(BEATS[0].id);
   const activeBeatIndexRef = useRef(0);
   const [compactMotion, setCompactMotion] = useState(false);
+  const [singleSlot, setSingleSlot] = useState(false);
 
   React.useEffect(() => {
-    const media = window.matchMedia('(max-width: 767px), (pointer: coarse)');
-    const updateCompactMotion = () => setCompactMotion(media.matches);
-    updateCompactMotion();
-    media.addEventListener('change', updateCompactMotion);
-    return () => media.removeEventListener('change', updateCompactMotion);
+    const compactMedia = window.matchMedia('(max-width: 767px), (pointer: coarse)');
+    const singleSlotMedia = window.matchMedia('(max-width: 639px)');
+    const updateMotionMode = () => {
+      setCompactMotion(compactMedia.matches);
+      setSingleSlot(singleSlotMedia.matches);
+    };
+    updateMotionMode();
+    compactMedia.addEventListener('change', updateMotionMode);
+    singleSlotMedia.addEventListener('change', updateMotionMode);
+    return () => {
+      compactMedia.removeEventListener('change', updateMotionMode);
+      singleSlotMedia.removeEventListener('change', updateMotionMode);
+    };
   }, []);
 
   const activeBeatIndex = activeBeatIndexRef.current;
@@ -460,6 +552,7 @@ export const HomeScrollScene: React.FC = () => {
     >
       {/* Sticky 100vh Stage */}
       <motion.div
+        ref={stageRef}
         style={{
           perspective: SCENE_CONFIG.PERSPECTIVE,
         }}
@@ -551,121 +644,141 @@ export const HomeScrollScene: React.FC = () => {
         </motion.div>
 
         {/* 2. ABOUT BEAT (0.10 - 0.24) */}
-        <SectionHeading
+        <BeatContent
           beat={BEATS[1]}
           progress={smoothedProgress}
           title={aboutData.title}
           eyebrow={aboutData.eyebrow}
           isActiveBeat={isBeatActive(1)}
-        />
-        {aboutData.cards.map((card, i) => (
-          <IdeaCard
-            key={card.id}
-            id={card.id}
-            text={card.text}
-            cardIndex={i}
-            totalCards={aboutData.cards.length}
-            beat={BEATS[1]}
-            progress={smoothedProgress}
-            compactMotion={compactMotion}
-            isActiveBeat={isBeatActive(1)}
-            isNearActiveBeat={isBeatNearActive(1)}
-          />
-        ))}
+          singleSlot={singleSlot}
+          beatRef={beatAboutRef}
+        >
+          {aboutData.cards.map((card, i) => (
+            <IdeaCard
+              key={card.id}
+              id={card.id}
+              text={card.text}
+              cardIndex={i}
+              totalCards={aboutData.cards.length}
+              beat={BEATS[1]}
+              progress={smoothedProgress}
+              compactMotion={compactMotion}
+              singleSlot={singleSlot}
+              isActiveBeat={isBeatActive(1)}
+              isNearActiveBeat={isBeatNearActive(1)}
+            />
+          ))}
+        </BeatContent>
 
         {/* 3. APPROACH BEAT (0.24 - 0.38) */}
-        <SectionHeading
+        <BeatContent
           beat={BEATS[2]}
           progress={smoothedProgress}
           title={approachData.title}
           isActiveBeat={isBeatActive(2)}
-        />
-        {approachData.cards.map((card, i) => (
-          <IdeaCard
-            key={card.id}
-            id={card.id}
-            title={card.title}
-            description={card.description}
-            cardIndex={i}
-            totalCards={approachData.cards.length}
-            beat={BEATS[2]}
-            progress={smoothedProgress}
-            compactMotion={compactMotion}
-            isActiveBeat={isBeatActive(2)}
-            isNearActiveBeat={isBeatNearActive(2)}
-          />
-        ))}
+          singleSlot={singleSlot}
+          beatRef={beatApproachRef}
+        >
+          {approachData.cards.map((card, i) => (
+            <IdeaCard
+              key={card.id}
+              id={card.id}
+              title={card.title}
+              description={card.description}
+              cardIndex={i}
+              totalCards={approachData.cards.length}
+              beat={BEATS[2]}
+              progress={smoothedProgress}
+              compactMotion={compactMotion}
+              singleSlot={singleSlot}
+              isActiveBeat={isBeatActive(2)}
+              isNearActiveBeat={isBeatNearActive(2)}
+            />
+          ))}
+        </BeatContent>
 
         {/* 4. ECOSYSTEM BEAT (0.38 - 0.52) */}
-        <SectionHeading
+        <BeatContent
           beat={BEATS[3]}
           progress={smoothedProgress}
           title={ecosystemData.title}
           subtitle={ecosystemData.subtitle}
           isActiveBeat={isBeatActive(3)}
-        />
-        {ecosystemData.cards.map((card, i) => (
-          <IdeaCard
-            key={card.id}
-            id={card.id}
-            title={card.title}
-            description={card.description}
-            cardIndex={i}
-            totalCards={ecosystemData.cards.length}
-            beat={BEATS[3]}
-            progress={smoothedProgress}
-            compactMotion={compactMotion}
-            isActiveBeat={isBeatActive(3)}
-            isNearActiveBeat={isBeatNearActive(3)}
-          />
-        ))}
+          singleSlot={singleSlot}
+          beatRef={beatEcosystemRef}
+        >
+          {ecosystemData.cards.map((card, i) => (
+            <IdeaCard
+              key={card.id}
+              id={card.id}
+              title={card.title}
+              description={card.description}
+              cardIndex={i}
+              totalCards={ecosystemData.cards.length}
+              beat={BEATS[3]}
+              progress={smoothedProgress}
+              compactMotion={compactMotion}
+              singleSlot={singleSlot}
+              isActiveBeat={isBeatActive(3)}
+              isNearActiveBeat={isBeatNearActive(3)}
+            />
+          ))}
+        </BeatContent>
 
         {/* 5. STUDENT JOURNEY BEAT (0.52 - 0.68) */}
-        <SectionHeading
+        <BeatContent
           beat={BEATS[4]}
           progress={smoothedProgress}
           title={studentJourneyData.title}
           isActiveBeat={isBeatActive(4)}
-        />
-        {studentJourneyData.cards.map((card, i) => (
-          <IdeaCard
-            key={card.id}
-            id={card.id}
-            title={card.title}
-            description={card.description}
-            cardIndex={i}
-            totalCards={studentJourneyData.cards.length}
-            beat={BEATS[4]}
-            progress={smoothedProgress}
-            compactMotion={compactMotion}
-            isActiveBeat={isBeatActive(4)}
-            isNearActiveBeat={isBeatNearActive(4)}
-          />
-        ))}
+          singleSlot={singleSlot}
+          beatRef={beatJourneyRef}
+        >
+          {studentJourneyData.cards.map((card, i) => (
+            <IdeaCard
+              key={card.id}
+              id={card.id}
+              title={card.title}
+              description={card.description}
+              cardIndex={i}
+              totalCards={studentJourneyData.cards.length}
+              beat={BEATS[4]}
+              progress={smoothedProgress}
+              compactMotion={compactMotion}
+              singleSlot={singleSlot}
+              isActiveBeat={isBeatActive(4)}
+              isNearActiveBeat={isBeatNearActive(4)}
+            />
+          ))}
+        </BeatContent>
 
         {/* 6. WHO IS E-CELL FOR BEAT (0.68 - 0.84) */}
-        <SectionHeading
+        <BeatContent
           beat={BEATS[5]}
           progress={smoothedProgress}
           title={whoIsECellForData.title}
           subtitle={whoIsECellForData.subtitle}
           isActiveBeat={isBeatActive(5)}
-        />
-        {whoIsECellForData.cards.map((card, i) => (
-          <IdeaCard
-            key={card.id}
-            id={card.id}
-            title={card.title}
-            description={card.description}
-            cardIndex={i}
-            totalCards={whoIsECellForData.cards.length}
-            beat={BEATS[5]}
-            progress={smoothedProgress}
-            compactMotion={compactMotion}
-            isActiveBeat={isBeatActive(5)}
-            isNearActiveBeat={isBeatNearActive(5)}
-          />
-        ))}
+          singleSlot={singleSlot}
+          beatRef={beatWhoRef}
+        >
+          {whoIsECellForData.cards.map((card, i) => (
+            <IdeaCard
+              key={card.id}
+              id={card.id}
+              title={card.title}
+              description={card.description}
+              cardIndex={i}
+              totalCards={whoIsECellForData.cards.length}
+              beat={BEATS[5]}
+              progress={smoothedProgress}
+              compactMotion={compactMotion}
+              singleSlot={singleSlot}
+              isActiveBeat={isBeatActive(5)}
+              isNearActiveBeat={isBeatNearActive(5)}
+            />
+          ))}
+        </BeatContent>
 
         {/* 7. FINAL CTA BEAT (0.84 - 1.00) - No Exit */}
         <motion.div
