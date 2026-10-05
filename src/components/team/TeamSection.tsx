@@ -64,48 +64,22 @@ export function TeamSection({
   return (
     <section
       id={id}
-      className={`relative w-full overflow-hidden bg-[#FAFAFC] pt-24 sm:pt-28 md:pt-32 pb-8 sm:pb-12 text-[#0A0A0A] scroll-mt-12 ${className}`}
+      className={`relative w-full h-screen min-h-screen flex flex-col justify-center overflow-hidden bg-transparent py-4 sm:py-6 text-[#0A0A0A] snap-start scroll-mt-0 ${className}`}
       aria-labelledby="team-heading"
     >
-      {/* Background Decorative Ambient Curve */}
-      <div className="absolute right-0 bottom-0 pointer-events-none opacity-40">
-        <svg
-          className="text-neutral-200"
-          fill="none"
-          height="154"
-          viewBox="0 0 460 154"
-          width="460"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g clipPath="url(#clip0_team_bg)">
-            <path
-              d="M-87.463 458.432C-102.118 348.092 -77.3418 238.841 -15.0744 188.274C57.4129 129.408 180.708 150.071 351.748 341.128C278.246 -374.233 633.954 380.602 548.123 42.7707"
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="40"
-            />
-          </g>
-          <defs>
-            <clipPath id="clip0_team_bg">
-              <rect fill="white" height="154" width="460" />
-            </clipPath>
-          </defs>
-        </svg>
-      </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         {/* Realigned Balanced Catchphrase Header */}
-        <div className="mx-auto mb-12 sm:mb-16 text-center max-w-3xl">
+        <div className="mx-auto mb-6 sm:mb-8 text-center max-w-3xl">
           {subtitle && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDEFFC] text-[#2547FF] border border-[#2547FF]/20 text-xs font-mono font-semibold uppercase tracking-wider mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDEFFC] text-[#2547FF] border border-[#2547FF]/20 text-xs font-mono font-semibold uppercase tracking-wider mb-3">
               <span className="size-1.5 rounded-full bg-[#2547FF] animate-pulse" />
               <span>{subtitle}</span>
             </div>
           )}
           <h2
             id="team-heading"
-            className="font-display font-bold text-3xl sm:text-4xl md:text-[44px] lg:text-5xl text-[#0A0A0A] tracking-[-0.03em] leading-[1.18] text-balance mx-auto"
+            className="font-display font-bold text-3xl sm:text-4xl md:text-[42px] lg:text-[46px] text-[#0A0A0A] tracking-[-0.03em] leading-[1.18] text-balance mx-auto"
           >
             {catchphrase === "The minds building the future at PSG Tech E-Cell" ? (
               <>
@@ -132,9 +106,9 @@ export function TeamSection({
             {members.map((member, index) => (
               <div
                 key={`${member.name}-${index}`}
-                className="group/card relative flex w-60 sm:w-64 shrink-0 flex-col cursor-pointer transition-transform duration-300 hover:-translate-y-2 mx-3 sm:mx-4"
+                className="group/card relative flex w-56 sm:w-60 shrink-0 flex-col cursor-pointer transition-transform duration-300 hover:-translate-y-2 mx-3 sm:mx-4"
               >
-                <div className="relative h-84 sm:h-92 md:h-96 w-full overflow-hidden rounded-2xl bg-neutral-200/60 shadow-sm border border-black/[0.06] transition-shadow duration-300 group-hover/card:shadow-xl">
+                <div className="relative h-72 sm:h-80 md:h-84 w-full overflow-hidden rounded-2xl bg-neutral-200/60 shadow-sm border border-black/[0.06] transition-shadow duration-300 group-hover/card:shadow-xl">
                   {/* Portrait Image: Isolated Grayscale to Color Transition */}
                   <img
                     src={member.image}
@@ -144,11 +118,11 @@ export function TeamSection({
                   />
 
                   {/* Frosted Identity Badge at Bottom */}
-                  <div className="absolute bottom-2.5 left-2.5 right-2.5 rounded-xl bg-white/85 backdrop-blur-md p-3 border border-black/5 shadow-sm transition-all duration-300 group-hover/card:bg-white/95">
-                    <h3 className="font-display font-semibold text-[15px] sm:text-base text-[#0A0A0A] tracking-tight">
+                  <div className="absolute bottom-2.5 left-2.5 right-2.5 rounded-xl bg-white/85 backdrop-blur-md p-2.5 border border-black/5 shadow-sm transition-all duration-300 group-hover/card:bg-white/95">
+                    <h3 className="font-display font-semibold text-[14px] sm:text-[15px] text-[#0A0A0A] tracking-tight">
                       {member.name}
                     </h3>
-                    <p className="font-mono text-xs text-[#262626]/75 mt-0.5 tracking-tight truncate">
+                    <p className="font-mono text-[11px] text-[#262626]/75 mt-0.5 tracking-tight truncate">
                       {member.role}
                     </p>
                   </div>
@@ -159,7 +133,7 @@ export function TeamSection({
         </div>
 
         {/* Bottom smooth scroll link to Collaboration */}
-        <div className="mt-8 sm:mt-10 flex justify-center">
+        <div className="mt-6 sm:mt-8 flex justify-center">
           <button
             type="button"
             onClick={() =>

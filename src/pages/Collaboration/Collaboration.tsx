@@ -109,31 +109,17 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
   ];
 
   return (
-    <section id={id} className="min-h-screen bg-[#FAFAFC] text-[#0A0A0A] pt-12 sm:pt-16 pb-24 px-4 sm:px-6 relative overflow-hidden scroll-mt-10">
-      {/* Background Decorative Gradients */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-[#2547FF]/10 via-[#2547FF]/5 to-transparent blur-3xl opacity-70" />
-        <div className="absolute -top-40 right-10 w-96 h-96 bg-[#2547FF]/5 rounded-full blur-3xl" />
-      </div>
+    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden snap-start scroll-mt-0">
 
-      <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center">
-        {/* Header Section matching exact PDF Copy */}
-        <div className="text-center max-w-3xl mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EDEFFC] text-[#2547FF] border border-[#2547FF]/20 text-xs font-mono font-medium uppercase tracking-wider mb-4">
-            <Sparkles className="size-3.5" />
-            <span>Industry & Corporate Collaborations</span>
-          </div>
-
+      <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center w-full">
+        {/* Streamlined Clean Header */}
+        <div className="text-center max-w-2xl mb-6">
           <h1 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-[#0A0A0A] leading-tight">
-            Industry & Corporate <span className="text-[#2547FF]">Collaborations</span>
+            Let’s Build <span className="text-[#2547FF]">Together</span>
           </h1>
 
-          <p className="mt-4 text-base sm:text-lg text-[#262626]/80 leading-relaxed max-w-2xl mx-auto">
-            Partner with our student community to solve real-world problems, develop innovative solutions, and create meaningful industry-academia opportunities.
-          </p>
-
-          <p className="mt-2 text-sm text-[#262626]/65 leading-relaxed max-w-xl mx-auto">
-            Have a project, challenge, research requirement, or collaboration opportunity? Tell us about it. Our team will get in touch with you to explore the next steps.
+          <p className="mt-2.5 text-sm sm:text-base text-[#262626]/75 leading-relaxed max-w-lg mx-auto">
+            Connect with student innovators and startups at PSG Tech.
           </p>
         </div>
 

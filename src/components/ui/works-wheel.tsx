@@ -43,13 +43,13 @@ export interface WorksWheelProps extends Omit<
    swinging on a huge drum. The three that matter are tuned together: STEP
    against DRUM sets how hard the neighbours rotate away, and DRUM against LENS
    decides whether they land inside the frame or run off it. */
-const CARD_H = 0.38; // front card height, of the stage
-const CARD_MAX_W = 0.34; // ... but never wider than this much of the stage
+const CARD_H = 0.34; // front card height, scaled so cards fill the stage beautifully with safe top/bottom margins
+const CARD_MAX_W = 0.31; // ... but never wider than this much of the stage
 const CARD_RATIO = 1.45; // card width / height
 const STEP = 40; // degrees between cards on the drum
 const DRUM = 2.22; // drum radius, in card heights - and everything below likewise
 const LENS = 2.7; // perspective distance
-const RING_R = 1.14; // ring radius
+const RING_R = 1.18; // ring radius
 /* The drum alone hangs the work on a plumb line. It isn't one: the strip curves
    away round an arc whose centre sits off to the LEFT, so the piece at the front
    is at the arc's near point - dead centre - and its neighbours have already
@@ -273,7 +273,7 @@ export function WorksWheel({
     <section
       aria-label={label}
       className={cn(
-        "bg-background text-foreground relative h-full min-h-[24rem] w-full overflow-hidden select-none",
+        "bg-transparent text-foreground relative h-full min-h-[24rem] w-full overflow-hidden select-none",
         className,
       )}
       {...props}

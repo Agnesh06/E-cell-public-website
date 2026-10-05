@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { WorksWheel } from "@/components/ui/works-wheel";
 import { getWorksWheelItems } from "@/data/projects";
 import TeamSection from "@/components/team/TeamSection";
+import AmbientTopography from "@/components/ui/AmbientTopography";
 
 export default function Projects() {
   const navigate = useNavigate();
@@ -45,6 +46,9 @@ export default function Projects() {
 
       {/* Projects Showcase Stage - Full Viewport */}
       <section className="relative w-full h-screen flex flex-col justify-between overflow-hidden">
+        {/* Dim Ambient Topography Background */}
+        <AmbientTopography opacity={0.28} />
+
         {/* Minimal Top Navigation */}
         <header className="absolute top-0 left-0 right-0 z-30 flex items-center justify-between px-6 sm:px-10 pr-20 sm:pr-24 py-5 pointer-events-none">
           <Link

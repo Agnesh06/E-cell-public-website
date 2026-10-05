@@ -43,7 +43,7 @@ export default function ProjectPreview() {
   return (
     <section
       id="projects"
-      className="relative w-full h-screen bg-[#FAFAFC] text-[#0A0A0A] overflow-hidden flex flex-col justify-between"
+      className="relative w-full h-screen min-h-screen bg-transparent text-[#0A0A0A] overflow-hidden flex flex-col justify-between snap-start scroll-mt-0"
       aria-label="Projects Showcase"
     >
       {/* Top Section Header */}
