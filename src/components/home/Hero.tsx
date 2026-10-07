@@ -1,34 +1,37 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import GlyphPortal from "@/components/ui/glyph-portal";
 import Topography from "@/components/ui/Topography";
+import ReadyWord, { type ReadyWordRef } from "@/components/home/ReadyWord";
 
 export interface HeroProps {
-  /** The word displayed and zoomed through. Default: "IDEAS" */
+  /** The word displayed and zoomed through. Default: "READY" */
   word?: string;
-  /** The letter to zoom into. Default: "D" (auto-falls back if not present) */
+  /** The letter to zoom into. Default: "E" */
   focusChar?: string;
-  /** Scroll travel length in container heights. Default: 2.3 */
+  /** Scroll travel length in container heights. Default: 3.6 */
   scrollLength?: number;
 }
 
 export default function Hero({
-  word = "IDEAS",
-  focusChar = "D",
+  word = "READY",
+  focusChar = "E",
   scrollLength = 3.6,
 }: HeroProps) {
   const [fontReady, setFontReady] = useState(false);
+  const heroContainerRef = useRef<HTMLDivElement>(null);
+  const headlineRef = useRef<HTMLDivElement>(null);
+  const readyWordRef = useRef<ReadyWordRef>(null);
 
   useEffect(() => {
     let active = true;
-    const fontSpec = `800 100px "Plus Jakarta Sans"`;
-    // Timeout fallback (1800ms) to ensure Hero renders promptly even if network lags
+    const fontSpec = `700 76px "Plus Jakarta Sans"`;
     const timer = setTimeout(() => {
       if (active) setFontReady(true);
-    }, 1800);
+    }, 1200);
 
     if (typeof document !== "undefined" && document.fonts) {
       document.fonts
-        .load(fontSpec, word)
+        .load(fontSpec, "Build before you're READY.")
         .then(() => {
           if (active) setFontReady(true);
         })
@@ -43,9 +46,9 @@ export default function Hero({
       active = false;
       clearTimeout(timer);
     };
-  }, [word]);
+  }, []);
 
-  // While font is loading, reserve a 100svh placeholder to prevent layout shifts or premature offset math
+  // While font is loading, reserve a 100svh placeholder to prevent layout shifts
   if (!fontReady) {
     return (
       <div
@@ -54,7 +57,7 @@ export default function Hero({
         aria-hidden="true"
       >
         <div className="flex flex-col items-center gap-4">
-          <span className="font-display font-extrabold text-7xl sm:text-9xl tracking-tight text-[#0A0A0A]/10 uppercase select-none">
+          <span className="font-display font-extrabold text-6xl sm:text-8xl tracking-tight text-[#0A0A0A]/10 uppercase select-none">
             {word}
           </span>
           <span className="text-xs font-mono tracking-widest text-[#0A0A0A]/40 uppercase animate-pulse">
@@ -67,6 +70,7 @@ export default function Hero({
 
   return (
     <div
+      ref={heroContainerRef}
       id="home"
       data-slipstream-hero
       className="relative w-full overflow-x-clip select-text bg-transparent snap-start scroll-mt-0"
@@ -104,24 +108,224 @@ export default function Hero({
           mouseStrength={0.4}
         />
       </div>
+
       <style>{`
-        [data-slipstream-hero] [data-gp-caption]{inset:calc(var(--gp-word-bottom,50%) + 82px) 24px auto;justify-content:center;}
-        [data-slipstream-hero] [data-gp-hint]{display:none;}
-        [data-slipstream-hero] [data-gp-enter]{min-height:46px;padding:0 24px;gap:20px;background:#2547FF;border:1px solid rgba(255,255,255,0.25);border-radius:9999px;color:#fff;font-size:13px;font-weight:600;letter-spacing:0.04em;box-shadow:0 4px 16px rgba(37,71,255,0.35);transition:all .2s ease;}
-        [data-slipstream-hero] [data-gp-enter]:hover{background:#1B3AE5;box-shadow:0 6px 22px rgba(37,71,255,0.48);transform:scale(1.02);}
-        [data-slipstream-hero] [data-gp-enter]:focus-visible{outline:2px solid #8CA6FE;outline-offset:4px;}
-        [data-slipstream-hero] [data-gp-touch-picker]{top:auto;bottom:18px;left:50%;}
-        [data-slipstream-hero] [data-gp-select]{border-color:transparent;border-radius:8px;font-size:12px;color:#262626;}
-        [data-sublime-header]{position:absolute;inset:clamp(24px,4.5cqw,48px) clamp(24px,5cqw,64px) auto;display:flex;align-items:center;justify-content:space-between;gap:20px;z-index:10;}
-        [data-sublime-logo]{font-size:22px;font-weight:800;letter-spacing:-.04em;color:#0A0A0A;}
-        [data-sublime-category]{font-size:12px;font-weight:500;line-height:1.5;color:#262626;opacity:0.7;font-family:inherit;}
-        [data-sublime-eyebrow]{position:absolute;inset:auto 24px calc(100% - var(--gp-word-top,35%) + 32px);margin:0;text-align:center;font-size:14px;font-weight:500;line-height:1.5;letter-spacing:.01em;color:#262626;opacity:0.8;pointer-events:none;}
-        [data-sublime-support]{position:absolute;inset:calc(var(--gp-word-bottom,50%) + 32px) 24px auto;margin:0;text-align:center;font-size:16px;font-weight:400;line-height:1.5;color:#262626;opacity:0.75;pointer-events:none;}
-        [data-sublime-scroll]{position:absolute;inset:auto 24px 7%;text-align:center;color:#262626;opacity:0.6;font-size:11px;font-family:ui-monospace, monospace;letter-spacing:.08em;text-transform:uppercase;pointer-events:none;}
-        [data-gp-motion=off] [data-sublime-scroll]{display:none;}
-        @media(any-pointer:coarse){[data-sublime-scroll]{bottom:13%;}}
-        @container(max-width:450px){[data-sublime-category]{max-width:14ch;text-align:right;}[data-sublime-eyebrow]{font-size:12px;}[data-sublime-support]{font-size:14px;}[data-slipstream-hero] [data-gp-caption]{top:calc(var(--gp-word-bottom,50%) + 76px);}}
-        @container(max-height:479px){[data-sublime-header]{top:18px;}[data-sublime-support]{top:calc(var(--gp-word-bottom,50%) + 16px);}[data-slipstream-hero] [data-gp-caption]{top:calc(var(--gp-word-bottom,50%) + 60px);}[data-sublime-scroll]{display:none;}}
+        :root, [data-slipstream-hero] {
+          --hero-left-edge: clamp(24px, 10vw, 150px);
+        }
+        @media (max-width: 767px) {
+          :root, [data-slipstream-hero] {
+            --hero-left-edge: 20px;
+          }
+        }
+
+        /* Ensure front layer stays visible through the zoom transition instead of premature fading */
+        [data-slipstream-hero] [data-gp-front] {
+          opacity: 1 !important;
+        }
+
+        /* Hide the centered giant SVG glyph from GlyphPortal so right side remains completely open */
+        [data-slipstream-hero] [data-gp-art] {
+          display: none !important;
+        }
+
+        /* Hide the "Step inside" button */
+        [data-slipstream-hero] [data-gp-caption] {
+          display: none !important;
+        }
+
+        /* Blue field expands smoothly as zoom advances into the royal blue portal */
+        [data-slipstream-hero] [data-gp-field] {
+          clip-path: none !important;
+          opacity: var(--hero-portal-opacity, 0) !important;
+          pointer-events: none;
+          transition: opacity 0.06s linear;
+        }
+
+        /* Top-Left: Logo & PSG Tech Club Name */
+        .hero-brand-block {
+          position: absolute;
+          top: 36px;
+          left: var(--hero-left-edge);
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          z-index: 20;
+          pointer-events: auto;
+          will-change: opacity;
+          opacity: var(--hero-aux-opacity, 1);
+          transition: opacity 0.15s ease;
+        }
+        @media (max-width: 767px) {
+          .hero-brand-block {
+            top: 24px;
+            gap: 10px;
+          }
+        }
+
+        /* Soft white glow behind brand block so blue topography lines don't make it look dim */
+        .hero-brand-glow {
+          position: absolute;
+          inset: -14px -28px -14px -14px;
+          background: radial-gradient(ellipse at 40% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.88) 65%, rgba(255, 255, 255, 0) 100%);
+          filter: blur(18px);
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        .hero-logo-box {
+          width: 50px;
+          height: 50px;
+          border-radius: 12px;
+          background: #FFFFFF;
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4px;
+          flex-shrink: 0;
+        }
+        @media (max-width: 767px) {
+          .hero-logo-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            padding: 3px;
+          }
+        }
+
+        .hero-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .hero-brand-text {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 2px;
+        }
+
+        .hero-logo-text {
+          font-size: 28px;
+          font-weight: 800;
+          line-height: 1.05;
+          letter-spacing: -0.035em;
+          color: #000000;
+        }
+        @media (max-width: 767px) {
+          .hero-logo-text {
+            font-size: 22px;
+          }
+        }
+
+        .hero-college-text {
+          font-size: 13px;
+          font-weight: 600;
+          line-height: 1.2;
+          color: #1A1A1A;
+          letter-spacing: 0.01em;
+          margin: 0;
+        }
+        @media (max-width: 767px) {
+          .hero-college-text {
+            font-size: 11px;
+          }
+        }
+
+        /* Main Headline Block (~55% vertical height) - Surrounding sentence remains static */
+        .hero-headline-block {
+          position: absolute;
+          top: 55%;
+          transform: translateY(-50%);
+          left: var(--hero-left-edge);
+          max-width: 620px;
+          z-index: 20;
+          pointer-events: auto;
+          opacity: var(--hero-headline-opacity, 1);
+        }
+        @media (max-width: 767px) {
+          .hero-headline-block {
+            top: 45%;
+            max-width: calc(100vw - 40px);
+          }
+        }
+
+        /* Soft radial fade behind headline block for contour line readability */
+        .hero-text-glow {
+          position: absolute;
+          inset: -36px -60px -40px -40px;
+          background: radial-gradient(ellipse at 35% 45%, rgba(250, 250, 252, 0.88) 0%, rgba(250, 250, 252, 0.76) 45%, rgba(250, 250, 252, 0) 100%);
+          filter: blur(48px);
+          pointer-events: none;
+          z-index: -1;
+        }
+
+        .hero-headline-text {
+          margin: 0;
+          font-family: inherit;
+          font-size: clamp(44px, 5.2vw, 76px);
+          font-weight: 700;
+          line-height: 1.05;
+          letter-spacing: -0.035em;
+          color: #0A0A0A;
+          text-wrap: balance;
+        }
+        @media (max-width: 767px) {
+          .hero-headline-text {
+            font-size: 40px;
+            line-height: 1.1;
+          }
+        }
+
+        .hero-ready-word {
+          display: inline-block;
+        }
+
+        .hero-supporting-text {
+          margin: 28px 0 0 0;
+          font-size: 17px;
+          font-weight: 400;
+          line-height: 1.6;
+          color: #262626;
+          max-width: 520px;
+          text-wrap: pretty;
+          will-change: opacity;
+          opacity: var(--hero-aux-opacity, 1);
+          transition: opacity 0.15s ease;
+        }
+        @media (max-width: 767px) {
+          .hero-supporting-text {
+            font-size: 15px;
+            max-width: 300px;
+            margin-top: 20px;
+          }
+        }
+
+        /* Bottom-Center Scroll Indicator */
+        .hero-scroll-indicator {
+          position: absolute;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          color: #262626;
+          opacity: 0.6;
+          font-size: 11px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          pointer-events: none;
+          z-index: 20;
+          will-change: opacity;
+          opacity: var(--hero-aux-opacity, 1);
+          transition: opacity 0.15s ease;
+        }
 
         /* Smooth Bottom-to-Top Floating Animation for the 3-Column Text */
         [data-slipstream-hero] [data-gp-content]{
@@ -135,6 +339,7 @@ export default function Hero({
           font-family: inherit;
           background: transparent !important;
           overflow: hidden;
+          z-index: 40 !important;
         }
 
         [data-slipstream-copy]{
@@ -240,11 +445,29 @@ export default function Hero({
         scrollLength={scrollLength}
         fontWeight={800}
         fontFamily='"Plus Jakarta Sans", -apple-system, sans-serif'
-        enterLabel="Step inside"
+        enterLabel=""
+        onProgress={(p) => {
+          const hero = heroContainerRef.current;
+          if (!hero) return;
+
+          // Drive independent vector-sharp READY zoom
+          readyWordRef.current?.updateProgress(p);
+
+          // Surrounding headline fades out early (0.06 to 0.18) so no ghost letters remain
+          const headlineOpacity = Math.max(0, 1 - Math.min(1, Math.max(0, (p - 0.06) / 0.12)));
+          // Auxiliary items (logo, subtitle, scroll prompt) fade out quickly
+          const auxOpacity = Math.max(0, 1 - Math.min(1, Math.max(0, p / 0.10)));
+          // Background portal stays 0 (pure white background) until letter E covers the screen (0.28 to 0.35)
+          const portalOpacity = Math.min(1, Math.max(0, (p - 0.28) / 0.07));
+
+          hero.style.setProperty("--hero-headline-opacity", headlineOpacity.toFixed(4));
+          hero.style.setProperty("--hero-aux-opacity", auxOpacity.toFixed(4));
+          hero.style.setProperty("--hero-portal-opacity", portalOpacity.toFixed(4));
+        }}
         style={{
           "--gp-paper": "transparent",
           "--gp-ink": "#0A0A0A",
-          "--gp-field": "#0B134A",
+          "--gp-field": "#2547FF",
           "--gp-foreground": "#FFFFFF",
           fontFamily: '"Plus Jakarta Sans", -apple-system, sans-serif',
         }}
@@ -255,23 +478,65 @@ export default function Hero({
               position: "absolute",
               inset: 0,
               transform: "scale(var(--gp-field-scale,1))",
-              background:
-                "radial-gradient(ellipse at 50% 40%, #2547FF 0%, #1632D6 48%, #0B134A 100%)",
+              background: "#2547FF",
             }}
           />
         }
         front={
-          <>
-            <div data-sublime-header>
-              <span data-sublime-logo>
-                ecell<span className="text-[#2547FF]">.</span>
-              </span>
-              <span data-sublime-category>PSG College of Technology</span>
+          <div className="absolute inset-0 pointer-events-none select-text">
+            {/* Top-Left: Logo & PSG Tech Club Name */}
+            <a
+              href="#home"
+              className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer"
+              aria-label="PSG Tech E-Cell Home"
+            >
+              {/* Soft Radial Fade for Readability over Topography Lines */}
+              <div className="hero-brand-glow" aria-hidden="true" />
+
+              <div className="hero-logo-box">
+                <img
+                  src="/images/ecell-logo.png"
+                  alt="PSG Tech E-Cell Logo"
+                  className="hero-logo-img"
+                />
+              </div>
+              <div className="hero-brand-text">
+                <span className="hero-logo-text">
+                  E-Cell
+                </span>
+                <span className="hero-college-text">
+                  PSG College of Technology
+                </span>
+              </div>
+            </a>
+
+            {/* Center-Left: Headline & Supporting Text Block at ~55% height */}
+            <div ref={headlineRef} className="hero-headline-block">
+              {/* Soft Radial Fade for Readability over Topography Lines */}
+              <div className="hero-text-glow" aria-hidden="true" />
+
+              {/* Main Headline */}
+              <h1 className="hero-headline-text">
+                <span>Build before</span>
+                <br />
+                <span>you&apos;re </span>
+                <ReadyWord ref={readyWordRef} word={word} focusChar={focusChar} />
+                <span className="text-[#2547FF]">.</span>
+              </h1>
+
+              {/* Supporting Text */}
+              <p className="hero-supporting-text">
+                A place to start, learn, and build. Turn your ideas into ventures and
+                your ventures into impact.
+              </p>
             </div>
-            <p data-sublime-eyebrow>Ideas are just the beginning.</p>
-            <p data-sublime-support>A space to ideate, collaborate, and build.</p>
-            <span data-sublime-scroll>Scroll for a closer look ↓</span>
-          </>
+
+            {/* Bottom-Center: Scroll to Explore Indicator */}
+            <div className="hero-scroll-indicator">
+              <span>SCROLL TO EXPLORE</span>
+              <span className="text-[12px] animate-bounce">↓</span>
+            </div>
+          </div>
         }
       >
         {/* Floating 3-Column Content Rising from Bottom-to-Top on Scroll */}
