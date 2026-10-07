@@ -1,1 +1,1 @@
-// src/schemas/contactInfo.ts
+export * from "./collaboration";

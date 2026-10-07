@@ -1,1 +1,1 @@
-// src/components/collaboration/AdditionalDetails.tsx
+export { CommercialTimeline as default } from "@/components/collaboration/CommercialTimeline";
