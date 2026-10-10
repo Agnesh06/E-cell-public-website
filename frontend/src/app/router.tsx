@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'contact',
-        element: lazyRoute(() => import('@/features/contact/ContactPage')),
+        element: lazyRoute(() => import('@/features/contact/Collaboration')),
       },
       {
         path: '*',

@@ -270,6 +270,7 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
         .menu-wrapper .sm-scope .sm-panel-item {
           box-sizing: border-box !important;
           max-width: 100% !important;
+          font-family: var(--font-display) !important;
           font-size: clamp(2rem, min(3.6vw, 7.5vh), 3.75rem) !important;
           line-height: 1.05 !important;
           white-space: normal !important;

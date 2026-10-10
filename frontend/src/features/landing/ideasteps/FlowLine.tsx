@@ -33,7 +33,7 @@ export const FlowLine: React.FC<FlowLineProps> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
-          className="opacity-20"
+          className="opacity-70"
         />
 
         <mask id="flow-stroke-mask">

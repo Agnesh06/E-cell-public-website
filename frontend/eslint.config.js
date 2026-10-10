@@ -31,6 +31,7 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'off',
       'prefer-const': 'off',
       'react-refresh/only-export-components': 'off',
+      'react-hooks/refs': 'off',
     },
   },
 ])

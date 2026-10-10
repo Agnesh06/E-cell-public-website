@@ -1,12 +1,19 @@
 import React, { useEffect, useRef } from 'react'
 
-interface ProfileCardProps {
+export interface ProfileSocialItem {
+  platform: 'linkedin' | 'github' | 'instagram' | 'email' | 'website' | string
+  url: string
+}
+
+export interface ProfileCardProps {
   name: string
   title: string
   subtitle?: string
   avatarUrl: string
   enableTilt?: boolean
   className?: string
+  socialLinks?: Record<string, string | undefined>
+  children?: React.ReactNode
 }
 
 const clamp = (v: number, min = 0, max = 100) => Math.min(Math.max(v, min), max)
@@ -18,6 +25,7 @@ export default function ProfileCard({
   avatarUrl,
   enableTilt = true,
   className = '',
+  children,
 }: ProfileCardProps) {
   const shellRef = useRef<HTMLDivElement>(null)
 
@@ -90,18 +98,19 @@ export default function ProfileCard({
             className="h-full w-full object-cover"
           />
         </div>
-        <div className="relative mt-5 text-center">
-          <h3 className="text-[clamp(1.35rem,2.6vw,1.8rem)] font-medium leading-tight text-[var(--color-ink)]">
+        <div className="relative mt-4 text-center">
+          <h3 className="text-[clamp(1.15rem,2vw,1.45rem)] font-medium leading-tight text-[var(--color-ink)]">
             {name}
           </h3>
-          <p className="mt-1 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-blue)]">
+          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-blue)]">
             {title}
           </p>
           {subtitle && (
-            <p className="mx-auto mt-2 max-w-[28ch] text-sm leading-snug text-[var(--color-ink-muted)]">
+            <p className="mx-auto mt-1.5 max-w-[28ch] text-xs leading-relaxed text-[var(--color-ink-muted)]">
               {subtitle}
             </p>
           )}
+          {children}
         </div>
       </div>
     </div>

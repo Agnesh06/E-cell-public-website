@@ -1,4 +1,5 @@
-@import '@fontsource-variable/instrument-sans';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/plus-jakarta-sans';
 @import '@fontsource-variable/geist-mono';
 @import 'tailwindcss';
 @import "tw-animate-css";
@@ -19,23 +20,35 @@
   --color-ink-muted: rgb(11 11 15 / 0.62);
   /* Micro-labels, indicator inactive */
   --color-ink-faint: rgb(11 11 15 / 0.42);
-  /* TODO: replace with the reference site's primary blue. */
-  --color-blue: #2340FF;
-  /* TODO: replace with the reference site's blue ghost color. */
-  --color-blue-ghost: #E6EBFF;
+  /* Primary & Accent Blues matching reference site */
+  --color-primary: #2547FF;
+  --color-primary-foreground: #FFFFFF;
+  --color-blue: #2547FF;
+  --color-blue-ghost: #EDEFFC;
+  --color-soft-blue: #EDEFFC;
+  --color-secondary: #EDEFFC;
+  --color-secondary-foreground: #2547FF;
+  --color-muted: #F1F1F4;
+  --color-muted-foreground: #71717A;
+  --color-accent: #F4F4F6;
+  --color-accent-foreground: #0A0A0A;
+  --color-border: #E5E5E7;
+  --color-input: #E5E5E7;
+  --color-ring: #2547FF;
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #FFFFFF;
   /* Dot grid token */
   --color-dot: #CBD5FF;
-  /* TODO: replace with the reference site's hairline color. */
+  /* Hairline color */
   --color-hairline: #E6E8F0;
   /* Form errors */
   --color-error: #C62828;
 
-  /* Fonts from DESIGN.md section 5 */
-  /* TODO: confirm the final sans typeface with the reference site. */
-  --font-sans: 'Instrument Sans Variable', sans-serif;
-  /* TODO: confirm the final mono typeface with the reference site. */
-  --font-mono: 'Geist Mono Variable', monospace;
-  --font-heading: var(--font-sans);
+  /* Fonts matching reference site (http://localhost:5174) */
+  --font-sans: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: var(--font-display);
+  --font-mono: 'Geist Mono Variable', 'Geist', ui-monospace, monospace;
 
   /* Type scale from DESIGN.md section 5 */
   --font-size-display: clamp(3rem, 7vw, 6.5rem);
@@ -76,25 +89,26 @@
 :root {
   --background: #FAFAFD;
   --foreground: #0B0B0F;
-  --card: #FAFAFD;
+  --card: #FFFFFF;
   --card-foreground: #0B0B0F;
-  --popover: #FAFAFD;
+  --popover: #FFFFFF;
   --popover-foreground: #0B0B0F;
-  --primary: #2340FF;
-  --primary-foreground: #FAFAFD;
-  --secondary: #E6EBFF;
-  --secondary-foreground: #0B0B0F;
+  --primary: #2547FF;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EDEFFC;
+  --secondary-foreground: #2547FF;
   --color-dot: #CBD5FF;
-  --color-blue: #2340FF;
-  --color-blue-ghost: #E6EBFF;
-  --muted: #E6EBFF;
-  --muted-foreground: #0B0B0F;
-  --accent: #E6EBFF;
-  --accent-foreground: #0B0B0F;
-  --destructive: #C62828;
-  --border: #E6E8F0;
-  --input: #E6E8F0;
-  --ring: #2340FF;
+  --color-blue: #2547FF;
+  --color-blue-ghost: #EDEFFC;
+  --soft-blue: #EDEFFC;
+  --muted: #F1F1F4;
+  --muted-foreground: #71717A;
+  --accent: #F4F4F6;
+  --accent-foreground: #0A0A0A;
+  --destructive: #EF4444;
+  --border: #E5E5E7;
+  --input: #E5E5E7;
+  --ring: #2547FF;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -103,13 +117,13 @@
   --radius: 0.625rem;
   --sidebar: #FAFAFD;
   --sidebar-foreground: #0B0B0F;
-  --sidebar-primary: #2340FF;
-  --sidebar-primary-foreground: #FAFAFD;
-  --sidebar-accent: #E6EBFF;
+  --sidebar-primary: #2547FF;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EDEFFC;
   --sidebar-accent-foreground: #0B0B0F;
-  --sidebar-border: #E6E8F0;
-  --sidebar-ring: #2340FF;
-  font-family: 'Instrument Sans Variable', sans-serif;
+  --sidebar-border: #E5E5E7;
+  --sidebar-ring: #2547FF;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -292,10 +306,19 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--letter-spacing-section);
 }
 
-/* Visible focus ring (2px blue, 2px offset) */
+/* Visible focus ring for accessible buttons/links */
 :focus-visible {
   outline: 2px solid var(--color-blue);
   outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
 }
 
 /* Small reusable utility classes */

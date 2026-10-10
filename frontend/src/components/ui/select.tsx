@@ -3,10 +3,91 @@ import { cn } from "cn"
 import { Select as SelectPrimitive } from "radix-ui"
 import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
 
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+export interface SelectProps extends Omit<React.ComponentProps<typeof SelectPrimitive.Root>, "onChange"> {
+  id?: string;
+  placeholder?: string;
+  options?: SelectOption[];
+  error?: string;
+  className?: string;
+  onChange?: (value: string) => void;
+}
+
 function Select({
+  id,
+  placeholder,
+  options,
+  error,
+  className,
+  value,
+  defaultValue,
+  onValueChange,
+  onChange,
+  disabled,
+  children,
   ...props
-}: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+}: SelectProps) {
+  if (options) {
+    return (
+      <div className="w-full space-y-1">
+        <SelectPrimitive.Root
+          data-slot="select"
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={(val) => {
+            onChange?.(val);
+            onValueChange?.(val);
+          }}
+          disabled={disabled}
+          {...props}
+        >
+          <SelectTrigger
+            id={id}
+            className={cn(
+              "flex h-11 w-full items-center justify-between rounded-xl border bg-surface px-3.5 pr-3 py-2 text-sm text-foreground transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none",
+              "border-border focus:border-primary focus:ring-2 focus:ring-primary/15 shadow-xs cursor-pointer",
+              error ? "border-destructive focus:border-primary focus:ring-2 focus:ring-primary/15" : "",
+              className
+            )}
+          >
+            <SelectValue placeholder={placeholder} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectPrimitive.Root>
+        {error && (
+          <p className="mt-1 text-xs text-destructive font-medium animate-fadeIn">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      value={value}
+      defaultValue={defaultValue}
+      onValueChange={(val) => {
+        onChange?.(val);
+        onValueChange?.(val);
+      }}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </SelectPrimitive.Root>
+  );
 }
 
 function SelectGroup({
