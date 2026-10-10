@@ -11,6 +11,11 @@ export interface StepTextProps {
   className?: string
 }
 
+const haloStyle: React.CSSProperties = {
+  textShadow:
+    '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg), 0 0 20px var(--color-bg)',
+}
+
 export const StepText: React.FC<StepTextProps> = ({
   eyebrow,
   headlineTop,
@@ -22,18 +27,27 @@ export const StepText: React.FC<StepTextProps> = ({
   return (
     <div className={`step-text flex flex-col items-start ${className}`}>
       {/* Eyebrow */}
-      <Eyebrow className="mb-4 text-xs md:text-sm font-mono tracking-[0.22em] text-[var(--color-blue)] uppercase">
+      <Eyebrow
+        className="mb-4 text-[clamp(0.7rem,1.5vh,0.875rem)] font-mono tracking-[0.22em] text-[var(--color-blue)] uppercase"
+        style={haloStyle}
+      >
         {eyebrow}
       </Eyebrow>
 
-      {/* Two-line headline */}
-      <h3 className="text-[clamp(2.5rem,5vw,4.5rem)] font-light tracking-[-0.03em] leading-[0.98] text-[var(--color-ink)] mb-6">
+      {/* Two-line headline — weight 400 */}
+      <h3
+        className="text-[clamp(2.25rem,min(5.5vw,9vh),5rem)] tracking-[-0.03em] leading-[0.98] text-[var(--color-ink)] mb-6"
+        style={{ fontWeight: 400, ...haloStyle }}
+      >
         <span className="block">{headlineTop}</span>
         <span className="block text-[var(--color-blue)]">{headlineAccent}</span>
       </h3>
 
-      {/* Body */}
-      <p className="text-base md:text-lg text-[var(--color-ink-muted)] max-w-[46ch] leading-relaxed mb-6 md:mb-8 font-normal">
+      {/* Body — weight 500, full ink, +10% size */}
+      <p
+        className="text-[clamp(0.99rem,2.4vh,1.24rem)] text-[var(--color-ink)] max-w-[46ch] leading-relaxed mb-6 md:mb-8"
+        style={{ fontWeight: 500, ...haloStyle }}
+      >
         {body}
       </p>
 
@@ -43,7 +57,8 @@ export const StepText: React.FC<StepTextProps> = ({
           {pills.map((pill, i) => (
             <Pill
               key={i}
-              className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.16em] bg-white/50 border-[var(--color-hairline)] text-[var(--color-ink-muted)]"
+              className="text-[clamp(0.6rem,1.2vh,0.75rem)] font-mono uppercase tracking-[0.16em] bg-white/50 border-[var(--color-hairline)] text-[var(--color-ink-muted)]"
+              style={haloStyle}
             >
               <span className="opacity-40 mr-1">-</span>
               {pill}
@@ -56,4 +71,3 @@ export const StepText: React.FC<StepTextProps> = ({
 }
 
 export default StepText
-

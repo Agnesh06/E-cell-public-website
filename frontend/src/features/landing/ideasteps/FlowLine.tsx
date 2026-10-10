@@ -33,18 +33,42 @@ export const FlowLine: React.FC<FlowLineProps> = ({
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
-          className="opacity-75"
+          className="opacity-20"
         />
 
-        {/* Drawn path: revealed dynamically by strokeDashoffset */}
+        <mask id="flow-stroke-mask">
+          <path
+            ref={drawnPathRef}
+            d={FLOW_PATH}
+            stroke="white"
+            strokeWidth="13"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </mask>
+
+        {/* Drawn blue path */}
         <path
-          ref={drawnPathRef}
           d={FLOW_PATH}
           stroke="var(--color-blue)"
-          strokeWidth="11"
+          strokeWidth="13"
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
+          mask="url(#flow-stroke-mask)"
+        />
+
+        {/* White dashed centre line inside blue stroke revealed in sync */}
+        <path
+          d={FLOW_PATH}
+          stroke="rgba(255, 255, 255, 0.9)"
+          strokeWidth="2"
+          strokeDasharray="14 12"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+          mask="url(#flow-stroke-mask)"
         />
       </svg>
     </div>

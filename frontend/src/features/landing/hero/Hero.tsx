@@ -45,7 +45,7 @@ export function Hero() {
           y: 0,
         })
         gsap.set('.hero-title-line', { y: '0%' })
-        if (ghostPath) gsap.set(ghostPath, { opacity: 1 })
+        if (ghostPath) gsap.set(ghostPath, { opacity: 0.2 })
         if (drawnPath) gsap.set(drawnPath, { strokeDashoffset: 0 })
         return
       }
@@ -58,7 +58,7 @@ export function Hero() {
         tl.fromTo(
           ghostPath,
           { opacity: 0 },
-          { opacity: 1, duration: 1.6, ease: 'power2.out' },
+          { opacity: 0.2, duration: 1.6, ease: 'power2.out' },
           0
         )
       }
@@ -116,19 +116,19 @@ export function Hero() {
 
           <h1
             id="landing-hero-title"
-            className="font-light tracking-[-0.03em] leading-[0.95] text-[clamp(3rem,7vw,6.5rem)] text-[var(--color-ink)] mb-6 md:mb-8"
+            className="font-medium tracking-[-0.03em] leading-[0.95] text-[clamp(3rem,7vw,6.5rem)] text-[var(--color-ink)] mb-6 md:mb-8"
           >
-            <span className="overflow-hidden block">
+            <span className="overflow-hidden block pb-2 -mb-2">
               <span className="hero-title-line block">Ideas are just</span>
             </span>{' '}
-            <span className="overflow-hidden block">
+            <span className="overflow-hidden block pb-4 -mb-4">
               <span className="hero-title-line block text-[var(--color-blue)]">
                 the beginning.
               </span>
             </span>
           </h1>
 
-          <p className="hero-paragraph text-base md:text-lg text-[var(--color-ink-muted)] max-w-[52ch] leading-relaxed mb-8 md:mb-10">
+          <p className="hero-paragraph text-base md:text-lg font-semibold text-[var(--color-ink-muted)] max-w-[52ch] leading-relaxed mb-8 md:mb-10">
             A space to ideate, collaborate, and build. Turn your curiosity into ideas,
             your ideas into solutions, and your solutions into something that matters.
           </p>

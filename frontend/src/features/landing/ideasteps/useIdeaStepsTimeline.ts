@@ -183,7 +183,7 @@ export function useIdeaStepsTimeline({
         start: 'top top',
         end: () => `+=${window.innerHeight * 5}`,
         pin: true,
-        scrub: 0.6,
+        scrub: 1.2,
         invalidateOnRefresh: true,
         animation: tl,
         onUpdate: (self) => {
@@ -221,6 +221,41 @@ export function useIdeaStepsTimeline({
           const len = drawnPathRef.current.getTotalLength() || 3000
           drawnPathRef.current.style.strokeDasharray = `${len}`
         }
+
+        // Safety net: measure blocks against available height and scale if needed
+        stepRefs.current.forEach((stepEl) => {
+          if (!stepEl) return
+          const container = stepEl.querySelector('.step-content-block') as HTMLElement
+          const textContainer = stepEl.querySelector('.step-text-container') as HTMLElement
+          const cardsContainer = stepEl.querySelector('.step-cards-container') as HTMLElement
+          if (!container) return
+          
+          const availableHeight = container.clientHeight
+          
+          const resetAndMeasure = (el: HTMLElement) => {
+            el.style.transform = 'none'
+            return el.scrollHeight
+          }
+
+          if (textContainer) {
+            const h = resetAndMeasure(textContainer)
+            if (h > availableHeight && availableHeight > 0) {
+              const scale = Math.max(0.75, availableHeight / h)
+              textContainer.style.transform = `scale(${scale})`
+              textContainer.style.transformOrigin = 'left center'
+            }
+          }
+          
+          if (cardsContainer) {
+            const h = resetAndMeasure(cardsContainer)
+            if (h > availableHeight && availableHeight > 0) {
+              const scale = Math.max(0.75, availableHeight / h)
+              cardsContainer.style.transform = `scale(${scale})`
+              cardsContainer.style.transformOrigin = 'center center'
+            }
+          }
+        })
+
         ScrollTrigger.refresh()
       }
 

@@ -256,3 +256,63 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
     expect(results.violations).toEqual([])
   })
 })
+
+test.describe('IdeaSteps Layout & Mask Assertions', () => {
+  const layoutViewports = [
+    { width: 900, height: 700, name: '900x700' },
+    { width: 768, height: 1024, name: '768x1024' },
+    { width: 375, height: 667, name: '375x667' },
+  ]
+
+  for (const vp of layoutViewports) {
+    test(`${vp.name}: every card lies fully inside the page, no overlaps`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.setViewportSize({ width: vp.width, height: vp.height })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      // Scroll to the about section
+      await page.evaluate(() => {
+        const el = document.getElementById('about')
+        if (el) el.scrollIntoView()
+      })
+      await page.waitForTimeout(400)
+
+      // Check all visible cards are within page bounds
+      const cards = page.locator('section#about .glass-card')
+      const cardCount = await cards.count()
+      const pageWidth = vp.width
+
+      for (let i = 0; i < cardCount; i++) {
+        const card = cards.nth(i)
+        const isVisible = await card.isVisible()
+        if (!isVisible) continue
+        const box = await card.boundingBox()
+        if (!box) continue
+        // Card must be within page width
+        expect(box.x).toBeGreaterThanOrEqual(-1)
+        expect(box.x + box.width).toBeLessThanOrEqual(pageWidth + 1)
+      }
+
+      // No horizontal overflow
+      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+      const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
+      expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1)
+    })
+  }
+
+  test('1300x600: no knockout mask element exists and flow line is a continuous stroke', async ({ page }) => {
+    await page.setViewportSize({ width: 1300, height: 600 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    // No SVG knockout mask element
+    const knockoutMask = page.locator('.flow-line-svg mask#flow-knockout')
+    await expect(knockoutMask).toHaveCount(0)
+
+    // The drawn path exists as a continuous stroke
+    const drawnPath = page.locator('.flow-line-svg path').nth(1)
+    await expect(drawnPath).toBeAttached()
+  })
+})

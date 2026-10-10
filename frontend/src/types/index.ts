@@ -11,7 +11,7 @@ export type Project = {
   tags: string[]
   lead: string
   links: ProjectLink[]
-  image: string | null
+  image?: string
   featured: boolean
   order: number
 }
@@ -26,7 +26,8 @@ export type TeamMember = {
   name: string
   role: string
   department: string
-  photo: string | null
+  photo?: string | null
+  leadership?: 'director' | 'co-director'
   wing: Wing
   socials: {
     linkedin: string

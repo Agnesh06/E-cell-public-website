@@ -13,6 +13,11 @@ export interface StepProps {
   hideIndicator?: boolean
 }
 
+const haloStyle: React.CSSProperties = {
+  textShadow:
+    '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg)',
+}
+
 export const Step: React.FC<StepProps> = ({
   step,
   stepIndex,
@@ -25,13 +30,16 @@ export const Step: React.FC<StepProps> = ({
     <div
       id={`step-${step.id}`}
       data-step-index={stepIndex}
-      className={`step-stage relative min-h-[100svh] w-full flex flex-col justify-between py-16 md:py-20 lg:py-24 ${className}`}
+      className={`step-stage relative h-[100svh] w-full grid grid-rows-[104px_minmax(0,1fr)_auto] ${className}`}
     >
-      {/* Main 12-column grid layout for desktop */}
-      <div className="container-site relative z-10 my-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+      {/* Row 1: Header-safe top padding */}
+      <div className="pointer-events-none" aria-hidden="true" />
+
+      {/* Row 2: Content (1fr, min-height 0, centred) */}
+      <div className="container-site relative z-10 w-full h-full flex flex-col justify-center min-h-0">
+        <div className="step-content-block grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center h-full w-full">
           {/* Columns 1-5: Text block */}
-          <div className="lg:col-span-5 flex flex-col justify-center">
+          <div className="step-text-container lg:col-span-5 flex flex-col justify-center h-full">
             <StepText
               eyebrow={step.eyebrow}
               headlineTop={step.headlineTop}
@@ -45,14 +53,14 @@ export const Step: React.FC<StepProps> = ({
           <div className="hidden lg:block lg:col-span-1" aria-hidden="true" />
 
           {/* Columns 7-12: Cards */}
-          <div className="lg:col-span-6 flex justify-center lg:justify-end items-center">
+          <div className="step-cards-container lg:col-span-6 flex justify-center lg:justify-end items-center h-full">
             <StepCards layout={step.layout} cards={step.cards} />
           </div>
         </div>
       </div>
 
-      {/* Bottom bar: indicator on left, sideLabel, first microLabel on right */}
-      <div className="container-site relative z-10 w-full pt-8 flex items-end justify-between text-xs font-mono select-none">
+      {/* Row 3: Bottom bar */}
+      <div className="step-bottom-bar container-site relative z-10 w-full pb-8 pt-4 flex items-end justify-between text-xs font-mono select-none">
         {/* Bottom-left: indicator & sideLabel */}
         <div className="hidden lg:flex items-center gap-6">
           {!hideIndicator ? (
@@ -65,15 +73,21 @@ export const Step: React.FC<StepProps> = ({
             <div className="w-[140px] invisible" aria-hidden="true" />
           )}
           {step.sideLabel && (
-            <span className="text-[var(--color-ink-muted)] tracking-wider">
+            <span
+              className="text-[var(--color-ink-muted)] tracking-wider"
+              style={{ fontWeight: 500, ...haloStyle }}
+            >
               {step.sideLabel}
             </span>
           )}
         </div>
 
-        {/* Bottom-right: first micro-label in mono, subtle grey — decorative only */}
+        {/* Bottom-right: first micro-label in mono, subtle grey */}
         {step.microLabels[0] && (
-          <div className="ml-auto text-[#6E6E70] tracking-[0.2em] uppercase">
+          <div
+            className="ml-auto text-[#6E6E70] tracking-[0.2em] uppercase"
+            style={{ fontWeight: 500, ...haloStyle }}
+          >
             {step.microLabels[0]}
           </div>
         )}
@@ -83,4 +97,3 @@ export const Step: React.FC<StepProps> = ({
 }
 
 export default Step
-

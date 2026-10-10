@@ -35,7 +35,7 @@ export const PinnedIdeaSteps: React.FC = () => {
       {/* Animated glow blob */}
       <GlowBlob ref={glowRef} corner="bottom-left" />
 
-      {/* Decorative flow line */}
+      {/* Decorative flow line — z-0, renders below step content */}
       <FlowLine drawnPathRef={drawnPathRef} />
 
       {/* The five Step components stacked absolutely (inset 0) */}
@@ -63,7 +63,7 @@ export const PinnedIdeaSteps: React.FC = () => {
       })}
 
       {/* Shared bottom-left StepIndicator at the pinned stage level */}
-      <div className="container-site absolute bottom-16 md:bottom-20 lg:bottom-24 left-0 right-0 z-30 pointer-events-none select-none">
+      <div className="container-site absolute bottom-8 left-0 right-0 z-30 pointer-events-none select-none">
         <div className="hidden lg:flex items-center gap-6 pointer-events-auto">
           <StepIndicator
             count={ideas.length}
@@ -77,4 +77,3 @@ export const PinnedIdeaSteps: React.FC = () => {
 }
 
 export default PinnedIdeaSteps
-

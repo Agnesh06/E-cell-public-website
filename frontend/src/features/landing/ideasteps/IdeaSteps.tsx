@@ -7,14 +7,15 @@ export const IdeaSteps: React.FC = () => {
   const [isPinnedMode, setIsPinnedMode] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false
     const mqWidth = window.matchMedia('(min-width: 1024px)')
+    const mqHeight = window.matchMedia('(min-height: 540px)')
     const mqMotion = window.matchMedia('(prefers-reduced-motion: no-preference)')
-    return mqWidth.matches && mqMotion.matches
+    return mqWidth.matches && mqHeight.matches && mqMotion.matches
   })
 
   useEffect(() => {
     const mm = gsap.matchMedia()
 
-    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+    mm.add('(min-width: 1024px) and (min-height: 540px) and (prefers-reduced-motion: no-preference)', () => {
       setIsPinnedMode(true)
       return () => {
         setIsPinnedMode(false)

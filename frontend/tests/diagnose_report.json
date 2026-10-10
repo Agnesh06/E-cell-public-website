@@ -1,0 +1,347 @@
+{
+  "viewports": {},
+  "heroLeak": {
+    "heroSection": {
+      "tag": "SECTION",
+      "classes": "landing-hero relative min-h-[100svh] w-full flex flex-col justify-between overflow-hidden bg-[var(--color-bg)] pt-28 pb-4 md:pt-36 md:pb-6",
+      "rect": {
+        "top": 0,
+        "left": 0,
+        "width": 1300,
+        "height": 603.375,
+        "bottom": 603.375,
+        "right": 1300
+      },
+      "display": "flex",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden",
+      "position": "relative",
+      "zIndex": "auto",
+      "stroke": null
+    },
+    "heroLineContainer": {
+      "tag": "DIV",
+      "classes": "hero-line-container absolute inset-0 pointer-events-none overflow-hidden z-0",
+      "rect": {
+        "top": 0,
+        "left": 0,
+        "width": 1300,
+        "height": 603.375,
+        "bottom": 603.375,
+        "right": 1300
+      },
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden",
+      "position": "absolute",
+      "zIndex": "0",
+      "stroke": null
+    },
+    "heroLineSvg": {
+      "tag": "svg",
+      "classes": {},
+      "rect": {
+        "top": 0,
+        "left": 416,
+        "width": 884,
+        "height": 603.375,
+        "bottom": 603.375,
+        "right": 1300
+      },
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "0.85",
+      "overflow": "hidden",
+      "position": "absolute",
+      "zIndex": "auto",
+      "stroke": null
+    },
+    "heroLineDrawn": {
+      "tag": "path",
+      "classes": {},
+      "rect": {
+        "top": 13.159722328186035,
+        "left": 600.1666870117188,
+        "width": 564.6316528320312,
+        "height": 559.031982421875,
+        "bottom": 572.191704750061,
+        "right": 1164.79833984375
+      },
+      "display": "inline",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "visible",
+      "position": "static",
+      "zIndex": "auto",
+      "stroke": "var(--color-blue)"
+    },
+    "heroLineGhost": {
+      "tag": "path",
+      "classes": {},
+      "rect": {
+        "top": 13.159722328186035,
+        "left": 600.1666870117188,
+        "width": 564.6316528320312,
+        "height": 559.031982421875,
+        "bottom": 572.191704750061,
+        "right": 1164.79833984375
+      },
+      "display": "inline",
+      "visibility": "visible",
+      "opacity": "0.9975",
+      "overflow": "visible",
+      "position": "static",
+      "zIndex": "auto",
+      "stroke": "var(--color-blue-ghost)"
+    },
+    "pinnedStage": {
+      "tag": "DIV",
+      "classes": "pinned-stage relative w-full h-[100svh] overflow-hidden bg-[var(--color-bg)]",
+      "rect": {
+        "top": 603.375,
+        "left": 0,
+        "width": 1300,
+        "height": 600,
+        "bottom": 1203.375,
+        "right": 1300
+      },
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden",
+      "position": "relative",
+      "zIndex": "auto",
+      "stroke": null
+    },
+    "flowLineContainer": {
+      "tag": "DIV",
+      "classes": "flow-line-container absolute inset-0 pointer-events-none overflow-hidden z-0 select-none ",
+      "rect": {
+        "top": 603.375,
+        "left": 0,
+        "width": 1300,
+        "height": 600,
+        "bottom": 1203.375,
+        "right": 1300
+      },
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden",
+      "position": "absolute",
+      "zIndex": "0",
+      "stroke": null
+    },
+    "flowLineSvg": {
+      "tag": "svg",
+      "classes": {},
+      "rect": {
+        "top": 603.375,
+        "left": 0,
+        "width": 1300,
+        "height": 600,
+        "bottom": 1203.375,
+        "right": 1300
+      },
+      "display": "block",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "hidden",
+      "position": "static",
+      "zIndex": "auto",
+      "stroke": null
+    },
+    "ghostPath": {
+      "tag": "path",
+      "classes": {},
+      "rect": {
+        "top": 585.3194580078125,
+        "left": 270.8333435058594,
+        "width": 830.3406982421875,
+        "height": 822.1058349609375,
+        "bottom": 1407.42529296875,
+        "right": 1101.1740417480469
+      },
+      "display": "inline",
+      "visibility": "visible",
+      "opacity": "0.75",
+      "overflow": "visible",
+      "position": "static",
+      "zIndex": "auto",
+      "stroke": "var(--color-blue-ghost)"
+    },
+    "drawnPath": {
+      "tag": "path",
+      "classes": {},
+      "rect": {
+        "top": 585.3194580078125,
+        "left": 270.8333435058594,
+        "width": 830.3406982421875,
+        "height": 822.1058349609375,
+        "bottom": 1407.42529296875,
+        "right": 1101.1740417480469
+      },
+      "display": "inline",
+      "visibility": "visible",
+      "opacity": "1",
+      "overflow": "visible",
+      "position": "static",
+      "zIndex": "auto",
+      "stroke": "var(--color-blue)"
+    }
+  },
+  "measurements1300x600": {
+    "step1": {
+      "viewportHeight": 600,
+      "headerBottom": 84,
+      "bottomBarTop": 480.375,
+      "bottomBarHeight": 119.625,
+      "availableHeight": 396.375,
+      "textBlockHeight": 391.625,
+      "cardsBlockHeight": 215,
+      "textBlockRect": {
+        "x": 50,
+        "y": 96.375,
+        "width": 481.328125,
+        "height": 391.625,
+        "top": 96.375,
+        "right": 531.328125,
+        "bottom": 488,
+        "left": 50
+      },
+      "cardsBlockRect": {
+        "x": 689.984375,
+        "y": 184.6875,
+        "width": 560,
+        "height": 215,
+        "top": 184.6875,
+        "right": 1249.984375,
+        "bottom": 399.6875,
+        "left": 689.984375
+      },
+      "cardsBottomExceeds": -200.3125
+    },
+    "step2": {
+      "viewportHeight": 600,
+      "headerBottom": 84,
+      "bottomBarTop": 480.375,
+      "bottomBarHeight": 119.625,
+      "availableHeight": 396.375,
+      "textBlockHeight": 303.875,
+      "cardsBlockHeight": 472,
+      "textBlockRect": {
+        "x": 50,
+        "y": 180.4375,
+        "width": 481.328125,
+        "height": 303.875,
+        "top": 180.4375,
+        "right": 531.328125,
+        "bottom": 484.3125,
+        "left": 50
+      },
+      "cardsBlockRect": {
+        "x": 709.984375,
+        "y": 96.375,
+        "width": 540,
+        "height": 472,
+        "top": 96.375,
+        "right": 1249.984375,
+        "bottom": 568.375,
+        "left": 709.984375
+      },
+      "cardsBottomExceeds": -31.625
+    },
+    "step3": {
+      "viewportHeight": 600,
+      "headerBottom": 84,
+      "bottomBarTop": 480.375,
+      "bottomBarHeight": 119.625,
+      "availableHeight": 396.375,
+      "textBlockHeight": 274.625,
+      "cardsBlockHeight": 524,
+      "textBlockRect": {
+        "x": 50,
+        "y": 221.0625,
+        "width": 481.328125,
+        "height": 274.625,
+        "top": 221.0625,
+        "right": 531.328125,
+        "bottom": 495.6875,
+        "left": 50
+      },
+      "cardsBlockRect": {
+        "x": 709.984375,
+        "y": 96.375,
+        "width": 540,
+        "height": 524,
+        "top": 96.375,
+        "right": 1249.984375,
+        "bottom": 620.375,
+        "left": 709.984375
+      },
+      "cardsBottomExceeds": 20.375
+    },
+    "step4": {
+      "viewportHeight": 600,
+      "headerBottom": 84,
+      "bottomBarTop": 480.375,
+      "bottomBarHeight": 119.625,
+      "availableHeight": 396.375,
+      "textBlockHeight": 274.625,
+      "cardsBlockHeight": 526,
+      "textBlockRect": {
+        "x": 50,
+        "y": 222.0625,
+        "width": 481.328125,
+        "height": 274.625,
+        "top": 222.0625,
+        "right": 531.328125,
+        "bottom": 496.6875,
+        "left": 50
+      },
+      "cardsBlockRect": {
+        "x": 709.984375,
+        "y": 96.375,
+        "width": 540,
+        "height": 526,
+        "top": 96.375,
+        "right": 1249.984375,
+        "bottom": 622.375,
+        "left": 709.984375
+      },
+      "cardsBottomExceeds": 22.375
+    },
+    "step5": {
+      "viewportHeight": 600,
+      "headerBottom": 84,
+      "bottomBarTop": 480.375,
+      "bottomBarHeight": 119.625,
+      "availableHeight": 396.375,
+      "textBlockHeight": 274.625,
+      "cardsBlockHeight": 364.5,
+      "textBlockRect": {
+        "x": 50,
+        "y": 141.3125,
+        "width": 481.328125,
+        "height": 274.625,
+        "top": 141.3125,
+        "right": 531.328125,
+        "bottom": 415.9375,
+        "left": 50
+      },
+      "cardsBlockRect": {
+        "x": 689.984375,
+        "y": 96.375,
+        "width": 560,
+        "height": 364.5,
+        "top": 96.375,
+        "right": 1249.984375,
+        "bottom": 460.875,
+        "left": 689.984375
+      },
+      "cardsBottomExceeds": -139.125
+    }
+  }
+}

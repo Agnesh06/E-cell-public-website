@@ -372,3 +372,58 @@ h1, h2, h3, h4, h5, h6 {
     scroll-behavior: auto !important;
   }
 }
+
+/* ── IdeaSteps static (mobile) layout ────────────────────────────────────── */
+
+/* Desktop/tablet static steps: keep full-viewport height */
+.static-idea-steps .step-stage {
+  height: auto;
+  min-height: 100svh;
+}
+
+/* Mobile (<1024px): steps grow with content */
+@media (max-width: 1023px) {
+  .static-idea-steps .step-stage {
+    height: auto;
+    min-height: 0;
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+  }
+
+  .static-idea-steps .step-text-container,
+  .static-idea-steps .step-cards-container {
+    height: auto;
+    overflow: visible;
+  }
+
+  .static-idea-steps .step-content-block {
+    height: auto;
+    align-items: flex-start;
+  }
+
+  .static-idea-steps .step-bottom-bar {
+    position: relative;
+    padding-top: 1.5rem;
+  }
+}
+
+/* Step 5 grid2x2 responsive columns */
+@media (max-width: 639px) {
+  .static-idea-steps .step-cards {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .static-idea-steps .step-cards {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── Header scroll: bg at 85% + backdrop blur ────────────────────────────── */
+.site-header[data-scrolled='true'] {
+  background-color: rgb(250 250 253 / 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 200ms ease, backdrop-filter 200ms ease;
+}

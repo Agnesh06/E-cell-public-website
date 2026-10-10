@@ -162,6 +162,8 @@ import * as fs from 'fs'
 
 const screenshotViewports = [
   { name: '1280x720', width: 1280, height: 720 },
+  { name: '1300x600', width: 1300, height: 600 },
+  { name: '900x700', width: 900, height: 700 },
   { name: '375x667', width: 375, height: 667 },
 ]
 
@@ -172,7 +174,7 @@ test.describe('IdeaSteps Screenshots', () => {
     for (const stepId of stepIds) {
       test(`screenshot: ${stepId} at ${vp.name}`, async ({ page }, testInfo) => {
         // Only run on specific projects to avoid duplicates
-        const targetProject = vp.width >= 1280 ? 'desktop' : 'mobile'
+        const targetProject = vp.width >= 1024 ? 'desktop' : 'mobile'
         if (testInfo.project.name !== targetProject) {
           test.skip()
           return

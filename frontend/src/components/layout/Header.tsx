@@ -24,6 +24,16 @@ export function Header() {
     const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let lastScrollY = window.scrollY
 
+    const updateScrolled = () => {
+      if (headerRef.current) {
+        headerRef.current.setAttribute(
+          'data-scrolled',
+          window.scrollY > 8 ? 'true' : 'false',
+        )
+      }
+    }
+    updateScrolled()
+
     const handleVisibility = (currentScrollY: number) => {
       const threshold = window.innerHeight * 0.7
       const isScrollingDown = currentScrollY > lastScrollY
@@ -75,7 +85,10 @@ export function Header() {
 
     // Use native window scroll — fires on window.scrollTo() in all envs,
     // including headless test runners where GSAP ticker / Lenis RAF may not run.
-    const onScroll = () => handleVisibility(window.scrollY)
+    const onScroll = () => {
+      handleVisibility(window.scrollY)
+      updateScrolled()
+    }
 
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {

@@ -14,18 +14,9 @@ export function HeroLine() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          className="hero-line-ghost"
+          className="hero-line-ghost opacity-30"
           d={FLOW_PATH}
           stroke="var(--color-blue-ghost)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-        />
-        <path
-          className="hero-line-drawn"
-          d={FLOW_PATH}
-          stroke="var(--color-blue)"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
