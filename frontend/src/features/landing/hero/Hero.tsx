@@ -39,62 +39,89 @@ export function Hero() {
         drawnPath.style.strokeDasharray = `${drawnSegment} ${totalLength}`
       }
 
-      if (isReducedMotion) {
+      // Safe fallback to guarantee content is always visible and never stuck at opacity 0
+      const ensureVisible = () => {
         gsap.set(['.hero-eyebrow', '.hero-paragraph', '.hero-buttons'], {
           opacity: 1,
           y: 0,
+          clearProps: 'opacity,transform',
         })
-        gsap.set('.hero-title-line', { y: '0%' })
+        gsap.set('.hero-title-line', {
+          y: '0%',
+          opacity: 1,
+          clearProps: 'opacity,transform',
+        })
         if (ghostPath) gsap.set(ghostPath, { opacity: 0.2 })
         if (drawnPath) gsap.set(drawnPath, { strokeDashoffset: 0 })
+      }
+
+      if (isReducedMotion) {
+        ensureVisible()
         return
       }
 
-      // One load timeline (about 1.4s total, power3.out)
-      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+      // Fallback timer so content can never get stuck at opacity 0 if animation fails or stalls
+      const fallbackTimer = setTimeout(ensureVisible, 700)
 
-      // Drawn segment of HeroLine draws once over 1.6s (power2.inOut) while ghost fades in
-      if (ghostPath) {
+      try {
+        // Short intro animation on load (~0.6s total, never gated by scroll)
+        const tl = gsap.timeline({
+          defaults: { ease: 'power2.out' },
+          onComplete: () => {
+            clearTimeout(fallbackTimer)
+            ensureVisible()
+          },
+        })
+
+        if (ghostPath) {
+          tl.fromTo(
+            ghostPath,
+            { opacity: 0 },
+            { opacity: 0.2, duration: 0.6, ease: 'power2.out' },
+            0
+          )
+        }
+
+        if (drawnPath) {
+          tl.fromTo(
+            drawnPath,
+            { strokeDashoffset: drawnSegment },
+            { strokeDashoffset: 0, duration: 0.6, ease: 'power2.inOut' },
+            0
+          )
+        }
+
+        // Subtle fade/slide-in (~0.6s total, ends fully visible, never gated by scroll)
         tl.fromTo(
-          ghostPath,
-          { opacity: 0 },
-          { opacity: 0.2, duration: 1.6, ease: 'power2.out' },
+          '.hero-eyebrow',
+          { opacity: 0.5, y: 8 },
+          { opacity: 1, y: 0, duration: 0.4 },
           0
         )
-      }
 
-      if (drawnPath) {
+        // H1 lines gentle rise
         tl.fromTo(
-          drawnPath,
-          { strokeDashoffset: drawnSegment },
-          { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut' },
-          0
+          '.hero-title-line',
+          { opacity: 0.6, y: 10 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.05 },
+          0.05
         )
+
+        // Paragraph and buttons gentle rise
+        tl.fromTo(
+          ['.hero-paragraph', '.hero-buttons'],
+          { opacity: 0.5, y: 12 },
+          { opacity: 1, y: 0, duration: 0.5, stagger: 0.06 },
+          0.1
+        )
+      } catch {
+        clearTimeout(fallbackTimer)
+        ensureVisible()
       }
 
-      // Eyebrow fades and rises 16px
-      tl.fromTo(
-        '.hero-eyebrow',
-        { opacity: 0, y: 16 },
-        { opacity: 1, y: 0, duration: 0.6 },
-        0.1
-      )
-
-      // The two h1 lines reveal through masks (each line in overflow-hidden wrapper, y 100% -> 0, 80ms stagger)
-      tl.fromTo(
-        '.hero-title-line',
-        { y: '100%' },
-        { y: '0%', duration: 0.8, stagger: 0.08 },
-        0.25
-      )
-
-      // Paragraph then buttons fade and rise 24px with 80ms stagger
-      tl.fromTo(
-        ['.hero-paragraph', '.hero-buttons'],
-        { opacity: 0, y: 24 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.08 },
-        0.45
-      )
+      return () => {
+        clearTimeout(fallbackTimer)
+      }
     },
     { scope: heroRef }
   )

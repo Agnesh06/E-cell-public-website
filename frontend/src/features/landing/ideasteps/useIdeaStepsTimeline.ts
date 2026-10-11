@@ -52,10 +52,10 @@ export function useIdeaStepsTimeline({
       if (!stageEl) return
 
       // Measure SVG path length
-      let pathLength = 3000
+      let pathLength = 3600
       if (drawnPathRef.current) {
-        pathLength = drawnPathRef.current.getTotalLength() || 3000
-        drawnPathRef.current.style.strokeDasharray = `${pathLength}`
+        pathLength = drawnPathRef.current.getTotalLength() || 3600
+        drawnPathRef.current.style.strokeDasharray = `${pathLength} ${pathLength * 2 + 1000}`
         drawnPathRef.current.style.strokeDashoffset = `${pathLength}`
       }
 
@@ -229,13 +229,13 @@ export function useIdeaStepsTimeline({
         start: 'top top',
         end: () => `+=${window.innerHeight * 5}`,
         pin: true,
-        scrub: 1.2,
+        scrub: true,
         invalidateOnRefresh: true,
         animation: tl,
         onUpdate: (self) => {
-          progressRef.current = self.progress
+          const progress = Math.max(0, Math.min(1, self.progress))
+          progressRef.current = progress
           // Throttled / direct DOM update for data-progress attribute
-          const progress = self.progress
           const roundedProgress = progress.toFixed(2)
           stageEl.setAttribute('data-progress', roundedProgress)
           if (aboutSection) {
@@ -265,8 +265,8 @@ export function useIdeaStepsTimeline({
       // Re-measure path length on resize and fonts loaded
       const handleResizeOrFonts = () => {
         if (drawnPathRef.current) {
-          const len = drawnPathRef.current.getTotalLength() || 3000
-          drawnPathRef.current.style.strokeDasharray = `${len}`
+          const len = drawnPathRef.current.getTotalLength() || 3600
+          drawnPathRef.current.style.strokeDasharray = `${len} ${len * 2 + 1000}`
         }
 
         // Safety net: measure blocks against available height and scale if needed

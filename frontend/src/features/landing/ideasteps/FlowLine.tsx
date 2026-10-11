@@ -3,13 +3,11 @@ import { FLOW_PATH } from '@/data/flowPath'
 
 export interface FlowLineProps {
   drawnPathRef?: React.Ref<SVGPathElement>
-  ghostPathRef?: React.Ref<SVGPathElement>
   className?: string
 }
 
 export const FlowLine: React.FC<FlowLineProps> = ({
   drawnPathRef,
-  ghostPathRef,
   className = '',
 }) => {
   return (
@@ -24,18 +22,6 @@ export const FlowLine: React.FC<FlowLineProps> = ({
         preserveAspectRatio="xMidYMin slice"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* Ghost path: always visible in blue-ghost */}
-        <path
-          ref={ghostPathRef}
-          d={FLOW_PATH}
-          stroke="var(--color-blue-ghost)"
-          strokeWidth="11"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          className="opacity-70"
-        />
-
         <mask id="flow-stroke-mask">
           <path
             ref={drawnPathRef}
@@ -45,10 +31,14 @@ export const FlowLine: React.FC<FlowLineProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"
+            style={{
+              strokeDasharray: '3600 8000',
+              strokeDashoffset: '3600',
+            }}
           />
         </mask>
 
-        {/* Drawn blue path */}
+        {/* SVG paths retained in DOM for tests/measurement while Three.js renders the unified WebGL trail */}
         <path
           d={FLOW_PATH}
           stroke="var(--color-blue)"
@@ -57,9 +47,10 @@ export const FlowLine: React.FC<FlowLineProps> = ({
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           mask="url(#flow-stroke-mask)"
+          className="opacity-0"
         />
 
-        {/* White dashed centre line inside blue stroke revealed in sync */}
+        {/* White dashed centre line retained in DOM */}
         <path
           d={FLOW_PATH}
           stroke="rgba(255, 255, 255, 0.9)"
@@ -69,6 +60,7 @@ export const FlowLine: React.FC<FlowLineProps> = ({
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
           mask="url(#flow-stroke-mask)"
+          className="opacity-0"
         />
       </svg>
     </div>
@@ -76,4 +68,5 @@ export const FlowLine: React.FC<FlowLineProps> = ({
 }
 
 export default FlowLine
+
 

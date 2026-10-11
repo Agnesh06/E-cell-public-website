@@ -1,12 +1,13 @@
-import React, { useRef } from 'react'
+import React, { Suspense, useRef } from 'react'
 import { ideas } from '@/data/ideas'
 import { GridBackdrop } from '@/components/common/GridBackdrop'
 import { GlowBlob } from '@/components/common/GlowBlob'
 import { Step } from './Step'
 import { FlowLine } from './FlowLine'
-import { FlowArrow3D } from './FlowArrow3D'
 import { StepIndicator } from './StepIndicator'
 import { useIdeaStepsTimeline } from './useIdeaStepsTimeline'
+
+const FlowArrow3D = React.lazy(() => import('./FlowArrow3D'))
 
 export const PinnedIdeaSteps: React.FC = () => {
   const stageRef = useRef<HTMLDivElement>(null)
@@ -40,13 +41,15 @@ export const PinnedIdeaSteps: React.FC = () => {
       <FlowLine drawnPathRef={drawnPathRef} />
 
       {/* 3D Paper-Plane Arrow riding the scroll line */}
-      <FlowArrow3D
-        drawnPathRef={drawnPathRef}
-        stageRef={stageRef}
-        progressRef={progressRef}
-      />
+      <Suspense fallback={null}>
+        <FlowArrow3D
+          drawnPathRef={drawnPathRef}
+          stageRef={stageRef}
+          progressRef={progressRef}
+        />
+      </Suspense>
 
-      {/* The five Step components stacked absolutely (inset 0) */}
+      {/* The five Step components stacked absolutely (inset 0) on layer z-10 above canvas */}
       {ideas.map((step, index) => {
         const isActive = activeIndex === index
         return (
@@ -55,7 +58,7 @@ export const PinnedIdeaSteps: React.FC = () => {
             ref={(el) => {
               stepRefs.current[index] = el
             }}
-            className="step-stage-slide absolute inset-0 w-full h-full will-change-[transform,opacity]"
+            className="step-stage-slide absolute inset-0 w-full h-full will-change-[transform,opacity] z-10"
             aria-hidden={!isActive}
             inert={!isActive ? true : undefined}
           >

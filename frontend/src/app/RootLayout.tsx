@@ -1,12 +1,36 @@
 import { useEffect } from 'react'
-import { Outlet, ScrollRestoration, useLocation } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 import Footer from '@/components/layout/Footer'
 import Header from '@/components/layout/Header'
 import { useLenis } from '@/app/smoothScroll'
+import { ScrollTrigger } from '@/lib/gsap'
 
 function RootLayout() {
   const location = useLocation()
   const lenis = useLenis()
+
+  // Ensure manual scroll restoration, scroll to top on mount, and refresh ScrollTrigger after fonts & window load
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+    if (!window.location.hash) {
+      window.scrollTo(0, 0)
+    }
+
+    const refreshScrollTrigger = () => {
+      ScrollTrigger.refresh()
+    }
+
+    if (document.fonts) {
+      document.fonts.ready.then(refreshScrollTrigger)
+    }
+    window.addEventListener('load', refreshScrollTrigger)
+
+    return () => {
+      window.removeEventListener('load', refreshScrollTrigger)
+    }
+  }, [])
 
   // Scroll to top on route change, and support hash links
   useEffect(() => {
@@ -45,7 +69,6 @@ function RootLayout() {
         <Outlet />
       </main>
       <Footer />
-      <ScrollRestoration />
     </>
   )
 }

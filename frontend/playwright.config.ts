@@ -14,6 +14,7 @@ const viewports = [
 
 export default defineConfig({
   testDir: './tests/e2e',
+  outputDir: './test-results',
   fullyParallel: true,
   reporter: 'list',
   use: {

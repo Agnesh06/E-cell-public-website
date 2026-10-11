@@ -1,67 +1,63 @@
 # ==============================================================================
-# E-Cell Public Website - Team Git Ignore Configuration
-# Multi-OS (Windows / macOS / Linux) & Multi-Editor Support
+# E-Cell Public Website - Root Git Ignore Configuration
+# Multi-OS (macOS / Linux / Windows) & Multi-Editor Support
+# Tailored for Vite + React 19 + TypeScript + Playwright SPA Project
 # ==============================================================================
-
-# ------------------------------------------------------------------------------
-# Project Specific
-# ------------------------------------------------------------------------------
-# Requirements & architecture specifications folder
-docs/
 
 # ------------------------------------------------------------------------------
 # Dependencies & Package Managers
 # ------------------------------------------------------------------------------
 node_modules/
+frontend/node_modules/
 .pnp
-.pnp.js
+.pnp.*
 .yarn/cache
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
 
 # ------------------------------------------------------------------------------
-# Production & Build Outputs
+# Production, Build Outputs & Bundler Caches
 # ------------------------------------------------------------------------------
 dist/
 dist-ssr/
+frontend/dist/
+frontend/dist-ssr/
 build/
+.next/
 out/
 .cache/
 .parcel-cache/
 *.tsbuildinfo
 .turbo/
+.vite/
+**/.vite/
+.rollup.cache/
+frontend/@/
 
 # ------------------------------------------------------------------------------
-# Environment Variables & Secrets (Prevent accidental leaks)
+# Environment Variables & Secrets
 # ------------------------------------------------------------------------------
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
+.env.*
+frontend/.env
+frontend/.env.*
+*.local
+frontend/*.local
 *.pem
 *.key
 *.cert
 
-# Do NOT ignore the example environment file
+# Keep example environment files
 !.env.example
+!frontend/.env.example
 
 # ------------------------------------------------------------------------------
-# Testing & Code Coverage (Vitest / Playwright)
-# ------------------------------------------------------------------------------
-coverage/
-.nyc_output/
-test-results/
-playwright-report/
-blob-report/
-playwright/.cache/
-
-# ------------------------------------------------------------------------------
-# Logs & Debuggers
+# Logs & Linter Caches
 # ------------------------------------------------------------------------------
 *.log
+logs/
+frontend/logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -70,47 +66,6 @@ lerna-debug.log*
 .eslintcache
 .stylelintcache
 .prettiercache
-
-# ------------------------------------------------------------------------------
-# IDEs & Code Editors
-# ------------------------------------------------------------------------------
-# Visual Studio Code & Cursor (keep shared workspace extensions & settings if tracked)
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.vscode/*.log
-.history/
-.ionide/
-
-# JetBrains (WebStorm, IntelliJ IDEA, etc.)
-.idea/
-*.iws
-*.iml
-*.ipr
-out/
-
-# Visual Studio
-.vs/
-*.suo
-*.user
-*.useroscore
-*.sln.docstates
-
-# Sublime Text
-*.sublime-workspace
-*.sublime-project.local
-
-# Vim / Emacs
-[._]*.s[a-v][a-z]
-[._]*.sw[a-p]
-[._]s[a-rt-v][a-z]
-[._]ss[a-gi-z]
-[._]sw[a-p]
-*~
-#*#
-.#*
 
 # ------------------------------------------------------------------------------
 # Operating System Specific Files
@@ -133,7 +88,171 @@ $RECYCLE.BIN/
 *.lnk
 
 # Linux
-*~
 .fuse_hidden*
 .directory
 .Trash-*
+
+# ------------------------------------------------------------------------------
+# IDEs & Code Editors
+# ------------------------------------------------------------------------------
+# Visual Studio Code & Cursor (keep shared workspace settings if tracked)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.log
+frontend/.vscode/*
+!frontend/.vscode/settings.json
+!frontend/.vscode/tasks.json
+!frontend/.vscode/launch.json
+!frontend/.vscode/extensions.json
+.history/
+.ionide/
+
+# JetBrains (WebStorm, IntelliJ IDEA, etc.)
+.idea/
+frontend/.idea/
+*.iws
+*.iml
+*.ipr
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.useroscore
+*.sln.docstates
+*.ntvs*
+*.njsproj
+*.sln
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project.local
+
+# Vim / Emacs
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+*.sw?
+*~
+#*#
+.#*
+
+# ------------------------------------------------------------------------------
+# Test & Agent Artifacts (Directories)
+# ------------------------------------------------------------------------------
+# Playwright, Vitest & Cypress test outputs
+test-results/
+**/test-results/
+playwright-report/
+**/playwright-report/
+blob-report/
+**/blob-report/
+playwright/.cache/
+**/playwright/.cache/
+coverage/
+**/coverage/
+.nyc_output/
+**/cypress/screenshots/
+**/cypress/videos/
+
+# Screenshot directories (root & test directories)
+screenshots/
+**/screenshots/
+diagnose_screenshots/
+**/diagnose_screenshots/
+
+# Agent, scratch & temporary output folders
+artifacts/
+**/artifacts/
+tmp/
+**/tmp/
+.antigravity/
+**/.antigravity/
+
+# ------------------------------------------------------------------------------
+# Test Screenshot & Verification Capture File Patterns
+# ------------------------------------------------------------------------------
+# Explicit screenshot patterns observed in test runs and browser verification
+Screenshot_*.png
+Screenshot*.png
+screenshot-*.png
+screenshot*.png
+scroll-*.png
+scroll0_*.png
+scroll*.png
+stage_step*.png
+page_step*.png
+progress-*.png
+hero-*.png
+header-*.png
+header_*.png
+footer-*.png
+menu-open-*.png
+menu_open_*.png
+ideastep-*.png
+leadership-*.png
+projects-*.png
+project-detail-*.png
+
+# Visual regression diffs and test assertions
+*-diff.png
+*-actual.png
+*-expected.png
+*-verify.png
+*-test.png
+
+# ------------------------------------------------------------------------------
+# Real Project Asset Protection (Negation Rules)
+# DO NOT ignore application assets under public/ or src/assets/
+# ------------------------------------------------------------------------------
+!public/
+!public/**
+!frontend/public/
+!frontend/public/**
+!src/assets/
+!src/assets/**
+!frontend/src/assets/
+!frontend/src/assets/**
+
+# Explicitly guarantee images and media in asset folders are tracked
+!public/**/*.png
+!public/**/*.jpg
+!public/**/*.jpeg
+!public/**/*.webp
+!public/**/*.gif
+!public/**/*.svg
+!public/**/*.ico
+!frontend/public/**/*.png
+!frontend/public/**/*.jpg
+!frontend/public/**/*.jpeg
+!frontend/public/**/*.webp
+!frontend/public/**/*.gif
+!frontend/public/**/*.svg
+!frontend/public/**/*.ico
+
+!src/assets/**/*.png
+!src/assets/**/*.jpg
+!src/assets/**/*.jpeg
+!src/assets/**/*.webp
+!src/assets/**/*.gif
+!src/assets/**/*.svg
+!frontend/src/assets/**/*.png
+!frontend/src/assets/**/*.jpg
+!frontend/src/assets/**/*.jpeg
+!frontend/src/assets/**/*.webp
+!frontend/src/assets/**/*.gif
+!frontend/src/assets/**/*.svg
+
+# ------------------------------------------------------------------------------
+# Documentation
+# ------------------------------------------------------------------------------
+# Root-level requirements & specs (if kept separate from public code)
+/docs/
+# Preserve project architecture & documentation in frontend/docs
+!frontend/docs/
+!frontend/docs/**

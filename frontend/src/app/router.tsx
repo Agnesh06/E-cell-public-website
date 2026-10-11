@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ComponentType } from 'react'
 import { createBrowserRouter } from 'react-router'
 import RootLayout from './RootLayout'
+import LandingPage from '@/features/landing'
 
 function lazyRoute(loader: () => Promise<{ default: ComponentType }>) {
   const Page = lazy(loader)
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: lazyRoute(() => import('@/features/landing')),
+        element: <LandingPage />,
       },
       {
         path: 'projects',
