@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 const routes = [
   { path: '/', heading: 'Ideas are just the beginning.' },
-  { path: '/projects', heading: 'Projects' },
+  { path: '/projects', heading: 'Our Projects' },
   { path: '/projects/placeholder-project', heading: 'Project Details' },
   { path: '/team', heading: 'Team' },
   { path: '/contact', heading: 'Contact' },
