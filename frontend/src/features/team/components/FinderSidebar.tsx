@@ -152,8 +152,7 @@ export function FinderSidebar({ currentLevel, onNavigate, totalCount }: FinderSi
 
         {/* System info badge */}
         <div className="mt-6 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-blue-ghost)]/40 p-3 text-[11px] text-[var(--color-ink-muted)]">
-          <p className="font-semibold text-[var(--color-blue)]">E-Cell Directory</p>
-          <p className="mt-0.5 text-zinc-500 font-mono text-[10px]">macOS Finder UI</p>
+          <p className="font-semibold text-[var(--color-blue)] text-center">E-Cell Directory</p>
         </div>
       </aside>
     </>
