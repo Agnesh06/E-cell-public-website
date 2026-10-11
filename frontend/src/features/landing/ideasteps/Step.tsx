@@ -18,7 +18,7 @@ const haloStyle: React.CSSProperties = {
     '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg)',
 }
 
-export const Step: React.FC<StepProps> = ({
+export const Step: React.FC<StepProps> = React.memo(({
   step,
   stepIndex,
   totalSteps = 5,
@@ -94,6 +94,6 @@ export const Step: React.FC<StepProps> = ({
       </div>
     </div>
   )
-}
+})
 
 export default Step

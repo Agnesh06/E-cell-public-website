@@ -8,7 +8,7 @@ export interface StepCardsProps {
   className?: string
 }
 
-export const StepCards: React.FC<StepCardsProps> = ({
+export const StepCards: React.FC<StepCardsProps> = React.memo(({
   layout,
   cards,
   tilt = 0,
@@ -50,7 +50,7 @@ export const StepCards: React.FC<StepCardsProps> = ({
         {cards.map((card, i) => (
           <div
             key={i}
-            className={`glass-card p-[clamp(12px,2.2vh,20px)] border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)] transition-transform duration-200 ${
+            className={`glass-card p-[clamp(12px,2.2vh,20px)] border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)] ${
               horizontalOffsets[i % horizontalOffsets.length]
             }`}
           >
@@ -148,7 +148,7 @@ export const StepCards: React.FC<StepCardsProps> = ({
   }
 
   return null
-}
+})
 
 export default StepCards
 

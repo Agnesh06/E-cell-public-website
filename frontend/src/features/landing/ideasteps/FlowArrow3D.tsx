@@ -11,6 +11,7 @@ export interface FlowArrow3DProps {
   drawnPathRef: React.RefObject<SVGPathElement | null>
   stageRef: React.RefObject<HTMLDivElement | null>
   progressRef?: React.RefObject<number>
+  renderRef?: React.MutableRefObject<((p?: number) => void) | null>
   className?: string
 }
 
@@ -219,7 +220,7 @@ function buildCurveFromPath(
   const stageRect = stageEl.getBoundingClientRect()
   const pPoint = svg.createSVGPoint()
 
-  const SAMPLE_COUNT = 800
+  const SAMPLE_COUNT = 360
   const points: THREE.Vector3[] = []
 
   for (let i = 0; i < SAMPLE_COUNT; i++) {
@@ -240,10 +241,11 @@ function buildCurveFromPath(
   return new PathArcCurve(points)
 }
 
-export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
+export const FlowArrow3D: React.FC<FlowArrow3DProps> = React.memo(({
   drawnPathRef,
   stageRef,
   progressRef,
+  renderRef,
   className = '',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -273,21 +275,21 @@ export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
       antialias: true,
       powerPreference: 'high-performance',
     })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(width, height, false)
 
-    // Colors derived directly from the website's theme line color
-    let currentLineColor = getLineColor()
-    let baseColor = new THREE.Color(currentLineColor)
+    // Colors derived directly from the website's theme line color (read once, not per frame)
+    const currentLineColor = getLineColor()
+    const baseColor = new THREE.Color(currentLineColor)
     const hsl = { h: 0, s: 0, l: 0 }
     baseColor.getHSL(hsl)
 
-    let darkColor = new THREE.Color().setHSL(
+    const darkColor = new THREE.Color().setHSL(
       hsl.h,
       hsl.s,
       Math.max(0.08, hsl.l - 0.18),
     )
-    let trailColor = new THREE.Color().setHSL(
+    const trailColor = new THREE.Color().setHSL(
       hsl.h,
       Math.max(0.2, hsl.s * 0.7),
       Math.min(0.92, hsl.l + 0.35),
@@ -326,177 +328,100 @@ export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
     arrowGroup.add(trailMesh)
     scene.add(arrowGroup)
 
-    // ── Unified Three.js Line Ribbon (physically joined to rocket tail) ──────
-    const MAX_LINE_POINTS = 800
-    const MAX_QUADS = MAX_LINE_POINTS - 1
-    const TOTAL_LINE_VERTICES = MAX_QUADS * 6
-
-    const linePositions = new Float32Array(TOTAL_LINE_VERTICES * 3)
-    const lineColors = new Float32Array(TOTAL_LINE_VERTICES * 4)
-
-    const lineGeom = new THREE.BufferGeometry()
-    const posAttr = new THREE.BufferAttribute(linePositions, 3)
-    const colAttr = new THREE.BufferAttribute(lineColors, 4)
-    lineGeom.setAttribute('position', posAttr)
-    lineGeom.setAttribute('color', colAttr)
-    lineGeom.setDrawRange(0, 0)
-
-    const lineMaterial = new THREE.MeshBasicMaterial({
-      vertexColors: true,
-      transparent: true,
-      side: THREE.DoubleSide,
-      depthWrite: false,
-    })
-
-    const lineMesh = new THREE.Mesh(lineGeom, lineMaterial)
-    scene.add(lineMesh)
-
     // Build curve initially
     if (drawnPathRef.current) {
       curveRef.current = buildCurveFromPath(drawnPathRef.current, stage)
     }
 
-    let animationFrameId: number
-    let lastTime = performance.now()
-    let smoothedProgress = 0
+    // ── Continuous Smooth Line (TubeGeometry with shader progress reveal) ─────
+    // Slightly thinner than rocket wingspan: radius ~4-4.5px (diameter ~8-9px)
+    const tubeRadius = Math.max(3.2, 8.5 * activeScale * 0.5)
+    const tubularSegments = 360
+    const radialSegments = 12
+
+    const lineMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uColor: { value: baseColor },
+        uProgress: { value: 0.0 },
+        uFadeLength: { value: 0.07 },
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        uniform float uProgress;
+        uniform float uFadeLength;
+        varying vec2 vUv;
+
+        void main() {
+          if (uProgress <= 0.0001 || vUv.x > uProgress) {
+            discard;
+          }
+
+          // Smooth continuous alpha gradient on the oldest (start) end
+          float alpha = smoothstep(0.0, uFadeLength, vUv.x);
+
+          // Subpixel antialiased cutoff ending precisely at rocket tail
+          float edgeDelta = (uProgress - vUv.x) / max(fwidth(vUv.x), 0.00002);
+          alpha *= clamp(edgeDelta, 0.0, 1.0);
+
+          gl_FragColor = vec4(uColor, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    })
+
+    const buildTubeGeometry = (curve: PathArcCurve) => {
+      return new THREE.TubeGeometry(
+        curve,
+        tubularSegments,
+        tubeRadius,
+        radialSegments,
+        false,
+      )
+    }
+
+    let lineGeom = curveRef.current
+      ? buildTubeGeometry(curveRef.current)
+      : new THREE.BufferGeometry()
+
+    const lineMesh = new THREE.Mesh(lineGeom, lineMaterial)
+    scene.add(lineMesh)
+
     let lastRenderedProgress = -1
     const targetQuat = new THREE.Quaternion()
 
-    // Line thickness slightly thinner than rocket wingspan (~9-10px)
-    const lineWidth = Math.max(7, Math.round(19 * activeScale))
-    const halfWidth = lineWidth * 0.5
-
-    const updateLineGeometry = (p: number, curve: PathArcCurve) => {
-      if (p <= 0.0001) {
-        lineGeom.setDrawRange(0, 0)
-        return
-      }
-
-      const totalSegments = MAX_LINE_POINTS - 1
-      const segCount = Math.max(1, Math.min(totalSegments, Math.floor(p * totalSegments)))
-
-      let vIdx = 0
-      let cIdx = 0
-
-      // Pre-sample previous segment's left/right vertices
-      let prevLeftX = 0, prevLeftY = 0
-      let prevRightX = 0, prevRightY = 0
-      let prevA = 0
-      const { r: lineR, g: lineG, b: lineB } = baseColor
-
-      for (let k = 0; k <= segCount; k++) {
-        const u = k === segCount ? p : k / totalSegments
-        const pos = curve.getPointAt(u)
-        const tan = curve.getTangentAt(u)
-
-        const normX = -tan.y
-        const normY = tan.x
-        const normLen = Math.hypot(normX, normY) || 1
-        const nx = normX / normLen
-        const ny = normY / normLen
-
-        const curLeftX = pos.x + halfWidth * nx
-        const curLeftY = pos.y + halfWidth * ny
-        const curRightX = pos.x - halfWidth * nx
-        const curRightY = pos.y - halfWidth * ny
-
-        // Fade oldest part of the trail (first 25 segments) so it does not look cut abruptly
-        const fadeAlpha = k < 25 ? Math.min(1, k / 25) : 1.0
-
-        if (k > 0) {
-          // Quad between (k-1) and k: 2 triangles = 6 vertices
-          // Tri 1: prevLeft, prevRight, curLeft
-          linePositions[vIdx] = prevLeftX; linePositions[vIdx + 1] = prevLeftY; linePositions[vIdx + 2] = 0; vIdx += 3
-          linePositions[vIdx] = prevRightX; linePositions[vIdx + 1] = prevRightY; linePositions[vIdx + 2] = 0; vIdx += 3
-          linePositions[vIdx] = curLeftX; linePositions[vIdx + 1] = curLeftY; linePositions[vIdx + 2] = 0; vIdx += 3
-
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = prevA; cIdx += 4
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = prevA; cIdx += 4
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = fadeAlpha; cIdx += 4
-
-          // Tri 2: prevRight, curRight, curLeft
-          linePositions[vIdx] = prevRightX; linePositions[vIdx + 1] = prevRightY; linePositions[vIdx + 2] = 0; vIdx += 3
-          linePositions[vIdx] = curRightX; linePositions[vIdx + 1] = curRightY; linePositions[vIdx + 2] = 0; vIdx += 3
-          linePositions[vIdx] = curLeftX; linePositions[vIdx + 1] = curLeftY; linePositions[vIdx + 2] = 0; vIdx += 3
-
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = prevA; cIdx += 4
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = fadeAlpha; cIdx += 4
-          lineColors[cIdx] = lineR; lineColors[cIdx + 1] = lineG; lineColors[cIdx + 2] = lineB; lineColors[cIdx + 3] = fadeAlpha; cIdx += 4
-        }
-
-        prevLeftX = curLeftX
-        prevLeftY = curLeftY
-        prevRightX = curRightX
-        prevRightY = curRightY
-        prevA = fadeAlpha
-      }
-
-      posAttr.needsUpdate = true
-      colAttr.needsUpdate = true
-      lineGeom.setDrawRange(0, segCount * 6)
-    }
-
-    const renderLoop = () => {
-      animationFrameId = requestAnimationFrame(renderLoop)
-
-      const now = performance.now()
-      const deltaSec = Math.min(0.1, Math.max(0.001, (now - lastTime) / 1000))
-      lastTime = now
-
+    const renderScene = (rawP?: number) => {
       if (!curveRef.current && drawnPathRef.current && stageRef.current) {
         curveRef.current = buildCurveFromPath(drawnPathRef.current, stageRef.current)
       }
       const curve = curveRef.current
       if (!curve) return
 
-      // Read target scroll progress from single source
-      let rawTarget = 0
-      if (progressRef && typeof progressRef.current === 'number') {
-        rawTarget = progressRef.current
-      } else if (stageRef.current) {
-        const dataProgress = stageRef.current.getAttribute('data-progress')
-        if (dataProgress !== null) {
-          rawTarget = parseFloat(dataProgress)
+      let target = rawP
+      if (target === undefined) {
+        if (progressRef && typeof progressRef.current === 'number') {
+          target = progressRef.current
+        } else if (stageRef.current) {
+          const dataProgress = stageRef.current.getAttribute('data-progress')
+          if (dataProgress !== null) {
+            target = parseFloat(dataProgress)
+          }
         }
       }
-      const target = Math.max(0, Math.min(1, isNaN(rawTarget) ? 0 : rawTarget))
+      const p = Math.max(0, Math.min(1, isNaN(target ?? 0) ? 0 : (target ?? 0)))
 
-      // Single smoothing system: frame-rate-independent damping
-      // current += (target - current) * (1 - Math.exp(-6 * delta))
-      const diff = target - smoothedProgress
-      if (Math.abs(diff) < 0.0001) {
-        smoothedProgress = target
-      } else {
-        smoothedProgress += diff * (1 - Math.exp(-6 * deltaSec))
-      }
-
-      const p = Math.max(0, Math.min(1, smoothedProgress))
-
-      // Settled check: when scrolling stops and values have settled, do not update scene
-      const isProgressSettled = Math.abs(p - lastRenderedProgress) < 0.00005
-      const angleDiff = arrowGroup.quaternion.angleTo(targetQuat)
-      const isAngleSettled = angleDiff < 0.0005
-
-      if (isProgressSettled && isAngleSettled && isInitializedRef.current) {
+      if (Math.abs(p - lastRenderedProgress) < 0.00005 && isInitializedRef.current) {
         return
       }
-
       lastRenderedProgress = p
-
-      // Update theme colors dynamically if CSS variables change
-      const latestLineColor = getLineColor()
-      if (latestLineColor !== currentLineColor) {
-        currentLineColor = latestLineColor
-        baseColor = new THREE.Color(latestLineColor)
-        baseColor.getHSL(hsl)
-
-        darkColor = new THREE.Color().setHSL(hsl.h, hsl.s, Math.max(0.08, hsl.l - 0.18))
-        trailColor = new THREE.Color().setHSL(hsl.h, Math.max(0.2, hsl.s * 0.7), Math.min(0.92, hsl.l + 0.35))
-
-        mainMaterial.color.copy(baseColor)
-        darkMaterial.color.copy(darkColor)
-        trailMaterial.color.copy(trailColor)
-      }
 
       const pos = curve.getPointAt(p)
       arrowGroup.position.copy(pos)
@@ -506,33 +431,52 @@ export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
         ;(window as unknown as { __ROCKET_POS__?: { x: number; y: number }; __ROCKET_PROGRESS__?: number }).__ROCKET_PROGRESS__ = p
       }
 
-      // Orientation from smoothed tangent window [p - 0.005, p + 0.005]
       const avgTangent = getSmoothedTangent(curve, p)
       const headingAngle = Math.atan2(avgTangent.y, avgTangent.x)
-
-      // Lock roll: keep up vector constant (0, 0, 1), only rotate around Z in 2D plane
       targetQuat.setFromAxisAngle(new THREE.Vector3(0, 0, 1), headingAngle)
+      arrowGroup.quaternion.copy(targetQuat)
+      isInitializedRef.current = true
 
-      if (!isInitializedRef.current) {
-        arrowGroup.quaternion.copy(targetQuat)
-        isInitializedRef.current = true
-      } else {
-        if (angleDiff < 0.0005) {
-          arrowGroup.quaternion.copy(targetQuat)
-        } else {
-          // Quaternion slerp using the same exp-based damping factor
-          const slerpFactor = 1 - Math.exp(-6 * deltaSec)
-          arrowGroup.quaternion.slerp(targetQuat, Math.min(1, Math.max(0, slerpFactor)))
-        }
+      if (curve && !(lineGeom instanceof THREE.TubeGeometry)) {
+        lineGeom.dispose()
+        lineGeom = buildTubeGeometry(curve)
+        lineMesh.geometry = lineGeom
       }
 
-      // Draw the line trail up to p in the SAME frame from the SAME smoothed progress
-      updateLineGeometry(p, curve)
-
+      lineMaterial.uniforms.uProgress.value = p
       renderer.render(scene, camera)
     }
 
-    renderLoop()
+    // On-demand rendering: only render when progress changes or on scroll
+    let rafId = 0
+    const requestRender = (p?: number) => {
+      if (rafId) return
+      rafId = requestAnimationFrame(() => {
+        rafId = 0
+        renderScene(p)
+      })
+    }
+
+    // Connect renderRef if provided
+    if (renderRef) {
+      renderRef.current = (p?: number) => {
+        requestRender(p)
+      }
+    }
+
+    // Passive scroll listener for demand rendering on scroll
+    const onScroll = () => {
+      requestRender()
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
+    // Pre-warm WebGL shader pipeline and render initial frame synchronously on mount
+    try {
+      renderer.compile(scene, camera)
+      renderScene(0)
+    } catch {
+      // Ignore pre-warm compilation errors on mock or inactive contexts
+    }
 
     const handleResize = () => {
       if (!stageRef.current) return
@@ -544,20 +488,30 @@ export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
       camera.updateProjectionMatrix()
 
       renderer.setSize(width, height, false)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
 
       // Re-sample curve on resize
       if (drawnPathRef.current) {
         curveRef.current = buildCurveFromPath(drawnPathRef.current, stageRef.current)
-        lastRenderedProgress = -1
+        if (curveRef.current) {
+          lineGeom.dispose()
+          lineGeom = buildTubeGeometry(curveRef.current)
+          lineMesh.geometry = lineGeom
+          lastRenderedProgress = -1
+        }
       }
+      requestRender()
     }
 
     window.addEventListener('resize', handleResize)
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      if (rafId) cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', handleResize)
+      if (renderRef) {
+        renderRef.current = null
+      }
 
       arrowGeom.dispose()
       trailGeom.dispose()
@@ -568,16 +522,16 @@ export const FlowArrow3D: React.FC<FlowArrow3DProps> = ({
       lineMaterial.dispose()
       renderer.dispose()
     }
-  }, [drawnPathRef, stageRef, progressRef])
+  }, [drawnPathRef, stageRef, progressRef, renderRef])
 
   return (
     <canvas
       ref={canvasRef}
-      className={`flow-arrow-canvas absolute inset-0 pointer-events-none z-0 w-full h-full select-none ${className}`}
+      className={`flow-arrow-canvas absolute inset-0 pointer-events-none z-0 w-full h-full select-none [transform:translateZ(0)] ${className}`}
       aria-hidden="true"
     />
   )
-}
+})
 
 export default FlowArrow3D
 

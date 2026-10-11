@@ -16,7 +16,7 @@ const haloStyle: React.CSSProperties = {
     '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg), 0 0 20px var(--color-bg)',
 }
 
-export const StepText: React.FC<StepTextProps> = ({
+export const StepText: React.FC<StepTextProps> = React.memo(({
   eyebrow,
   headlineTop,
   headlineAccent,
@@ -68,6 +68,6 @@ export const StepText: React.FC<StepTextProps> = ({
       )}
     </div>
   )
-}
+})
 
 export default StepText

@@ -25,12 +25,7 @@ export const StaticIdeaSteps: React.FC = () => {
     if (!el) return
 
     if (lenis) {
-      try {
-        lenis.scrollTo(el)
-      } catch {
-        el.scrollIntoView({ behavior: 'smooth' })
-      }
-      el.scrollIntoView({ behavior: 'smooth' })
+      lenis.scrollTo(el)
     } else {
       const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       el.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth' })

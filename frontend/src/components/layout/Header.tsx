@@ -7,7 +7,6 @@ export function Header() {
   const logoRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
   const isHiddenRef = useRef(false)
-  const [isHidden, setIsHidden] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -23,16 +22,19 @@ export function Header() {
 
     const isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let lastScrollY = window.scrollY
+    let isScrolledState = window.scrollY > 8
 
-    const updateScrolled = () => {
-      if (headerRef.current) {
-        headerRef.current.setAttribute(
-          'data-scrolled',
-          window.scrollY > 8 ? 'true' : 'false',
-        )
+    if (headerRef.current) {
+      headerRef.current.setAttribute('data-scrolled', isScrolledState ? 'true' : 'false')
+    }
+
+    const updateScrolled = (currentY: number) => {
+      const isScrolled = currentY > 8
+      if (isScrolled !== isScrolledState) {
+        isScrolledState = isScrolled
+        headerRef.current?.setAttribute('data-scrolled', isScrolled ? 'true' : 'false')
       }
     }
-    updateScrolled()
 
     const handleVisibility = (currentScrollY: number) => {
       const threshold = window.innerHeight * 0.7
@@ -49,9 +51,9 @@ export function Header() {
 
       if (shouldHide !== isHiddenRef.current) {
         isHiddenRef.current = shouldHide
-        setIsHidden(shouldHide)
 
         if (logoRef.current) {
+          logoRef.current.setAttribute('aria-hidden', shouldHide ? 'true' : 'false')
           if (isReducedMotion) {
             logoRef.current.style.opacity = shouldHide ? '0' : '1'
             logoRef.current.style.pointerEvents = shouldHide ? 'none' : 'auto'
@@ -84,12 +86,12 @@ export function Header() {
     }
 
     const onScroll = () => {
-      handleVisibility(window.scrollY)
-      updateScrolled()
+      const y = window.scrollY
+      handleVisibility(y)
+      updateScrolled(y)
     }
 
     // Initial sync
-    updateScrolled()
     handleVisibility(window.scrollY)
 
     window.addEventListener('scroll', onScroll, { passive: true })
@@ -109,7 +111,6 @@ export function Header() {
         <div
           ref={logoRef}
           className="site-header__logo-scroll pointer-events-auto"
-          aria-hidden={isHidden ? 'true' : undefined}
         >
           <LogoGroup />
         </div>

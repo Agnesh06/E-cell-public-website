@@ -97,7 +97,7 @@ const DotGrid: React.FC<DotGridProps> = ({
     if (!wrap || !canvas) return;
 
     const { width, height } = wrap.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -130,13 +130,18 @@ const DotGrid: React.FC<DotGridProps> = ({
     dotsRef.current = dots;
   }, [dotSize, gap]);
 
+  const wakeRef = useRef<() => void>(() => {});
+
   useEffect(() => {
     if (!circlePath || paused) return;
 
-    let rafId: number;
+    let rafId: number = 0;
+    let isRunning = false;
+    let idleCounter = 0;
     const proxSq = proximity * proximity;
 
     const draw = () => {
+      rafId = 0;
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
@@ -144,8 +149,12 @@ const DotGrid: React.FC<DotGridProps> = ({
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const { x: px, y: py } = pointerRef.current;
+      let hasActiveAnimation = false;
 
       for (const dot of dotsRef.current) {
+        if (dot._inertiaApplied || Math.abs(dot.xOffset) > 0.1 || Math.abs(dot.yOffset) > 0.1) {
+          hasActiveAnimation = true;
+        }
         const ox = dot.cx + dot.xOffset;
         const oy = dot.cy + dot.yOffset;
         const dx = dot.cx - px;
@@ -169,11 +178,33 @@ const DotGrid: React.FC<DotGridProps> = ({
         ctx.restore();
       }
 
-      rafId = requestAnimationFrame(draw);
+      if (hasActiveAnimation) {
+        idleCounter = 0;
+        rafId = requestAnimationFrame(draw);
+      } else {
+        idleCounter++;
+        if (idleCounter < 3) {
+          rafId = requestAnimationFrame(draw);
+        } else {
+          isRunning = false;
+        }
+      }
     };
 
-    draw();
-    return () => cancelAnimationFrame(rafId);
+    const wake = () => {
+      idleCounter = 0;
+      if (!isRunning) {
+        isRunning = true;
+        rafId = requestAnimationFrame(draw);
+      }
+    };
+    wakeRef.current = wake;
+
+    wake();
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      isRunning = false;
+    };
   }, [proximity, baseColor, activeRgb, baseRgb, circlePath, paused]);
 
   useEffect(() => {
@@ -220,6 +251,8 @@ const DotGrid: React.FC<DotGridProps> = ({
       pr.x = e.clientX - rect.left;
       pr.y = e.clientY - rect.top;
 
+      wakeRef.current();
+
       for (const dot of dotsRef.current) {
         const dist = Math.hypot(dot.cx - pr.x, dot.cy - pr.y);
         if (speed > speedTrigger && dist < proximity && !dot._inertiaApplied) {
@@ -229,14 +262,19 @@ const DotGrid: React.FC<DotGridProps> = ({
           const pushY = dot.cy - pr.y + vy * 0.005;
           gsap.to(dot, {
             inertia: { xOffset: pushX, yOffset: pushY, resistance },
+            onUpdate: () => wakeRef.current(),
             onComplete: () => {
               gsap.to(dot, {
                 xOffset: 0,
                 yOffset: 0,
                 duration: returnDuration,
-                ease: 'elastic.out(1,0.75)'
+                ease: 'elastic.out(1,0.75)',
+                onUpdate: () => wakeRef.current(),
+                onComplete: () => {
+                  dot._inertiaApplied = false;
+                  wakeRef.current();
+                }
               });
-              dot._inertiaApplied = false;
             }
           });
         }
@@ -247,6 +285,8 @@ const DotGrid: React.FC<DotGridProps> = ({
       const rect = canvasRef.current!.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
+      wakeRef.current();
+
       for (const dot of dotsRef.current) {
         const dist = Math.hypot(dot.cx - cx, dot.cy - cy);
         if (dist < shockRadius && !dot._inertiaApplied) {
@@ -257,14 +297,19 @@ const DotGrid: React.FC<DotGridProps> = ({
           const pushY = (dot.cy - cy) * shockStrength * falloff;
           gsap.to(dot, {
             inertia: { xOffset: pushX, yOffset: pushY, resistance },
+            onUpdate: () => wakeRef.current(),
             onComplete: () => {
               gsap.to(dot, {
                 xOffset: 0,
                 yOffset: 0,
                 duration: returnDuration,
-                ease: 'elastic.out(1,0.75)'
+                ease: 'elastic.out(1,0.75)',
+                onUpdate: () => wakeRef.current(),
+                onComplete: () => {
+                  dot._inertiaApplied = false;
+                  wakeRef.current();
+                }
               });
-              dot._inertiaApplied = false;
             }
           });
         }

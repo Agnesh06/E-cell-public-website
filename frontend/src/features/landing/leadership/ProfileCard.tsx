@@ -71,7 +71,7 @@ export default function ProfileCard({
     <div className={`[perspective:900px] ${className}`}>
       <div
         ref={shellRef}
-        className="group relative overflow-hidden rounded-[28px] border border-[var(--color-hairline)] bg-gradient-to-b from-white to-[var(--color-blue-ghost)] p-5 shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)] transition-transform duration-300 ease-out will-change-transform"
+        className="group relative overflow-hidden rounded-[28px] border border-[var(--color-hairline)] bg-gradient-to-b from-white to-[var(--color-blue-ghost)] p-5 shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)] transition-transform duration-300 ease-out"
         style={
           {
             '--px': '50%',
@@ -94,7 +94,10 @@ export default function ProfileCard({
           <img
             src={avatarUrl}
             alt={`Portrait of ${name}`}
+            width={300}
+            height={375}
             loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover"
           />
         </div>

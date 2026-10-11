@@ -14,12 +14,7 @@ export function Hero() {
     const target = document.getElementById('about')
     if (!target) return
     if (lenis) {
-      try {
-        lenis.scrollTo(target)
-      } catch {
-        // fallback
-      }
-      target.scrollIntoView({ behavior: 'smooth' })
+      lenis.scrollTo(target)
     } else {
       const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       target.scrollIntoView({ behavior: isReduced ? 'auto' : 'smooth' })

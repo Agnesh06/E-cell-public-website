@@ -9,7 +9,10 @@ export function LogoGroup() {
             src={logo.src}
             alt={logo.alt}
             className="logo-group__image grayscale select-none"
+            width={120}
             height={36}
+            loading="eager"
+            decoding="async"
           />
         )
 

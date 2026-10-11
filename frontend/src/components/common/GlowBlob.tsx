@@ -20,10 +20,10 @@ export const GlowBlob = React.forwardRef<HTMLDivElement, GlowBlobProps>(
     return (
       <div
         ref={ref}
-        className={`absolute w-[45vw] h-[45vw] max-w-[650px] max-h-[650px] rounded-full pointer-events-none select-none z-0 blur-[90px] md:blur-[120px] opacity-70 ${cornerClasses[corner]} ${className}`}
+        className={`absolute w-[45vw] h-[45vw] max-w-[650px] max-h-[650px] rounded-full pointer-events-none select-none z-0 blur-md opacity-70 ${cornerClasses[corner]} ${className}`}
         style={{
           background:
-            'radial-gradient(circle, var(--color-blue-ghost) 0%, rgba(230, 235, 255, 0.4) 45%, transparent 70%)',
+            'radial-gradient(circle at center, var(--color-blue-ghost) 0%, rgba(237, 239, 252, 0.65) 30%, rgba(230, 235, 255, 0.3) 55%, transparent 72%)',
           ...style,
         }}
         aria-hidden="true"

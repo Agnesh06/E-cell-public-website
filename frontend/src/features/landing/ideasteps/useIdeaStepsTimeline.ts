@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { useLenis } from '@/app/smoothScroll'
 
@@ -8,10 +8,11 @@ export interface UseIdeaStepsTimelineProps {
   glowRef: React.RefObject<HTMLDivElement | null>
   stepRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
   totalSteps: number
+  onTimelineUpdate?: (progress: number) => void
+  onActiveIndexChange?: (index: number) => void
 }
 
 export interface UseIdeaStepsTimelineReturn {
-  activeIndex: number
   goToStep: (index: number) => void
   progressRef: React.RefObject<number>
 }
@@ -39,10 +40,15 @@ export function useIdeaStepsTimeline({
   glowRef,
   stepRefs,
   totalSteps,
+  onTimelineUpdate,
+  onActiveIndexChange,
 }: UseIdeaStepsTimelineProps): UseIdeaStepsTimelineReturn {
-  const [activeIndex, setActiveIndex] = useState(0)
   const activeIndexRef = useRef(0)
   const progressRef = useRef<number>(0)
+  const onTimelineUpdateRef = useRef(onTimelineUpdate)
+  onTimelineUpdateRef.current = onTimelineUpdate
+  const onActiveIndexChangeRef = useRef(onActiveIndexChange)
+  onActiveIndexChangeRef.current = onActiveIndexChange
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null)
   const lenis = useLenis()
 
@@ -78,12 +84,16 @@ export function useIdeaStepsTimeline({
       stepRefs.current.forEach((el, index) => {
         if (el) {
           if (index === 0) {
+            el.setAttribute('aria-hidden', 'false')
+            el.removeAttribute('inert')
             gsap.set(el, { autoAlpha: 1 })
             const textElements = el.querySelectorAll('.step-text > *, .step-bottom-bar')
             const cardElements = el.querySelectorAll('.step-cards .glass-card, .step-cards')
             gsap.set(textElements, { y: 0, autoAlpha: 1 })
             gsap.set(cardElements, { y: 0, autoAlpha: 1 })
           } else {
+            el.setAttribute('aria-hidden', 'true')
+            el.setAttribute('inert', '')
             gsap.set(el, { autoAlpha: 0 })
           }
         }
@@ -117,7 +127,9 @@ export function useIdeaStepsTimeline({
 
       // Sync progressRef on scrubbed timeline updates
       tl.eventCallback('onUpdate', () => {
-        progressRef.current = tl.progress()
+        const p = tl.progress()
+        progressRef.current = p
+        onTimelineUpdateRef.current?.(p)
       })
 
       // GlowBlob animation between corner positions during interludes
@@ -235,6 +247,7 @@ export function useIdeaStepsTimeline({
         onUpdate: (self) => {
           const progress = Math.max(0, Math.min(1, self.progress))
           progressRef.current = progress
+          onTimelineUpdateRef.current?.(progress)
           // Throttled / direct DOM update for data-progress attribute
           const roundedProgress = progress.toFixed(2)
           stageEl.setAttribute('data-progress', roundedProgress)
@@ -242,17 +255,27 @@ export function useIdeaStepsTimeline({
             aboutSection.setAttribute('data-progress', roundedProgress)
           }
 
-          // Active index calculation and state update strictly on change
+          // Active index calculation and DOM updates strictly on change
           const newIdx = calculateActiveIndex(progress)
           if (newIdx !== activeIndexRef.current) {
             activeIndexRef.current = newIdx
-            setActiveIndex(newIdx)
             stageEl.setAttribute('data-active-step', String(newIdx + 1))
             stageEl.setAttribute('data-active-index', String(newIdx))
             if (aboutSection) {
               aboutSection.setAttribute('data-active-step', String(newIdx + 1))
               aboutSection.setAttribute('data-active-index', String(newIdx))
             }
+            stepRefs.current.forEach((el, idx) => {
+              if (!el) return
+              const isActive = idx === newIdx
+              el.setAttribute('aria-hidden', String(!isActive))
+              if (isActive) {
+                el.removeAttribute('inert')
+              } else {
+                el.setAttribute('inert', '')
+              }
+            })
+            onActiveIndexChangeRef.current?.(newIdx)
           }
         },
       })
@@ -329,18 +352,14 @@ export function useIdeaStepsTimeline({
     const targetProgress = HOLD_PROGRESS_MAP[index] ?? 0
     const targetScroll = st.start + targetProgress * (st.end - st.start)
     if (lenis) {
-      try {
-        lenis.scrollTo(targetScroll, { duration: 1.2 })
-      } catch {
-        window.scrollTo({ top: targetScroll, behavior: 'smooth' })
-      }
+      lenis.scrollTo(targetScroll, { duration: 1.2 })
     } else {
-      window.scrollTo({ top: targetScroll, behavior: 'smooth' })
+      const isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      window.scrollTo({ top: targetScroll, behavior: isReduced ? 'auto' : 'smooth' })
     }
   }
 
   return {
-    activeIndex,
     goToStep,
     progressRef,
   }
