@@ -5,6 +5,7 @@ interface SocialLinksProps {
   links?: ProfileSocialLinks
   className?: string
   memberName?: string
+  compact?: boolean
 }
 
 function LinkedInIcon({ className }: { className?: string }) {
@@ -54,7 +55,12 @@ const PLATFORM_LABELS = {
   website: 'Personal website',
 } as const
 
-export function SocialLinks({ links, className = '', memberName = 'Member' }: SocialLinksProps) {
+export function SocialLinks({
+  links,
+  className = '',
+  memberName = 'Member',
+  compact = false,
+}: SocialLinksProps) {
   if (!links) return null
 
   // Filter only entries that are defined, non-empty, and not '#'
@@ -65,23 +71,32 @@ export function SocialLinks({ links, className = '', memberName = 'Member' }: So
   if (validEntries.length === 0) return null
 
   const renderIcon = (platform: string) => {
+    const size = compact ? 'h-3 w-3' : 'h-3.5 w-3.5'
     switch (platform.toLowerCase()) {
       case 'linkedin':
-        return <LinkedInIcon className="h-3.5 w-3.5" />
+        return <LinkedInIcon className={size} />
       case 'github':
-        return <GitHubIcon className="h-3.5 w-3.5" />
+        return <GitHubIcon className={size} />
       case 'instagram':
-        return <InstagramIcon className="h-3.5 w-3.5" />
+        return <InstagramIcon className={size} />
       case 'email':
-        return <Mail className="h-3.5 w-3.5" />
+        return <Mail className={size} />
       default:
-        return <Globe className="h-3.5 w-3.5" />
+        return <Globe className={size} />
     }
   }
 
+  const containerClasses = compact
+    ? `flex items-center justify-center gap-1.5 ${className}`
+    : `mt-4 flex items-center justify-center gap-2 pt-2.5 border-t border-[var(--color-hairline)]/70 ${className}`
+
+  const btnClasses = compact
+    ? 'flex h-6 w-6 items-center justify-center rounded-full bg-white text-[var(--color-ink-muted)] border border-[var(--color-border)] shadow-2xs transition-all duration-150 hover:scale-110 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-ghost)] hover:text-[var(--color-blue)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--color-blue)]'
+    : 'flex h-8 w-8 items-center justify-center rounded-full bg-white text-[var(--color-ink-muted)] border border-[var(--color-border)] shadow-xs transition-all duration-200 hover:scale-110 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-ghost)] hover:text-[var(--color-blue)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--color-blue)]'
+
   return (
     <div
-      className={`mt-4 flex items-center justify-center gap-2 pt-2.5 border-t border-[var(--color-hairline)]/70 ${className}`}
+      className={containerClasses}
       aria-label={`${memberName} social links`}
     >
       {validEntries.map(([platform, url]) => {
@@ -99,7 +114,7 @@ export function SocialLinks({ links, className = '', memberName = 'Member' }: So
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${memberName}'s ${labelText}`}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[var(--color-ink-muted)] border border-[var(--color-border)] shadow-xs transition-all duration-200 hover:scale-110 hover:border-[var(--color-blue)] hover:bg-[var(--color-blue-ghost)] hover:text-[var(--color-blue)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[var(--color-blue)]"
+            className={btnClasses}
           >
             {renderIcon(platform)}
           </a>

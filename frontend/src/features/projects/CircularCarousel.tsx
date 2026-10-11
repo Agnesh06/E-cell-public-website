@@ -1126,11 +1126,11 @@ const CircularCarousel = ({
             className="flex max-w-full flex-col items-center text-lg md:text-xl font-medium leading-[1.35] animate-[circular-carousel-title_520ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-none"
           >
             {current.title || current.alt}
-            {current.subtitle && <span className="font-normal opacity-60">{current.subtitle}</span>}
+            {current.subtitle && <span className="font-normal text-neutral-600 dark:text-neutral-300">{current.subtitle}</span>}
           </span>
-          <span className="inline-flex items-center gap-[3px] text-[12px] leading-none tabular-nums opacity-50">
+          <span className="inline-flex items-center gap-[3px] text-[12px] leading-none tabular-nums text-neutral-600 dark:text-neutral-300">
             <Digits value={active + 1} />
-            <span className="opacity-60">/</span>
+            <span className="text-neutral-500">/</span>
             <span>{String(count).padStart(2, '0')}</span>
           </span>
         </div>

@@ -3,6 +3,42 @@ export type ProjectLink = {
   href: string
 }
 
+export type ProjectCost = {
+  estimate: string
+  currency?: string
+  assumptions: string
+  statusLabel?: string
+}
+
+export type ProjectFeasibility = {
+  status: string
+  technicalRequirements: string
+  resourceRequirements: string
+  timeline: string
+  potentialConstraints: string
+  summaryAssessment: string
+}
+
+export type ProjectImpact = {
+  status: 'Proposed' | 'Ongoing' | 'Completed'
+  changeStatement: string
+  impactType: 'expected' | 'verified'
+  outcomes: string[]
+}
+
+export type ProjectTechStackOrApproachItem = {
+  name: string
+  category?: string
+  description?: string
+}
+
+export type ProjectTechOrApproach = {
+  type: 'tech-stack' | 'approach'
+  title: string
+  summary: string
+  items: ProjectTechStackOrApproachItem[]
+}
+
 export type Project = {
   slug: string
   title: string
@@ -14,6 +50,11 @@ export type Project = {
   image?: string
   featured: boolean
   order: number
+  status?: 'Proposed' | 'Ongoing' | 'Completed'
+  cost: ProjectCost
+  feasibility: ProjectFeasibility
+  impact: ProjectImpact
+  techOrApproach: ProjectTechOrApproach
 }
 
 export type Wing = {

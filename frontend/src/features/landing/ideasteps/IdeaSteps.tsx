@@ -31,7 +31,7 @@ export const IdeaSteps: React.FC = () => {
     <section
       id="about"
       aria-labelledby="about-section-heading"
-      className="ideasteps-section relative w-full bg-[var(--color-bg)]"
+      className="ideasteps-section relative w-full bg-[var(--color-bg)] overflow-hidden"
     >
       <h2 id="about-section-heading" className="sr-only">
         About CSEA E-Cell

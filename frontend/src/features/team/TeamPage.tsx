@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { FolderGrid, type FolderItemConfig } from './components/FolderGrid'
 import { ProfileGrid } from './components/ProfileGrid'
 import { FinderToolbar } from './components/FinderToolbar'
@@ -11,6 +11,12 @@ export default function TeamPage() {
   const [activeLevel, setActiveLevel] = useState<DirectoryLevel>('root')
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid')
+  const contentRef = useRef<HTMLElement>(null)
+
+  // Scroll to top of content workspace on level navigation
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+  }, [activeLevel])
 
   // Breadcrumbs construction
   const breadcrumbs: BreadcrumbSegment[] = useMemo(() => {
@@ -152,7 +158,7 @@ export default function TeamPage() {
 
       <div className="container-site relative z-10">
         {/* Main Header / Intro */}
-        <div className="mx-auto mb-10 max-w-3xl text-center">
+        <div className="mx-auto mb-8 max-w-3xl text-center">
           <h1 className="text-[clamp(2.25rem,4.5vw,3.75rem)] font-light leading-tight tracking-[-0.03em] text-[var(--color-ink)]">
             Our <span className="text-[var(--color-blue)] font-normal">People</span>
           </h1>
@@ -161,41 +167,48 @@ export default function TeamPage() {
           </p>
         </div>
 
-        {/* Directory Workspace */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
-          {/* Finder Sidebar (Desktop / Laptops) */}
-          <FinderSidebar
-            currentLevel={activeLevel}
-            onNavigate={(level) => setActiveLevel(level)}
-            totalCount={totalAllProfiles}
+        {/* Unified macOS Finder Window Frame */}
+        <div className="mx-auto w-full max-w-6xl rounded-2xl sm:rounded-3xl border border-[var(--color-hairline)] bg-white/85 shadow-[0_20px_50px_-15px_rgba(37,71,255,0.08)] backdrop-blur-xl overflow-hidden flex flex-col min-h-[640px]">
+          {/* macOS Finder Toolbar / Titlebar */}
+          <FinderToolbar
+            breadcrumbs={breadcrumbs}
+            onBack={handleBack}
+            canGoBack={canGoBack}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            currentCount={
+              activeLevel === 'root'
+                ? 2
+                : activeLevel === 'members'
+                  ? 2
+                  : currentProfiles.length
+            }
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
           />
 
-          {/* Main Content Area */}
-          <section aria-label="Team Directory Workspace" className="flex-1 w-full min-w-0">
-            {/* Finder Toolbar */}
-            <FinderToolbar
-              breadcrumbs={breadcrumbs}
-              onBack={handleBack}
-              canGoBack={canGoBack}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              currentCount={
-                activeLevel === 'root'
-                  ? 2
-                  : activeLevel === 'members'
-                    ? 2
-                    : currentProfiles.length
-              }
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
+          {/* macOS Window Body (Sidebar + Content Workspace) */}
+          <div className="flex flex-col lg:flex-row flex-1 min-h-0">
+            {/* Finder Sidebar */}
+            <FinderSidebar
+              currentLevel={activeLevel}
+              onNavigate={(level) => {
+                setActiveLevel(level)
+                setSearchQuery('')
+              }}
+              totalCount={totalAllProfiles}
             />
 
-            {/* Stage content */}
-            <div className="mt-6">
+            {/* Main Content Area */}
+            <section
+              ref={contentRef}
+              aria-label="Team Directory Workspace"
+              className="flex-1 flex flex-col min-h-[500px] min-w-0 bg-white/40 overflow-y-auto"
+            >
               {/* ROOT VIEW */}
               {activeLevel === 'root' && (
-                <div className="py-6">
-                  <div className="mb-6 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
+                <div className="py-5 px-6">
+                  <div className="mb-4 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
                     <span className="font-mono text-xs font-medium tracking-wider text-[var(--color-ink-faint)] uppercase">
                       Root Folders
                     </span>
@@ -203,14 +216,14 @@ export default function TeamPage() {
                       2 categories
                     </span>
                   </div>
-                  <FolderGrid folders={rootFolders} />
+                  <FolderGrid folders={rootFolders} viewMode={viewMode} />
                 </div>
               )}
 
               {/* MEMBERS VIEW (Exactly 2 child folders) */}
               {activeLevel === 'members' && (
-                <div className="py-6">
-                  <div className="mb-6 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
+                <div className="py-5 px-6">
+                  <div className="mb-4 flex items-center justify-between border-b border-[var(--color-hairline)] pb-3">
                     <span className="font-mono text-xs font-medium tracking-wider text-[var(--color-ink-faint)] uppercase">
                       Member Wings
                     </span>
@@ -218,41 +231,44 @@ export default function TeamPage() {
                       2 wings
                     </span>
                   </div>
-                  <FolderGrid folders={memberFolders} />
+                  <FolderGrid folders={memberFolders} viewMode={viewMode} />
                 </div>
               )}
 
               {/* LEADS VIEW (Exactly 7 profiles) */}
               {activeLevel === 'leads' && (
-                <div className="py-4">
+                <div className="py-4 px-6">
                   <ProfileGrid
                     profiles={currentProfiles}
                     title="Executive & Wing Leadership"
+                    viewMode={viewMode}
                   />
                 </div>
               )}
 
               {/* TECHNICAL VIEW (Exactly 15 profiles) */}
               {activeLevel === 'technical' && (
-                <div className="py-4">
+                <div className="py-4 px-6">
                   <ProfileGrid
                     profiles={currentProfiles}
                     title="Technical Wing Members"
+                    viewMode={viewMode}
                   />
                 </div>
               )}
 
               {/* OUTREACH VIEW (Exactly 15 profiles) */}
               {activeLevel === 'outreach' && (
-                <div className="py-4">
+                <div className="py-4 px-6">
                   <ProfileGrid
                     profiles={currentProfiles}
                     title="Industry and Community Outreach Members"
+                    viewMode={viewMode}
                   />
                 </div>
               )}
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </div>
     </div>

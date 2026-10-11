@@ -69,7 +69,7 @@ export const StaticIdeaSteps: React.FC = () => {
   )
 
   return (
-    <div ref={containerRef} className="static-idea-steps relative w-full">
+    <div ref={containerRef} className="static-idea-steps relative w-full overflow-hidden">
       {/* GridBackdrop behind the whole group */}
       <GridBackdrop className="opacity-70" />
 

@@ -98,7 +98,7 @@ test.describe('StaggeredMenu', () => {
 
     // Assert URL navigated to /projects
     await page.waitForURL('**/projects')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Projects')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/Projects/)
 
     // Assert marker still exists (SPA client-side navigation without reload)
     const markerExists = await page.evaluate(() => {

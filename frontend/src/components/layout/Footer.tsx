@@ -46,23 +46,23 @@ export function Footer() {
   }
 
   return (
-    <footer className="border-t border-[var(--color-hairline)] bg-[var(--color-bg)] pt-16 pb-12 text-[var(--color-ink)]">
+    <footer className="border-t border-white/20 bg-[var(--color-blue)] pt-16 pb-12 text-white">
       <Container>
         {/* Four columns on desktop, stacked on mobile */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8 pb-12">
           {/* Col 1: Brand and Tagline */}
           <div className="flex flex-col gap-3">
-            <h2 className="text-xl font-medium tracking-tight text-[var(--color-ink)]">
+            <h2 className="text-xl font-bold tracking-tight text-white">
               {site.name}
             </h2>
-            <p className="text-base text-[var(--color-ink-muted)]">
+            <p className="text-base text-white/85">
               {site.tagline}
             </p>
           </div>
 
           {/* Col 2: Quick Links */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-[var(--color-ink-muted)]">
+            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-white/90">
               Navigation
             </h3>
             <nav aria-label="Footer" className="flex flex-col gap-2.5">
@@ -70,7 +70,7 @@ export function Footer() {
                 <Link
                   key={item.href}
                   to={item.href}
-                  className="text-sm text-[var(--color-ink)] hover:text-[var(--color-blue)] transition-colors w-fit"
+                  className="footer-text-link text-sm"
                 >
                   {item.label}
                 </Link>
@@ -80,18 +80,18 @@ export function Footer() {
 
           {/* Col 3: Contact Block */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-[var(--color-ink-muted)]">
+            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-white/90">
               Contact
             </h3>
-            <div className="flex flex-col gap-2 text-sm text-[var(--color-ink-muted)]">
+            <div className="flex flex-col gap-2 text-sm text-white/85">
               {/* TODO: replace placeholder email with real official contact email */}
               <a
                 href="mailto:ecell@psgtech.ac.in"
-                className="hover:text-[var(--color-blue)] transition-colors w-fit"
+                className="footer-text-link"
               >
                 ecell@psgtech.ac.in
               </a>
-              <address className="not-italic leading-relaxed">
+              <address className="not-italic leading-relaxed text-white/85">
                 PSG College of Technology,
                 <br />
                 Coimbatore
@@ -101,7 +101,7 @@ export function Footer() {
 
           {/* Col 4: CSEA Website Link & Socials */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-[var(--color-ink-muted)]">
+            <h3 className="text-xs font-mono font-medium uppercase tracking-[var(--letter-spacing-eyebrow)] text-white/90">
               Connect
             </h3>
             <div className="flex flex-col gap-4">
@@ -110,13 +110,13 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="CSEA Official Website (opens in new tab)"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-blue)] hover:underline"
+                className="footer-text-link text-sm font-medium"
               >
                 <span>CSEA Website</span>
                 <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                 {site.socials.map((social) => (
                   <a
                     key={social.label}
@@ -124,7 +124,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`${social.label} (opens in new tab)`}
-                    className="text-[var(--color-ink-muted)] hover:text-[var(--color-blue)] transition-colors"
+                    className="footer-social-link"
                   >
                     {getSocialIcon(social.label)}
                   </a>
@@ -135,7 +135,7 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-[var(--color-hairline)] pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[var(--color-ink-muted)] gap-4">
+        <div className="border-t border-white/20 pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-white/90 gap-4">
           <p>© {currentYear} CSEA E-Cell, PSG College of Technology, Coimbatore</p>
         </div>
       </Container>

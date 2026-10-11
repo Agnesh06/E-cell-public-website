@@ -13,6 +13,7 @@ export interface UseIdeaStepsTimelineProps {
 export interface UseIdeaStepsTimelineReturn {
   activeIndex: number
   goToStep: (index: number) => void
+  progressRef: React.RefObject<number>
 }
 
 // Start of hold segment for each step in master progress (0 to 1)
@@ -41,6 +42,7 @@ export function useIdeaStepsTimeline({
 }: UseIdeaStepsTimelineProps): UseIdeaStepsTimelineReturn {
   const [activeIndex, setActiveIndex] = useState(0)
   const activeIndexRef = useRef(0)
+  const progressRef = useRef<number>(0)
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null)
   const lenis = useLenis()
 
@@ -62,21 +64,60 @@ export function useIdeaStepsTimeline({
         paused: true,
       })
 
-      // Linear flow-line drawing: draws from progress ~0.02 (t=2) to ~0.97 (t=97)
+      // Linear flow-line drawing: draws smoothly from progress 0.0 (t=0) to 1.0 (t=100)
       if (drawnPathRef.current) {
         tl.fromTo(
           drawnPathRef.current,
           { strokeDashoffset: pathLength },
-          { strokeDashoffset: 0, ease: 'none', duration: 95 },
-          2,
+          { strokeDashoffset: 0, ease: 'none', duration: 100 },
+          0,
         )
       }
 
-      // Initial state: hide all step stage slides
-      stepRefs.current.forEach((el) => {
+      // Initial state: Step 1 is rendered and fully visible at scroll progress 0 on load; later steps start hidden
+      stepRefs.current.forEach((el, index) => {
         if (el) {
-          gsap.set(el, { autoAlpha: 0 })
+          if (index === 0) {
+            gsap.set(el, { autoAlpha: 1 })
+            const textElements = el.querySelectorAll('.step-text > *, .step-bottom-bar')
+            const cardElements = el.querySelectorAll('.step-cards .glass-card, .step-cards')
+            gsap.set(textElements, { y: 0, autoAlpha: 1 })
+            gsap.set(cardElements, { y: 0, autoAlpha: 1 })
+          } else {
+            gsap.set(el, { autoAlpha: 0 })
+          }
         }
+      })
+
+      // Gentle intro animation for Step 1 on initial load (does not depend on user scrolling)
+      const firstStepEl = stepRefs.current[0]
+      if (firstStepEl && typeof window !== 'undefined' && window.scrollY < 10) {
+        const textElements = firstStepEl.querySelectorAll('.step-text > *, .step-bottom-bar')
+        const cardElements = firstStepEl.querySelectorAll('.step-cards .glass-card, .step-cards')
+        if (textElements.length > 0) {
+          gsap.from(textElements, {
+            y: 20,
+            autoAlpha: 0,
+            duration: 0.8,
+            stagger: 0.08,
+            ease: 'power2.out',
+          })
+        }
+        if (cardElements.length > 0) {
+          gsap.from(cardElements, {
+            y: 20,
+            autoAlpha: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            delay: 0.15,
+            ease: 'power2.out',
+          })
+        }
+      }
+
+      // Sync progressRef on scrubbed timeline updates
+      tl.eventCallback('onUpdate', () => {
+        progressRef.current = tl.progress()
       })
 
       // GlowBlob animation between corner positions during interludes
@@ -111,13 +152,13 @@ export function useIdeaStepsTimeline({
 
       // Build each step's enter, hold, exit, interlude
       // Step timings in master units (0..100):
-      // Step 1 (0): Enter 2..5, Hold 5..14 (0.10 in hold), Exit 14..16.5, Interlude 16.5..20
+      // Step 1 (0): Holds from 0..14 (0.10 in hold), Exit 14..16.5, Interlude 16.5..20
       // Step 2 (1): Enter 20..23, Hold 23..32 (0.30 in hold), Exit 32..34.5, Interlude 34.5..40
       // Step 3 (2): Enter 40..42.5, Hold 42.5..45.5, Exit 45.5..48, Interlude 48..60 (0.50 in interlude)
       // Step 4 (3): Enter 60..63, Hold 63..72 (0.70 in hold), Exit 72..74.5, Interlude 74.5..80
       // Step 5 (4): Enter 80..83, Hold 83..100 (0.90 in hold, pin releases at 100)
       const stepTimings = [
-        { enter: 2, enterDur: 3, exit: 14, exitDur: 2.5 },
+        { enter: 0, enterDur: 0, exit: 14, exitDur: 2.5 },
         { enter: 20, enterDur: 3, exit: 32, exitDur: 2.5 },
         { enter: 40, enterDur: 2.5, exit: 45.5, exitDur: 2.5 },
         { enter: 60, enterDur: 3, exit: 72, exitDur: 2.5 },
@@ -131,25 +172,30 @@ export function useIdeaStepsTimeline({
         const textElements = stepEl.querySelectorAll('.step-text > *, .step-bottom-bar')
         const cardElements = stepEl.querySelectorAll('.step-cards .glass-card, .step-cards')
 
-        // Enter segment
-        tl.set(stepEl, { autoAlpha: 1 }, timing.enter)
+        // Step 1 is rendered and visible at load (t=0)
+        if (index === 0) {
+          tl.set(stepEl, { autoAlpha: 1 }, 0)
+        } else {
+          // Later steps animate in as the user scrolls
+          tl.set(stepEl, { autoAlpha: 1 }, timing.enter)
 
-        if (textElements.length > 0) {
-          tl.fromTo(
-            textElements,
-            { y: 24, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.18, ease: 'power2.out' },
-            timing.enter,
-          )
-        }
+          if (textElements.length > 0) {
+            tl.fromTo(
+              textElements,
+              { y: 24, autoAlpha: 0 },
+              { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.18, ease: 'power2.out' },
+              timing.enter,
+            )
+          }
 
-        if (cardElements.length > 0) {
-          tl.fromTo(
-            cardElements,
-            { y: 24, autoAlpha: 0 },
-            { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.2, ease: 'power2.out' },
-            timing.enter + 0.3,
-          )
+          if (cardElements.length > 0) {
+            tl.fromTo(
+              cardElements,
+              { y: 24, autoAlpha: 0 },
+              { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.2, ease: 'power2.out' },
+              timing.enter + 0.3,
+            )
+          }
         }
 
         // Exit segment (all except the last step)
@@ -187,6 +233,7 @@ export function useIdeaStepsTimeline({
         invalidateOnRefresh: true,
         animation: tl,
         onUpdate: (self) => {
+          progressRef.current = self.progress
           // Throttled / direct DOM update for data-progress attribute
           const progress = self.progress
           const roundedProgress = progress.toFixed(2)
@@ -295,6 +342,7 @@ export function useIdeaStepsTimeline({
   return {
     activeIndex,
     goToStep,
+    progressRef,
   }
 }
 

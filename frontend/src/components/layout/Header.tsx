@@ -43,7 +43,7 @@ export function Header() {
       let shouldHide = isHiddenRef.current
       if (isScrollingDown && currentScrollY > threshold) {
         shouldHide = true
-      } else if (isScrollingUp) {
+      } else if (isScrollingUp || currentScrollY <= threshold) {
         shouldHide = false
       }
 
@@ -83,12 +83,14 @@ export function Header() {
       }
     }
 
-    // Use native window scroll — fires on window.scrollTo() in all envs,
-    // including headless test runners where GSAP ticker / Lenis RAF may not run.
     const onScroll = () => {
       handleVisibility(window.scrollY)
       updateScrolled()
     }
+
+    // Initial sync
+    updateScrolled()
+    handleVisibility(window.scrollY)
 
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {

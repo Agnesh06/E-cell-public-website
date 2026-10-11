@@ -2360,7 +2360,7 @@ const Folder = ({
               ref={node => {
                 itemRefs.current[index] = node;
               }}
-              className={`${LAYER} z-[10] overflow-hidden outline-none focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-solid focus-visible:[outline-color:var(--folder-focus)]`}
+              className={`${LAYER} z-[10] overflow-hidden outline-none focus:outline-none focus-visible:outline-none`}
               style={{
                 width: 'var(--folder-doc-w)',
                 height: 'var(--folder-doc-h)',

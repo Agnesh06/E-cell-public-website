@@ -189,10 +189,9 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
           width: 100% !important;
           height: 100dvh !important;
         }
-        /* Focus ring uses our blue token */
+        /* Focus ring disabled on toggle */
         .menu-wrapper .sm-scope .sm-toggle:focus-visible {
-          outline: 2px solid var(--color-blue) !important;
-          outline-offset: 4px !important;
+          outline: none !important;
         }
         @media (max-width: 479px) {
           .menu-wrapper .sm-scope .sm-toggle {
@@ -273,6 +272,7 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
           font-family: var(--font-display) !important;
           font-size: clamp(2rem, min(3.6vw, 7.5vh), 3.75rem) !important;
           line-height: 1.05 !important;
+          letter-spacing: -0.02em !important;
           white-space: normal !important;
           padding-right: 1.8em !important;
         }

@@ -4,6 +4,7 @@ import { GridBackdrop } from '@/components/common/GridBackdrop'
 import { GlowBlob } from '@/components/common/GlowBlob'
 import { Step } from './Step'
 import { FlowLine } from './FlowLine'
+import { FlowArrow3D } from './FlowArrow3D'
 import { StepIndicator } from './StepIndicator'
 import { useIdeaStepsTimeline } from './useIdeaStepsTimeline'
 
@@ -13,7 +14,7 @@ export const PinnedIdeaSteps: React.FC = () => {
   const glowRef = useRef<HTMLDivElement>(null)
   const stepRefs = useRef<(HTMLDivElement | null)[]>([])
 
-  const { activeIndex, goToStep } = useIdeaStepsTimeline({
+  const { activeIndex, goToStep, progressRef } = useIdeaStepsTimeline({
     scopeRef: stageRef,
     drawnPathRef,
     glowRef,
@@ -37,6 +38,13 @@ export const PinnedIdeaSteps: React.FC = () => {
 
       {/* Decorative flow line — z-0, renders below step content */}
       <FlowLine drawnPathRef={drawnPathRef} />
+
+      {/* 3D Paper-Plane Arrow riding the scroll line */}
+      <FlowArrow3D
+        drawnPathRef={drawnPathRef}
+        stageRef={stageRef}
+        progressRef={progressRef}
+      />
 
       {/* The five Step components stacked absolutely (inset 0) */}
       {ideas.map((step, index) => {

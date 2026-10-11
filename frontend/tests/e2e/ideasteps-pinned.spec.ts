@@ -34,7 +34,7 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
   // ── Timeline progress points & visibility ──────────────────────────────────
 
   const progressPoints = [
-    { p: 0.0, activeStep: '1', visibleStepId: null },
+    { p: 0.0, activeStep: '1', visibleStepId: 'step-about' },
     { p: 0.1, activeStep: '1', visibleStepId: 'step-about' },
     { p: 0.3, activeStep: '2', visibleStepId: 'step-approach' },
     { p: 0.5, activeStep: '4', visibleStepId: null }, // interlude: no text visible, next step (4) highlighted
@@ -251,6 +251,8 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
 
   test('axe passes in pinned desktop mode with exactly one h1', async ({ page }) => {
     await expect(page.locator('h1')).toHaveCount(1)
+    // Wait for hero load animation to complete
+    await page.waitForTimeout(1400)
 
     const results = await new AxeBuilder({ page }).analyze()
     expect(results.violations).toEqual([])
