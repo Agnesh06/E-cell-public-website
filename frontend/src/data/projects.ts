@@ -14,13 +14,10 @@ export const projects: Project[] = [
     featured: true,
     order: 1,
     status: 'Ongoing',
-    cost: {
-      estimate: '₹60,000 – ₹90,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Estimated for 12 months of cloud infrastructure, domain management, CI/CD pipeline, and staging servers. Assumes development is executed by student engineering teams and leverages campus lab facilities for hosting support.',
-      statusLabel: 'Estimated Annual Budget',
-    },
+    kind: 'technical',
+    stack: ['React 19 & TypeScript', 'Tailwind CSS', 'Node.js & Express', 'PostgreSQL', 'Redis', 'Docker'],
+    change:
+      'Aims to dismantle departmental isolation and double cross-disciplinary venture formation across PSG Tech.',
     feasibility: {
       status: 'High Feasibility',
       technicalRequirements:
@@ -73,13 +70,10 @@ export const projects: Project[] = [
     featured: true,
     order: 2,
     status: 'Proposed',
-    cost: {
-      estimate: '₹35,000 – ₹50,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Estimated for virtual conferencing tooling licenses, communication automation, cohort directory infrastructure, and event collateral. Assumes all participating alumni mentors contribute their time on an honorary pro-bono basis.',
-      statusLabel: 'Estimated Operational Cost',
-    },
+    kind: 'non-technical',
+    stack: ['Cohort Matching', 'Founder Office Hours', 'Venture Advisory Circles', 'Alumni Mentorship'],
+    change:
+      'Aims to build a permanent, structured pipeline of alumni expertise that de-risks and accelerates student entrepreneurship.',
     feasibility: {
       status: 'High Feasibility',
       technicalRequirements:
@@ -130,13 +124,10 @@ export const projects: Project[] = [
     featured: true,
     order: 3,
     status: 'Ongoing',
-    cost: {
-      estimate: '₹1,50,000 – ₹2,20,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Estimated event expenditure covering participant food and hospitality, high-speed networking facilities, hardware lab access, prizes, and promotional assets. Budget is projected to be co-sponsored by industry corporate partners and institutional grants.',
-      statusLabel: 'Estimated Event Budget',
-    },
+    kind: 'non-technical',
+    stack: ['Problem Statement Curation', 'Cross-Domain Team Formation', 'Milestone Checkpoints', 'Rubric Evaluation'],
+    change:
+      'Cultivates rapid problem-solving, real-time collaboration under pressure, and cross-functional prototype validation.',
     feasibility: {
       status: 'High Feasibility',
       technicalRequirements:
@@ -187,13 +178,10 @@ export const projects: Project[] = [
     featured: false,
     order: 4,
     status: 'Proposed',
-    cost: {
-      estimate: '₹45,000 – ₹70,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Projected for cloud application hosting, relational database storage, transactional email services, and SSL/domain infrastructure for 1 year. Development and maintenance managed by student contributors with zero third-party software licensing fees.',
-      statusLabel: 'Estimated Infrastructure Cost',
-    },
+    kind: 'technical',
+    stack: ['React & Vite', 'Tailwind CSS', 'Node.js & Express', 'PostgreSQL', 'JWT & OAuth2'],
+    change:
+      'Aims to remove barriers to campus startup talent acquisition, accelerating team formation from weeks to days.',
     feasibility: {
       status: 'High Feasibility',
       technicalRequirements:
@@ -245,13 +233,10 @@ export const projects: Project[] = [
     featured: false,
     order: 5,
     status: 'Ongoing',
-    cost: {
-      estimate: '₹30,000 – ₹45,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Estimated for physical collection bins in hostel blocks, informative signage, durable QR/barcode labels, and transport carts. Utilizes existing campus hostel storage facilities with volunteer student logistics management.',
-      statusLabel: 'Estimated Rollout Budget',
-    },
+    kind: 'non-technical',
+    stack: ['Hostel Hubs', 'Quality Triage', 'Mobile QR Logging', 'Distribution Fairs'],
+    change:
+      'Instills sustainable consumption habits across campus and diverts functional student materials from local landfills.',
     feasibility: {
       status: 'Feasible',
       technicalRequirements:
@@ -302,13 +287,10 @@ export const projects: Project[] = [
     featured: false,
     order: 6,
     status: 'Proposed',
-    cost: {
-      estimate: '₹40,000 – ₹60,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Includes WebRTC signaling server hosting, cloud database, and calendar synchronization APIs for 12 months. Assumes peer mentors participate voluntarily.',
-      statusLabel: 'Estimated Infrastructure Budget',
-    },
+    kind: 'technical',
+    stack: ['React 19 & TypeScript', 'Tailwind CSS', 'Node.js & WebSockets', 'PostgreSQL & Supabase', 'WebRTC'],
+    change:
+      'Empowers junior students to accelerate technical proficiency through empathetic, relatable peer-to-peer guidance.',
     feasibility: {
       status: 'High Feasibility',
       technicalRequirements:
@@ -360,13 +342,10 @@ export const projects: Project[] = [
     featured: false,
     order: 7,
     status: 'Ongoing',
-    cost: {
-      estimate: '₹85,000 – ₹1,30,000',
-      currency: 'INR (₹)',
-      assumptions:
-        'Estimated for 10 hardware sensor nodes, custom PCB fabrication, LoRa gateway, waterproof IP67 enclosures, and cloud telemetry hosting for a 6-month rural pilot in Coimbatore district.',
-      statusLabel: 'Estimated Pilot Prototype Cost',
-    },
+    kind: 'technical',
+    stack: ['ESP32 & Arduino', 'LoRaWAN & GSM', 'Python & FastAPI', 'TimescaleDB', 'React & Chart.js'],
+    change:
+      'Aims to deliver accessible, data-driven irrigation guidance to smallholder farmers to conserve water and improve yield consistency.',
     feasibility: {
       status: 'Moderate Feasibility',
       technicalRequirements:
@@ -418,13 +397,10 @@ export const projects: Project[] = [
     featured: false,
     order: 8,
     status: 'Proposed',
-    cost: {
-      estimate: 'To be estimated',
-      currency: 'INR (₹)',
-      assumptions:
-        'Formal financial budget to be determined following institutional data privacy compliance audit and campus medical clinic requirements review.',
-      statusLabel: 'To be estimated',
-    },
+    kind: 'technical',
+    stack: ['React & TypeScript', 'Tailwind CSS', 'Python & FastAPI', 'PostgreSQL (AES-256)', 'Docker & TLS'],
+    change:
+      'Aims to modernize collegiate healthcare delivery, eliminating clinic waiting bottlenecks and protecting student health privacy.',
     feasibility: {
       status: 'Under Feasibility Review',
       technicalRequirements:

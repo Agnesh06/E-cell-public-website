@@ -31,58 +31,54 @@ describe('Projects Data Integrity', () => {
       expect(typeof p.description).toBe('string')
       expect(p.description.length).toBeGreaterThan(120)
 
-      // 3. Cost (amount, currency, assumptions)
-      expect(p.cost).toBeDefined()
-      expect(typeof p.cost.estimate).toBe('string')
-      expect(typeof p.cost.assumptions).toBe('string')
-      expect(p.cost.assumptions.length).toBeGreaterThan(20)
-
-      // 4. Feasibility (technical, resources, timeline, constraints, summary)
+      // 3. Feasibility (technical, resources, timeline, constraints, summary)
       expect(p.feasibility).toBeDefined()
-      expect(typeof p.feasibility.status).toBe('string')
-      expect(typeof p.feasibility.summaryAssessment).toBe('string')
-      expect(typeof p.feasibility.technicalRequirements).toBe('string')
-      expect(typeof p.feasibility.resourceRequirements).toBe('string')
-      expect(typeof p.feasibility.timeline).toBe('string')
-      expect(typeof p.feasibility.potentialConstraints).toBe('string')
+      if (typeof p.feasibility === 'object') {
+        expect(typeof p.feasibility.status).toBe('string')
+        expect(typeof p.feasibility.summaryAssessment).toBe('string')
+        expect(typeof p.feasibility.technicalRequirements).toBe('string')
+        expect(typeof p.feasibility.resourceRequirements).toBe('string')
+        expect(typeof p.feasibility.timeline).toBe('string')
+        expect(typeof p.feasibility.potentialConstraints).toBe('string')
+      } else {
+        expect(typeof p.feasibility).toBe('string')
+      }
 
-      // 5. Change and Impact
+      // 4. Change and Impact
       expect(p.impact).toBeDefined()
-      expect(typeof p.impact.changeStatement).toBe('string')
-      expect(['expected', 'verified']).toContain(p.impact.impactType)
-      expect(Array.isArray(p.impact.outcomes)).toBe(true)
-      expect(p.impact.outcomes.length).toBeGreaterThanOrEqual(2)
+      if (p.impact) {
+        expect(typeof p.impact.changeStatement).toBe('string')
+        expect(['expected', 'verified']).toContain(p.impact.impactType)
+        expect(Array.isArray(p.impact.outcomes)).toBe(true)
+        expect(p.impact.outcomes.length).toBeGreaterThanOrEqual(2)
+      }
 
-      // 6. Technology Stack / Approach
+      // 5. Technology Stack / Approach
       expect(p.techOrApproach).toBeDefined()
-      expect(['tech-stack', 'approach']).toContain(p.techOrApproach.type)
-      expect(typeof p.techOrApproach.title).toBe('string')
-      expect(typeof p.techOrApproach.summary).toBe('string')
-      expect(p.techOrApproach.items.length).toBeGreaterThanOrEqual(3)
+      if (p.techOrApproach) {
+        expect(['tech-stack', 'approach']).toContain(p.techOrApproach.type)
+        expect(typeof p.techOrApproach.title).toBe('string')
+        expect(typeof p.techOrApproach.summary).toBe('string')
+        expect(p.techOrApproach.items.length).toBeGreaterThanOrEqual(3)
+      }
     }
   })
 
   it('correctly categorizes technical vs non-technical projects', () => {
     const campusInnovation = getProjectBySlug('placeholder-project-one')
-    expect(campusInnovation?.techOrApproach.type).toBe('tech-stack')
+    expect(campusInnovation?.techOrApproach?.type).toBe('tech-stack')
 
     const alumniNetwork = getProjectBySlug('placeholder-project-two')
-    expect(alumniNetwork?.techOrApproach.type).toBe('approach')
+    expect(alumniNetwork?.techOrApproach?.type).toBe('approach')
 
     const hackathon = getProjectBySlug('placeholder-project-three')
-    expect(hackathon?.techOrApproach.type).toBe('approach')
+    expect(hackathon?.techOrApproach?.type).toBe('approach')
 
     const greenLoop = getProjectBySlug('greenloop')
-    expect(greenLoop?.techOrApproach.type).toBe('approach')
+    expect(greenLoop?.techOrApproach?.type).toBe('approach')
 
     const agriSense = getProjectBySlug('agrisense')
-    expect(agriSense?.techOrApproach.type).toBe('tech-stack')
-  })
-
-  it('supports "To be estimated" cost transparently when data is pending', () => {
-    const meditrack = getProjectBySlug('meditrack')
-    expect(meditrack?.cost.estimate).toBe('To be estimated')
-    expect(meditrack?.cost.assumptions).toContain('compliance')
+    expect(agriSense?.techOrApproach?.type).toBe('tech-stack')
   })
 
   it('helper functions return expected adjacent projects', () => {

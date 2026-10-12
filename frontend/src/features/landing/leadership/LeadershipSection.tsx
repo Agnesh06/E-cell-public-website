@@ -1,14 +1,26 @@
 import ProfileCard from './ProfileCard'
 import { Button } from '@/components/common/Button'
-import { team } from '@/data/team'
+import { useSheetData } from '@/lib/useSheetData'
 import { initialsImage } from '@/lib/placeholder'
 import type { TeamMember } from '@/types'
 
 const ROLES = ['director', 'co-director'] as const
-const LABEL = { director: 'Director', 'co-director': 'Co-Director' }
 
 export default function LeadershipSection() {
-  const leaders = ROLES.map((r) => team.find((m) => m.leadership === r)).filter(Boolean) as TeamMember[]
+  const { data: teamData, status } = useSheetData('team')
+
+  if (status === 'loading') {
+    return (
+      <section
+        id="team"
+        aria-labelledby="team-heading"
+        className="relative py-[clamp(5rem,10vw,9rem)] min-h-[500px] sm:min-h-[600px]"
+        aria-busy="true"
+      />
+    )
+  }
+
+  const leaders = ROLES.map((r) => teamData.members.find((m) => m.leadership === r)).filter(Boolean) as TeamMember[]
   if (!leaders.length) return null
 
   return (
@@ -24,7 +36,7 @@ export default function LeadershipSection() {
               key={m.id}
               className="w-[clamp(260px,80vw,340px)]"
               name={m.name}
-              title={LABEL[m.leadership!]}
+              title={m.role}
               subtitle={m.department}
               avatarUrl={m.photo ?? initialsImage(m.name)}
             />

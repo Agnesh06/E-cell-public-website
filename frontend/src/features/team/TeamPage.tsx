@@ -4,7 +4,7 @@ import { ProfileGrid } from './components/ProfileGrid'
 import { FinderToolbar } from './components/FinderToolbar'
 import { FinderSidebar, type DirectoryLevel } from './components/FinderSidebar'
 import type { BreadcrumbSegment } from './components/FinderBreadcrumbs'
-import { teamProfiles } from '@/data/teamDirectoryData'
+import { useSheetData } from '@/lib/useSheetData'
 import type { TeamProfile } from '@/types/teamDirectory'
 
 export default function TeamPage() {
@@ -12,6 +12,11 @@ export default function TeamPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'compact'>('grid')
   const contentRef = useRef<HTMLElement>(null)
+  const { data: teamData, status } = useSheetData('team')
+
+  const leadsProfiles = teamData.profiles.leads
+  const technicalProfiles = teamData.profiles.technical
+  const outreachProfiles = teamData.profiles.industryAndCommunityOutreach
 
   // Scroll to top of content workspace on level navigation
   useEffect(() => {
@@ -79,11 +84,11 @@ export default function TeamPage() {
   const canGoBack = activeLevel !== 'root'
 
   // Root folder configs: exactly 2 folders: Leads & Members
-  const rootFolders: FolderItemConfig[] = [
+  const rootFolders: FolderItemConfig[] = useMemo(() => [
     {
       id: 'folder-leads',
       label: 'Leads',
-      count: teamProfiles.leads.length,
+      count: leadsProfiles.length,
       description: 'The core leadership guiding strategy, innovation, and club initiatives.',
       color: '#2547FF',
       onClick: () => setActiveLevel('leads'),
@@ -96,14 +101,14 @@ export default function TeamPage() {
       color: '#3B82F6',
       onClick: () => setActiveLevel('members'),
     },
-  ]
+  ], [leadsProfiles.length])
 
   // Members folder configs: exactly 2 folders: Technical & Industry and Community Outreach
-  const memberFolders: FolderItemConfig[] = [
+  const memberFolders: FolderItemConfig[] = useMemo(() => [
     {
       id: 'folder-technical',
       label: 'Technical',
-      count: teamProfiles.technical.length,
+      count: technicalProfiles.length,
       description: 'Developers, designers, and systems architects building club platforms.',
       color: '#2547FF',
       onClick: () => setActiveLevel('technical'),
@@ -111,22 +116,22 @@ export default function TeamPage() {
     {
       id: 'folder-outreach',
       label: 'Industry and Community Outreach',
-      count: teamProfiles.industryAndCommunityOutreach.length,
+      count: outreachProfiles.length,
       description: 'Building industry partnerships, sponsorships, and community relations.',
       color: '#0284C7',
       onClick: () => setActiveLevel('outreach'),
     },
-  ]
+  ], [technicalProfiles.length, outreachProfiles.length])
 
   // Profiles for current view (if in a leaf view)
   const currentProfiles: TeamProfile[] = useMemo(() => {
     let list: TeamProfile[] = []
     if (activeLevel === 'leads') {
-      list = teamProfiles.leads
+      list = leadsProfiles
     } else if (activeLevel === 'technical') {
-      list = teamProfiles.technical
+      list = technicalProfiles
     } else if (activeLevel === 'outreach') {
-      list = teamProfiles.industryAndCommunityOutreach
+      list = outreachProfiles
     }
 
     if (!searchQuery.trim()) return list
@@ -138,12 +143,21 @@ export default function TeamPage() {
         p.role.toLowerCase().includes(q) ||
         (p.subtitle && p.subtitle.toLowerCase().includes(q)),
     )
-  }, [activeLevel, searchQuery])
+  }, [activeLevel, searchQuery, leadsProfiles, technicalProfiles, outreachProfiles])
 
   const totalAllProfiles =
-    teamProfiles.leads.length +
-    teamProfiles.technical.length +
-    teamProfiles.industryAndCommunityOutreach.length
+    leadsProfiles.length +
+    technicalProfiles.length +
+    outreachProfiles.length
+
+  if (status === 'loading') {
+    return (
+      <div
+        className="min-h-screen bg-[var(--color-bg)] pt-24 pb-20 sm:pt-28"
+        aria-busy="true"
+      />
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[var(--color-bg)] pt-24 pb-20 sm:pt-28">
@@ -197,6 +211,11 @@ export default function TeamPage() {
                 setSearchQuery('')
               }}
               totalCount={totalAllProfiles}
+              folderCounts={{
+                leads: leadsProfiles.length,
+                technical: technicalProfiles.length,
+                outreach: outreachProfiles.length,
+              }}
             />
 
             {/* Main Content Area */}

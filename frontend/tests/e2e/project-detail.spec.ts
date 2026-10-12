@@ -14,20 +14,17 @@ test.describe('Project Details Page E2E Tests', () => {
     await expect(page).toHaveTitle(/Campus Connect \| PSG Tech E-Cell/)
   })
 
-  test('all 7 required details appear in the exact specified order', async ({ page }) => {
+  test('all required detail sections appear in order and facts grid has 3 cards', async ({ page }) => {
     await page.goto(`/projects/${testSlug}`)
     await page.getByRole('heading', { level: 1 }).waitFor()
 
     const sections = page.locator('section[data-detail-item]')
-    await expect(sections).toHaveCount(7)
+    await expect(sections).toHaveCount(4)
 
     const expectedLabels = [
       'detail-heading-image',
       'detail-heading-description',
-      'detail-heading-cost',
-      'detail-heading-feasibility',
-      'detail-heading-impact',
-      'detail-heading-tech-approach',
+      'detail-heading-facts',
       'detail-heading-contact',
     ]
 
@@ -36,13 +33,17 @@ test.describe('Project Details Page E2E Tests', () => {
       const labelledBy = await section.getAttribute('aria-labelledby')
       expect(labelledBy).toBe(expectedLabels[i])
       expect(await section.getAttribute('data-detail-item')).toBe(String(i + 1))
-
-      // Ensure the section is visible
       await expect(section).toBeVisible()
     }
+
+    // Verify facts grid has Feasibility, Change It Made, and Tech Stack cards
+    const factsSection = page.locator('section[aria-labelledby="detail-heading-facts"]')
+    await expect(factsSection.getByRole('heading', { name: 'Feasibility' })).toBeVisible()
+    await expect(factsSection.getByRole('heading', { name: 'Change It Made' })).toBeVisible()
+    await expect(factsSection.getByRole('heading', { name: 'Tech Stack' })).toBeVisible()
   })
 
-  test('Contact Us button is visible in section 7 and navigates to /contact', async ({ page }) => {
+  test('Contact Us button is visible and navigates to /contact', async ({ page }) => {
     await page.goto(`/projects/${testSlug}`)
     const contactSection = page.locator('section[aria-labelledby="detail-heading-contact"]')
     await expect(contactSection).toBeVisible()
@@ -70,26 +71,26 @@ test.describe('Project Details Page E2E Tests', () => {
     await expect(placeholderBadge).toBeVisible()
   })
 
-  test('displays "To be estimated" when cost information is pending (e.g. MediTrack)', async ({ page }) => {
+  test('Cost information is completely absent from project details page', async ({ page }) => {
     await page.goto('/projects/meditrack')
     const costSection = page.locator('section[aria-labelledby="detail-heading-cost"]')
-    await expect(costSection).toBeVisible()
-
-    await expect(costSection.getByText('To be estimated', { exact: true })).toBeVisible()
+    await expect(costSection).toHaveCount(0)
+    await expect(page.getByText('Estimated Implementation Cost')).toHaveCount(0)
+    await expect(page.getByText('Cost & Budget')).toHaveCount(0)
   })
 
-  test('displays Technology Stack for technical projects and Approach for non-technical projects', async ({
+  test('displays Tech Stack for technical projects and Tools & Resources for non-technical projects', async ({
     page,
   }) => {
     // Technical: Campus Connect
     await page.goto('/projects/campus-connect')
-    const techSection = page.locator('section[aria-labelledby="detail-heading-tech-approach"]')
-    await expect(techSection).toContainText('Technology Stack')
+    const techFacts = page.locator('section[aria-labelledby="detail-heading-facts"]')
+    await expect(techFacts.getByRole('heading', { name: 'Tech Stack' })).toBeVisible()
 
     // Non-Technical: Alumni Venture Network
     await page.goto('/projects/placeholder-project-two')
-    const approachSection = page.locator('section[aria-labelledby="detail-heading-tech-approach"]')
-    await expect(approachSection).toContainText('Methodology & Approach')
+    const nonTechFacts = page.locator('section[aria-labelledby="detail-heading-facts"]')
+    await expect(nonTechFacts.getByRole('heading', { name: 'Tools & Resources' })).toBeVisible()
   })
 
   test('renders friendly not-found page for invalid project slugs', async ({ page }) => {

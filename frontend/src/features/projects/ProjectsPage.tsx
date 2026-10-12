@@ -7,7 +7,7 @@ import { Eyebrow } from '@/components/common/Eyebrow'
 import { GridBackdrop } from '@/components/common/GridBackdrop'
 import ScrollStack, { ScrollStackItem } from '@/components/reactbits/ScrollStack'
 import { LineSidebar } from './LineSidebar'
-import { projects } from '@/data/projects'
+import { useSheetData } from '@/lib/useSheetData'
 import { placeholderImage } from '@/lib/placeholder'
 
 export default function ProjectsPage() {
@@ -15,6 +15,7 @@ export default function ProjectsPage() {
   const pinPointsRef = useRef<number[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const lenis = useLenis()
+  const { data: projectsData, status } = useSheetData('projects')
 
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
@@ -26,8 +27,8 @@ export default function ProjectsPage() {
   )
 
   const sortedProjects = useMemo(
-    () => [...projects].sort((a, b) => a.order - b.order),
-    []
+    () => [...projectsData].sort((a, b) => a.order - b.order),
+    [projectsData]
   )
 
   const projectTitles = useMemo(
@@ -167,6 +168,15 @@ export default function ProjectsPage() {
     },
     [lenis]
   )
+
+  if (status === 'loading') {
+    return (
+      <div
+        className="projects-page min-h-screen bg-[var(--color-bg)] pt-32 pb-24"
+        aria-busy="true"
+      />
+    )
+  }
 
   return (
     <div className="projects-page min-h-screen bg-[var(--color-bg)]">

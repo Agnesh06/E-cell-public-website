@@ -105,7 +105,7 @@ export default function ProfileCard({
           <h3 className="text-[clamp(1.15rem,2vw,1.45rem)] font-medium leading-tight text-[var(--color-ink)]">
             {name}
           </h3>
-          <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-blue)]">
+          <p className="mx-auto mt-1 max-w-[28ch] font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--color-blue)] line-clamp-2">
             {title}
           </p>
           {subtitle && (

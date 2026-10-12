@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { useLenis } from '@/app/smoothScroll'
 
@@ -46,9 +46,12 @@ export function useIdeaStepsTimeline({
   const activeIndexRef = useRef(0)
   const progressRef = useRef<number>(0)
   const onTimelineUpdateRef = useRef(onTimelineUpdate)
-  onTimelineUpdateRef.current = onTimelineUpdate
   const onActiveIndexChangeRef = useRef(onActiveIndexChange)
-  onActiveIndexChangeRef.current = onActiveIndexChange
+
+  useEffect(() => {
+    onTimelineUpdateRef.current = onTimelineUpdate
+    onActiveIndexChangeRef.current = onActiveIndexChange
+  })
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null)
   const lenis = useLenis()
 

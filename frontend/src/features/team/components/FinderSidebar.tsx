@@ -2,13 +2,24 @@ import { Folder, Users, Layers, ShieldCheck, ChevronRight } from 'lucide-react'
 
 export type DirectoryLevel = 'root' | 'leads' | 'members' | 'technical' | 'outreach'
 
+export interface FinderFolderCounts {
+  leads: number
+  technical: number
+  outreach: number
+}
+
 interface FinderSidebarProps {
   currentLevel: DirectoryLevel
   onNavigate: (level: DirectoryLevel) => void
   totalCount: number
+  folderCounts?: FinderFolderCounts
 }
 
-export function FinderSidebar({ currentLevel, onNavigate, totalCount }: FinderSidebarProps) {
+export function FinderSidebar({ currentLevel, onNavigate, totalCount, folderCounts }: FinderSidebarProps) {
+  const leadsCount = folderCounts?.leads ?? 0
+  const technicalCount = folderCounts?.technical ?? 0
+  const outreachCount = folderCounts?.outreach ?? 0
+
   const navItems = [
     {
       id: 'root' as DirectoryLevel,
@@ -21,7 +32,7 @@ export function FinderSidebar({ currentLevel, onNavigate, totalCount }: FinderSi
       id: 'leads' as DirectoryLevel,
       label: 'Leads',
       icon: ShieldCheck,
-      count: 7,
+      count: leadsCount,
       badge: 'Leads',
     },
     {
@@ -35,7 +46,7 @@ export function FinderSidebar({ currentLevel, onNavigate, totalCount }: FinderSi
       id: 'technical' as DirectoryLevel,
       label: 'Technical',
       icon: Folder,
-      count: 15,
+      count: technicalCount,
       indent: true,
       badge: 'Devs',
     },
@@ -43,7 +54,7 @@ export function FinderSidebar({ currentLevel, onNavigate, totalCount }: FinderSi
       id: 'outreach' as DirectoryLevel,
       label: 'Industry & Outreach',
       icon: Folder,
-      count: 15,
+      count: outreachCount,
       indent: true,
       badge: 'Partners',
     },

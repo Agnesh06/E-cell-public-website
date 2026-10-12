@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import CircularCarousel from './CircularCarousel'
 import { Button } from '@/components/common/Button'
-import { projects } from '@/data/projects'
+import { useSheetData } from '@/lib/useSheetData'
 import { placeholderImage } from '@/lib/placeholder'
 
 function useCardWidth() {
@@ -20,6 +20,7 @@ export default function ProjectsPreview() {
   const navigate = useNavigate()
   const activeRef = useRef(0)
   const cardWidth = useCardWidth()
+  const { data: projects, status } = useSheetData('projects')
 
   const featured = useMemo(
     () =>
@@ -27,7 +28,7 @@ export default function ProjectsPreview() {
         .filter((p) => p.featured)
         .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
         .slice(0, 3),
-    [],
+    [projects],
   )
 
   const items = useMemo(
@@ -40,6 +41,17 @@ export default function ProjectsPreview() {
       })),
     [featured],
   )
+
+  if (status === 'loading') {
+    return (
+      <section
+        id="projects"
+        aria-labelledby="projects-heading"
+        className="relative py-[clamp(5rem,10vw,9rem)] min-h-[600px] sm:min-h-[700px] lg:min-h-[800px]"
+        aria-busy="true"
+      />
+    )
+  }
 
   if (!items.length) return null
 

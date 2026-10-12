@@ -3,13 +3,6 @@ export type ProjectLink = {
   href: string
 }
 
-export type ProjectCost = {
-  estimate: string
-  currency?: string
-  assumptions: string
-  statusLabel?: string
-}
-
 export type ProjectFeasibility = {
   status: string
   technicalRequirements: string
@@ -44,17 +37,19 @@ export type Project = {
   title: string
   summary: string
   description: string
-  tags: string[]
-  lead: string
-  links: ProjectLink[]
+  tags?: string[]
+  lead?: string
+  links?: ProjectLink[]
   image?: string
   featured: boolean
   order: number
-  status?: 'Proposed' | 'Ongoing' | 'Completed'
-  cost: ProjectCost
-  feasibility: ProjectFeasibility
-  impact: ProjectImpact
-  techOrApproach: ProjectTechOrApproach
+  status?: 'Proposed' | 'Ongoing' | 'Completed' | string
+  kind?: 'technical' | 'non-technical'
+  stack?: string[]
+  change?: string
+  feasibility?: string | ProjectFeasibility
+  impact?: ProjectImpact
+  techOrApproach?: ProjectTechOrApproach
 }
 
 export type Wing = {
@@ -71,10 +66,11 @@ export type TeamMember = {
   leadership?: 'director' | 'co-director'
   wing: Wing
   socials: {
-    linkedin: string
-    github: string
-    email: string
+    linkedin?: string
+    github?: string
+    email?: string
   }
+  order?: number
 }
 
 export type IdeaCard = {

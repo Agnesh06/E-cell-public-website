@@ -126,6 +126,9 @@ Static metadata is exported from typed modules in `src/data/`. The site
 configuration reads validated `VITE_CSEA_URL` from `src/lib/env.ts`. The
 external contact endpoint is represented by `VITE_API_URL`; no backend or
 request behavior is implemented in this foundation phase.
+Live projects and team records are fetched via quote-aware CSV parsing (`src/lib/sheets.ts`) with a 4s timeout and session caching via `useSheetData`.
+Consumers preserve section heights during loading to eliminate layout shifts, rendering live records upon completion.
+Network failures, timeouts, or unconfigured sheets gracefully fall back to static fixtures, while cost metrics are eliminated in favor of a 3-card facts grid.
 
 ## Styling and tooling
 

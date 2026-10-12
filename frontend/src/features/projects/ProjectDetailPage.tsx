@@ -3,17 +3,13 @@ import { useParams, Link } from 'react-router'
 import {
   ArrowLeft,
   ArrowRight,
-  Coins,
   CheckCircle2,
-  Cpu,
   Layers,
   Compass,
-  Calendar,
-  Users,
   AlertCircle,
   Sparkles,
 } from 'lucide-react'
-import { getProjectBySlug, getAdjacentProjects } from '@/data/projects'
+import { useSheetData } from '@/lib/useSheetData'
 import { projectBannerPlaceholder } from '@/lib/placeholder'
 import { Button } from '@/components/common/Button'
 import { Eyebrow } from '@/components/common/Eyebrow'
@@ -22,10 +18,21 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const project = slug ? getProjectBySlug(slug) : undefined
+  const { data: projectsData, status } = useSheetData('projects')
   const [imageError, setImageError] = useState(false)
 
+  const project = slug ? projectsData.find((p) => p.slug === slug) : undefined
+
   usePageTitle(project ? project.title : 'Project Details')
+
+  if (status === 'loading') {
+    return (
+      <div
+        className="project-detail-page min-h-screen bg-[var(--color-bg)] pt-32 pb-20"
+        aria-busy="true"
+      />
+    )
+  }
 
   if (!project) {
     return (
@@ -58,13 +65,35 @@ export default function ProjectDetailPage() {
     )
   }
 
-  const { prev, next } = getAdjacentProjects(project.slug)
+  const sortedProjects = [...projectsData].sort((a, b) => a.order - b.order)
+  const currentIndex = sortedProjects.findIndex((p) => p.slug === project.slug)
+  const prev = currentIndex > 0 ? sortedProjects[currentIndex - 1] : undefined
+  const next = currentIndex < sortedProjects.length - 1 ? sortedProjects[currentIndex + 1] : undefined
+
   const isImagePlaceholder = !project.image || imageError
   const displayedImage = isImagePlaceholder
     ? projectBannerPlaceholder(project.title, project.order)
     : project.image
 
-  const isTechnical = project.techOrApproach.type === 'tech-stack'
+  const isTechnical =
+    project.kind !== undefined
+      ? project.kind === 'technical'
+      : project.techOrApproach?.type !== 'approach'
+
+  const feasibilityText =
+    typeof project.feasibility === 'string'
+      ? project.feasibility
+      : project.feasibility?.summaryAssessment || 'Feasibility analysis underway.'
+
+  const changeText =
+    project.change ||
+    project.impact?.changeStatement ||
+    'Project outcomes and campus community impact.'
+
+  const stackItems: string[] =
+    project.stack && project.stack.length > 0
+      ? project.stack
+      : project.techOrApproach?.items?.map((item) => item.name) || []
 
   return (
     <div className="project-detail-page min-h-screen bg-[var(--color-bg)] text-[var(--color-ink)] selection:bg-[var(--color-blue-ghost)]">
@@ -104,29 +133,37 @@ export default function ProjectDetailPage() {
 
             {/* Tags & Lead */}
             <div className="mt-6 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] mr-1">
-                Lead:
-              </span>
-              <span className="text-xs font-medium px-3 py-1 rounded-full bg-white border border-[var(--color-hairline)] text-[var(--color-ink)] mr-3">
-                {project.lead}
-              </span>
-              <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] mr-1">
-                Tags:
-              </span>
-              {project.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs font-medium px-3 py-1 rounded-full bg-[var(--color-blue-ghost)] text-[var(--color-blue)]"
-                >
-                  {tag}
-                </span>
-              ))}
+              {project.lead && (
+                <>
+                  <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] mr-1">
+                    Lead:
+                  </span>
+                  <span className="text-xs font-medium px-3 py-1 rounded-full bg-white border border-[var(--color-hairline)] text-[var(--color-ink)] mr-3">
+                    {project.lead}
+                  </span>
+                </>
+              )}
+              {project.tags && project.tags.length > 0 && (
+                <>
+                  <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] mr-1">
+                    Tags:
+                  </span>
+                  {project.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs font-medium px-3 py-1 rounded-full bg-[var(--color-blue-ghost)] text-[var(--color-blue)]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Project Details: Exactly 7 items in order */}
+      {/* Main Project Details */}
       <div className="container-site max-w-5xl py-12 md:py-16 space-y-12 md:space-y-16">
         {/* 1. PROJECT IMAGE */}
         <section
@@ -181,233 +218,106 @@ export default function ProjectDetailPage() {
           </div>
         </section>
 
-        {/* 3. COST */}
+        {/* 3. FACTS GRID (Feasibility, Change It Made, Tech Stack / Tools & Resources) */}
         <section
           data-detail-item="3"
-          aria-labelledby="detail-heading-cost"
+          aria-labelledby="detail-heading-facts"
           className="space-y-4"
         >
           <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-blue)] font-semibold block">
-            03 / Cost &amp; Budget
+            03 / Project Facts
           </span>
-          <div className="p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--color-hairline)]">
+          <h2 id="detail-heading-facts" className="sr-only">
+            Project Facts
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Card 1: Feasibility */}
+            <div className="p-6 sm:p-8 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)] flex flex-col justify-between">
               <div>
-                <h2
-                  id="detail-heading-cost"
-                  className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight"
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] font-semibold">
+                    Assessment
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-[var(--color-blue-ghost)] text-[var(--color-blue)]">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Feasibility
+                  </span>
+                </div>
+                <h3
+                  id="detail-heading-feasibility"
+                  className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight mb-3"
                 >
-                  Estimated Implementation Cost
-                </h2>
-                <p className="text-sm text-[var(--color-ink-muted)] mt-1">
-                  Currency: {project.cost.currency || 'INR (₹)'} · {project.cost.statusLabel}
+                  Feasibility
+                </h3>
+                <p className="text-base text-[var(--color-ink-muted)] leading-relaxed">
+                  {feasibilityText}
                 </p>
               </div>
-              <div className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-[var(--color-blue-ghost)] text-[var(--color-blue)]">
-                <Coins className="w-6 h-6 shrink-0" aria-hidden="true" />
-                <span className="text-xl sm:text-2xl font-mono font-bold tracking-tight">
-                  {project.cost.estimate}
+            </div>
+
+            {/* Card 2: Change It Made */}
+            <div className="p-6 sm:p-8 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] font-semibold">
+                    Outcome
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-[var(--color-blue-ghost)] text-[var(--color-blue)]">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    Impact
+                  </span>
+                </div>
+                <h3
+                  id="detail-heading-impact"
+                  className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight mb-3"
+                >
+                  Change It Made
+                </h3>
+                <p className="text-base text-[var(--color-ink-muted)] leading-relaxed">
+                  {changeText}
+                </p>
+              </div>
+            </div>
+
+            {/* Card 3: Tech Stack or Tools & Resources (spanning both columns on desktop) */}
+            <div className="md:col-span-2 p-6 sm:p-8 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)]">
+              <div className="flex items-center justify-between gap-3 mb-4">
+                <span className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] font-semibold">
+                  {isTechnical ? 'Technologies' : 'Methodology'}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-[var(--color-blue-ghost)] text-[var(--color-blue)]">
+                  {isTechnical ? <Layers className="w-3.5 h-3.5" /> : <Compass className="w-3.5 h-3.5" />}
+                  {isTechnical ? 'Technical' : 'Non-Technical'}
                 </span>
               </div>
-            </div>
-
-            <div className="pt-6">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] font-semibold mb-2">
-                Budget Scope &amp; Underlying Assumptions
+              <h3
+                id="detail-heading-tech-approach"
+                className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight mb-4"
+              >
+                {isTechnical ? 'Tech Stack' : 'Tools & Resources'}
               </h3>
-              <p className="text-base text-[var(--color-ink-muted)] leading-relaxed">
-                {project.cost.assumptions}
-              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {stackItems.map((item, idx) => (
+                  <span
+                    key={idx}
+                    className="px-3.5 py-2 rounded-xl border border-[var(--color-hairline)] bg-[var(--color-bg)] text-sm font-medium text-[var(--color-ink)] transition-colors hover:border-[var(--color-blue)]/30 hover:bg-white"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* 4. FEASIBILITY */}
+        {/* 4. CONTACT US BUTTON */}
         <section
           data-detail-item="4"
-          aria-labelledby="detail-heading-feasibility"
-          className="space-y-4"
-        >
-          <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-blue)] font-semibold block">
-            04 / Feasibility Assessment
-          </span>
-          <div className="p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-              <h2
-                id="detail-heading-feasibility"
-                className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight"
-              >
-                Practical Feasibility Analysis
-              </h2>
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium bg-[var(--color-blue-ghost)] text-[var(--color-blue)]">
-                <Sparkles className="w-3.5 h-3.5" />
-                {project.feasibility.status}
-              </span>
-            </div>
-
-            {/* Assessment summary */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[var(--color-bg)] border border-[var(--color-hairline)] mb-8">
-              <p className="text-base md:text-lg font-medium text-[var(--color-ink)] leading-relaxed">
-                {project.feasibility.summaryAssessment}
-              </p>
-            </div>
-
-            {/* 4 Breakdown cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-              <div className="p-5 rounded-2xl border border-[var(--color-hairline)] bg-white space-y-2">
-                <div className="flex items-center gap-2 text-[var(--color-blue)] font-mono text-xs uppercase tracking-wider font-semibold">
-                  <Cpu className="w-4 h-4 shrink-0" />
-                  <span>Technical Requirements</span>
-                </div>
-                <p className="text-sm sm:text-base text-[var(--color-ink-muted)] leading-relaxed">
-                  {project.feasibility.technicalRequirements}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-[var(--color-hairline)] bg-white space-y-2">
-                <div className="flex items-center gap-2 text-[var(--color-blue)] font-mono text-xs uppercase tracking-wider font-semibold">
-                  <Users className="w-4 h-4 shrink-0" />
-                  <span>Resource Requirements</span>
-                </div>
-                <p className="text-sm sm:text-base text-[var(--color-ink-muted)] leading-relaxed">
-                  {project.feasibility.resourceRequirements}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-[var(--color-hairline)] bg-white space-y-2">
-                <div className="flex items-center gap-2 text-[var(--color-blue)] font-mono text-xs uppercase tracking-wider font-semibold">
-                  <Calendar className="w-4 h-4 shrink-0" />
-                  <span>Projected Timeline</span>
-                </div>
-                <p className="text-sm sm:text-base text-[var(--color-ink-muted)] leading-relaxed">
-                  {project.feasibility.timeline}
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-[var(--color-hairline)] bg-white space-y-2">
-                <div className="flex items-center gap-2 text-amber-600 font-mono text-xs uppercase tracking-wider font-semibold">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>Potential Constraints</span>
-                </div>
-                <p className="text-sm sm:text-base text-[var(--color-ink-muted)] leading-relaxed">
-                  {project.feasibility.potentialConstraints}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. CHANGE AND IMPACT */}
-        <section
-          data-detail-item="5"
-          aria-labelledby="detail-heading-impact"
-          className="space-y-4"
-        >
-          <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-blue)] font-semibold block">
-            05 / Change &amp; Impact
-          </span>
-          <div className="p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <h2
-                id="detail-heading-impact"
-                className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight"
-              >
-                {project.impact.impactType === 'verified'
-                  ? 'Verified Outcomes'
-                  : 'Expected Change & Impact'}
-              </h2>
-              <span className="text-xs font-mono uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-[var(--color-ink-muted)] border border-[var(--color-hairline)]">
-                Status: {project.impact.status}
-              </span>
-            </div>
-
-            <p className="text-base sm:text-lg text-[var(--color-ink)] leading-relaxed mb-6 font-medium">
-              {project.impact.changeStatement}
-            </p>
-
-            <div className="space-y-3 pt-2">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-[var(--color-ink-faint)] font-semibold mb-3">
-                {project.impact.impactType === 'verified'
-                  ? 'Key Verified Milestones:'
-                  : 'Projected Impact Metrics (Expected):'}
-              </h3>
-              <ul className="space-y-3">
-                {project.impact.outcomes.map((outcome, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-3 p-4 rounded-xl bg-[var(--color-bg)] border border-[var(--color-hairline)]"
-                  >
-                    <CheckCircle2 className="w-5 h-5 text-[var(--color-blue)] shrink-0 mt-0.5" />
-                    <span className="text-sm sm:text-base text-[var(--color-ink)] leading-relaxed">
-                      {outcome}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* 6. TECHNOLOGY STACK / APPROACH */}
-        <section
-          data-detail-item="6"
-          aria-labelledby="detail-heading-tech-approach"
-          className="space-y-4"
-        >
-          <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-blue)] font-semibold block">
-            06 / {isTechnical ? 'Technology Stack' : 'Methodology & Approach'}
-          </span>
-          <div className="p-6 sm:p-8 md:p-10 rounded-2xl md:rounded-3xl bg-white border border-[var(--color-hairline)] shadow-[0_12px_32px_-16px_rgba(11,11,15,0.06)]">
-            <div className="flex items-center gap-3 mb-2">
-              {isTechnical ? (
-                <Layers className="w-6 h-6 text-[var(--color-blue)] shrink-0" />
-              ) : (
-                <Compass className="w-6 h-6 text-[var(--color-blue)] shrink-0" />
-              )}
-              <h2
-                id="detail-heading-tech-approach"
-                className="text-xl sm:text-2xl font-medium text-[var(--color-ink)] tracking-tight"
-              >
-                {project.techOrApproach.title}
-              </h2>
-            </div>
-            <p className="text-sm sm:text-base text-[var(--color-ink-muted)] mb-8 leading-relaxed">
-              {project.techOrApproach.summary}
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {project.techOrApproach.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 sm:p-5 rounded-2xl border border-[var(--color-hairline)] bg-[var(--color-bg)] transition-colors hover:border-[var(--color-blue)]/30 hover:bg-white"
-                >
-                  {item.category && (
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--color-blue)] font-medium block mb-1">
-                      {item.category}
-                    </span>
-                  )}
-                  <div className="font-medium text-[var(--color-ink)] text-base mb-1">
-                    {item.name}
-                  </div>
-                  {item.description && (
-                    <p className="text-xs sm:text-sm text-[var(--color-ink-muted)] leading-relaxed">
-                      {item.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* 7. CONTACT US BUTTON */}
-        <section
-          data-detail-item="7"
           aria-labelledby="detail-heading-contact"
           className="relative p-8 sm:p-12 md:p-16 rounded-3xl bg-gradient-to-br from-white to-[var(--color-blue-ghost)]/40 border border-[var(--color-hairline)] shadow-[0_20px_50px_-25px_rgba(35,64,255,0.2)] text-center space-y-6"
         >
           <span className="text-xs font-mono uppercase tracking-widest text-[var(--color-blue)] font-semibold block">
-            07 / Get in Touch
+            04 / Get in Touch
           </span>
           <div className="max-w-2xl mx-auto space-y-4">
             <h2
