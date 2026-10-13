@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Marquee } from "@/components/ui/marquee";
 
@@ -144,31 +144,79 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
 }
 
 export function TeamSection({
-  id = "team",
+  id,
   catchphrase = "The minds building the future at PSG Tech E-Cell",
   subtitle = "CORE TEAM '26",
   members = defaultTeamMembers,
   className = "",
 }: TeamSectionProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [headingInView, setHeadingInView] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
+
+  useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleChange = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches);
+    };
+    mql.addEventListener("change", handleChange);
+    return () => {
+      mql.removeEventListener("change", handleChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const target = document.getElementById("team-heading") || sectionRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setHeadingInView(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(target);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
-    <section
+    <div
+      ref={sectionRef}
       id={id}
-      className={`relative w-full h-auto min-h-0 md:h-screen md:min-h-screen flex flex-col justify-center overflow-hidden bg-transparent py-0 md:py-2 text-[#0A0A0A] md:snap-start md:scroll-mt-0 ${className}`}
-      aria-labelledby="team-heading"
+      className={cn(
+        "relative w-full h-auto min-h-0 flex flex-col justify-center bg-transparent py-0 md:py-2 text-[#0A0A0A]",
+        className
+      )}
     >
-      <div className="relative z-10 mx-auto max-w-7xl px-0 sm:px-6">
+      <style>{`
+        #team {
+          padding-top: clamp(4rem, 8vw, 7rem) !important;
+          padding-bottom: clamp(4rem, 8vw, 7rem) !important;
+          scroll-margin-top: 5.5rem;
+        }
+        #team-heading {
+          font-size: clamp(2rem, 6vw, 3.25rem) !important;
+          scroll-margin-top: 5.5rem;
+        }
+      `}</style>
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-0 sm:px-6">
         {/* Realigned Balanced Catchphrase Header */}
-        <div className="mx-auto mb-4 sm:mb-6 md:mb-8 text-center max-w-3xl px-4 sm:px-0">
+        <div className="mx-auto mb-4 sm:mb-6 md:mb-8 text-center w-full max-w-3xl px-4 sm:px-0">
           {subtitle && (
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EDEFFC] text-[#2547FF] border border-[#2547FF]/20 text-xs font-mono font-semibold uppercase tracking-wider mb-2 sm:mb-3">
               <span className="size-1.5 rounded-full bg-[#2547FF] animate-pulse" />
               <span>{subtitle}</span>
             </div>
           )}
-          <h2
-            id="team-heading"
-            className="font-display font-bold text-2xl sm:text-4xl md:text-[42px] lg:text-[46px] text-[#0A0A0A] tracking-[-0.03em] leading-[1.18] text-balance mx-auto"
-          >
+          <p className="mx-auto max-w-[36ch] text-center [text-wrap:balance] font-display font-medium text-base sm:text-lg md:text-xl text-[#0A0A0A]/85 tracking-[-0.01em] leading-snug">
             {catchphrase === "The minds building the future at PSG Tech E-Cell" ? (
               <>
                 The minds building the future <br className="hidden sm:inline" />
@@ -180,17 +228,21 @@ export function TeamSection({
                 <span className="text-[#2547FF]">.</span>
               </>
             )}
-          </h2>
+          </p>
         </div>
 
         {/* Infinite Scrolling Marquee Cards - Positioned Lower with Edge Fading Masks */}
-        <div className="relative w-full">
+        <div className="relative w-full overflow-hidden h-auto">
           {/* Left Gradient Fade Mask */}
           <div className="pointer-events-none absolute top-0 left-0 z-20 h-full w-8 sm:w-28 md:w-44 bg-gradient-to-r from-[#FAFAFC] via-[#FAFAFC]/90 to-transparent" />
           {/* Right Gradient Fade Mask */}
           <div className="pointer-events-none absolute top-0 right-0 z-20 h-full w-8 sm:w-28 md:w-44 bg-gradient-to-l from-[#FAFAFC] via-[#FAFAFC]/90 to-transparent" />
 
-          <Marquee duration={35} pauseOnHover>
+          <Marquee
+            duration={35}
+            pauseOnHover
+            speed={!headingInView || reducedMotion ? 0 : undefined}
+          >
             {members.map((member, index) => (
               <TeamMemberCard
                 key={`${member.name}-${index}`}
@@ -214,7 +266,7 @@ export function TeamSection({
           </button>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
 

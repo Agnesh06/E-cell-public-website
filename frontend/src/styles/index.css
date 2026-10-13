@@ -151,6 +151,14 @@ body {
   --header-toggle-width: 44px;
   --header-logo-height: 22px;
   --header-logo-gap: 8px;
+  --header-button-width: 78px;
+  --header-button-gap: 12px;
+}
+
+@media (max-width: 359px) {
+  .site-header {
+    --header-logo-gap: 0.5px;
+  }
 }
 
 .site-header__row {
@@ -169,9 +177,18 @@ body {
   width: max-content;
   max-width: calc(
     var(--header-viewport-width, 100%) - (2 * var(--header-gutter)) -
-      (2 * var(--header-toggle-width)) - 32px
+      (2 * (var(--header-toggle-width) + var(--header-button-gap) + var(--header-button-width)))
   );
   min-width: 0;
+}
+
+@media (min-width: 480px) {
+  .site-header__logo-scroll {
+    max-width: calc(
+      var(--header-viewport-width, 100%) - (2 * var(--header-gutter)) -
+        (2 * (var(--header-toggle-width) + var(--header-button-gap) + var(--header-button-width))) - 16px
+    );
+  }
 }
 
 .logo-group {
@@ -183,8 +200,24 @@ body {
   pointer-events: none;
 }
 
+.site-header__contact {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  margin-right: calc(var(--header-toggle-width) + var(--header-button-gap));
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.contact-button:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-bg, #FAFAFD), 0 0 0 4px #2340FF !important;
+}
+
 .site-header__menu {
   grid-column: 3;
+  grid-row: 1;
   justify-self: stretch;
   min-width: 0;
 }
@@ -275,6 +308,7 @@ body {
 @media (min-width: 480px) {
   .site-header {
     --header-toggle-width: 80px;
+    --header-button-width: 108px;
   }
 }
 

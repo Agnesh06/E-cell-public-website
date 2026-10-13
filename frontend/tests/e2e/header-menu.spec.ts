@@ -70,11 +70,11 @@ test.describe('StaggeredMenu', () => {
 
     const menuItems = page.locator('#staggered-menu-panel .sm-panel-item')
     await expect(menuItems).toHaveCount(5)
-    await expect(menuItems.nth(0)).toHaveText('Home')
-    await expect(menuItems.nth(1)).toHaveText('About')
-    await expect(menuItems.nth(2)).toHaveText('Projects')
-    await expect(menuItems.nth(3)).toHaveText('Team')
-    await expect(menuItems.nth(4)).toHaveText('Contact Us')
+    await expect(menuItems.nth(0)).toContainText('Home')
+    await expect(menuItems.nth(1)).toContainText('About')
+    await expect(menuItems.nth(2)).toContainText('Projects')
+    await expect(menuItems.nth(3)).toContainText('Team')
+    await expect(menuItems.nth(4)).toContainText('Contact Us')
 
     // Press Escape to close and check focus
     await page.keyboard.press('Escape')

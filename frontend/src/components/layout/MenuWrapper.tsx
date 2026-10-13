@@ -180,12 +180,14 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
           box-sizing: border-box !important;
           width: var(--header-toggle-width) !important;
           min-width: var(--header-toggle-width) !important;
+          font-family: var(--font-display) !important;
           font-size: 1rem !important;
           font-weight: 500 !important;
           justify-content: flex-end !important;
           /* Color is already driven by menuButtonColor / openMenuButtonColor props */
         }
         .menu-wrapper .sm-scope {
+          --menu-index-color: #4F2FF0;
           width: 100% !important;
           height: 100dvh !important;
         }
@@ -260,24 +262,46 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
         .menu-wrapper .sm-scope .sm-panel-list {
           display: flex !important;
           flex-direction: column !important;
-          gap: clamp(8px, 1.2vh, 12px) !important;
+          gap: clamp(12px, 1.8vh, 22px) !important;
         }
         .menu-wrapper .sm-scope .sm-panel-itemWrap {
           flex: 0 0 auto !important;
-          line-height: 1.05 !important;
+          line-height: 1.1 !important;
         }
         .menu-wrapper .sm-scope .sm-panel-item {
           box-sizing: border-box !important;
+          width: 100% !important;
           max-width: 100% !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
           font-family: var(--font-display) !important;
+          font-weight: 500 !important;
           font-size: clamp(2rem, min(3.6vw, 7.5vh), 3.75rem) !important;
-          line-height: 1.05 !important;
-          letter-spacing: -0.02em !important;
+          line-height: 1.1 !important;
+          letter-spacing: -0.03em !important;
+          text-transform: capitalize !important;
           white-space: normal !important;
-          padding-right: 1.8em !important;
+          padding-right: 0 !important;
+        }
+        .menu-wrapper .sm-scope .sm-panel-itemNumber {
+          display: inline-block !important;
+          color: var(--menu-index-color, #4F2FF0) !important;
+          font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif) !important;
+          font-weight: 400 !important;
+          font-size: clamp(18px, 2vw, 32px) !important;
+          font-variant-numeric: tabular-nums !important;
+          line-height: 1 !important;
+          letter-spacing: normal !important;
+          text-decoration: none !important;
+          pointer-events: none !important;
+          user-select: none !important;
+          flex-shrink: 0 !important;
+          margin-left: 1rem !important;
         }
         .menu-wrapper .sm-scope .sm-panel-list[data-numbering] .sm-panel-item::after {
-          right: 0.4em !important;
+          content: none !important;
+          display: none !important;
         }
         @media (min-width: 1024px) {
           .menu-wrapper .sm-scope .sm-panel-item {

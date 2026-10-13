@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Footer from '@/components/layout/Footer'
 import Header from '@/components/layout/Header'
+import { ContactProvider, ContactPopup } from '@/components/common/FloatingContact'
 import { useLenis } from '@/app/smoothScroll'
 import { ScrollTrigger } from '@/lib/gsap'
 
@@ -57,7 +58,7 @@ function RootLayout() {
   }, [location.pathname, location.hash, lenis])
 
   return (
-    <>
+    <ContactProvider>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--color-surface)] focus:text-[var(--color-blue)] focus:rounded-md focus:shadow-md focus:outline-none focus-visible:outline-none"
@@ -69,7 +70,8 @@ function RootLayout() {
         <Outlet />
       </main>
       <Footer />
-    </>
+      <ContactPopup />
+    </ContactProvider>
   )
 }
 

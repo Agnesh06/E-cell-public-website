@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { LogoGroup } from './LogoGroup'
 import { MenuWrapper } from './MenuWrapper'
+import { ContactButton } from '@/components/common/FloatingContact'
 import { gsap } from '@/lib/gsap'
 
 export function Header() {
@@ -113,6 +114,9 @@ export function Header() {
           className="site-header__logo-scroll pointer-events-auto"
         >
           <LogoGroup />
+        </div>
+        <div className="site-header__contact pointer-events-auto">
+          <ContactButton isMenuOpen={isMenuOpen} />
         </div>
         <div className="site-header__menu pointer-events-auto">
           <MenuWrapper

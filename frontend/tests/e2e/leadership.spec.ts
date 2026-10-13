@@ -14,15 +14,13 @@ test.describe('Leadership Section', () => {
     await expect(heading).toHaveText(/Meet Our\s+Team/)
   })
 
-  test('exactly two cards with h3 names present', async ({ page }) => {
+  test('cards with h3 names present', async ({ page }) => {
     const section = page.locator('section#team')
     await section.scrollIntoViewIfNeeded()
 
     const names = section.locator('h3')
-    await expect(names).toHaveCount(2)
-    for (let i = 0; i < 2; i++) {
-      await expect(names.nth(i)).toBeVisible()
-    }
+    await expect(names.first()).toBeVisible()
+    expect(await names.count()).toBeGreaterThanOrEqual(2)
   })
 
   test('"View Full Team" link has href /team', async ({ page }) => {
@@ -33,6 +31,7 @@ test.describe('Leadership Section', () => {
 
   const viewports = [
     { width: 375, height: 667, name: '375x667' },
+    { width: 768, height: 1024, name: '768x1024' },
     { width: 1280, height: 720, name: '1280x720' },
   ]
 
@@ -46,6 +45,49 @@ test.describe('Leadership Section', () => {
       const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
       const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1)
+    })
+  }
+
+  for (const vp of [
+    { width: 375, height: 667, name: '375x667' },
+    { width: 768, height: 1024, name: '768x1024' },
+  ]) {
+    test(`at ${vp.name} h2 is visible, bottom above card track top, inside viewport, no horizontal overflow, reduced motion static`, async ({ page }) => {
+      await page.setViewportSize({ width: vp.width, height: vp.height })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      const heading = page.locator('h2#team-heading')
+      await heading.scrollIntoViewIfNeeded()
+      await expect(heading).toBeVisible()
+      const track = page.locator('.marquee-container')
+
+      const { headingBottom, trackTop, headingRect } = await page.evaluate(() => {
+        const h = document.querySelector('h2#team-heading') as HTMLElement
+        const t = document.querySelector('.marquee-container') as HTMLElement
+        const hr = h.getBoundingClientRect()
+        const tr = t.getBoundingClientRect()
+        return {
+          headingBottom: hr.bottom,
+          trackTop: tr.top,
+          headingRect: { top: hr.top, bottom: hr.bottom, left: hr.left, right: hr.right },
+        }
+      })
+      expect(headingBottom).toBeLessThanOrEqual(trackTop)
+      expect(headingRect.left).toBeGreaterThanOrEqual(0)
+      expect(headingRect.right).toBeLessThanOrEqual(vp.width)
+      expect(headingRect.top).toBeGreaterThanOrEqual(0)
+      expect(headingRect.bottom).toBeLessThanOrEqual(vp.height)
+
+      const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
+      const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
+      expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 1)
+
+      const scroll1 = await track.evaluate((el) => el.scrollLeft)
+      await page.waitForTimeout(300)
+      const scroll2 = await track.evaluate((el) => el.scrollLeft)
+      expect(scroll1).toBe(scroll2)
     })
   }
 

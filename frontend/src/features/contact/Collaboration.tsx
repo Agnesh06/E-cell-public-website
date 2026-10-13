@@ -1,13 +1,13 @@
 import * as React from "react";
 import Stepper03, { type Step } from "@/components/ui/stepper-03";
 import { Building2, UserCheck, Handshake, CalendarClock, ShieldCheck } from "lucide-react";
-import { CompanyInfo } from "@/components/collaboration/CompanyInfo";
-import { ContactInfo } from "@/components/collaboration/ContactInfo";
-import { CollaborationDetails } from "@/components/collaboration/CollaborationDetails";
-import { CommercialTimeline } from "@/components/collaboration/CommercialTimeline";
-import { ConsentSubmit } from "@/components/collaboration/ConsentSubmit";
-import { SubmissionResult } from "@/components/collaboration/SubmissionResult";
-import { useCollaborationForm } from "@/hooks/useCollaborationForm";
+import { CompanyInfo } from "./CompanyInfo";
+import { ContactInfo } from "./ContactInfo";
+import { CollaborationDetails } from "./CollaborationDetails";
+import { CommercialTimeline } from "./CommercialTimeline";
+import { ConsentSubmit } from "./ConsentSubmit";
+import { SubmissionResult } from "./SubmissionResult";
+import { useCollaborationForm } from "./useCollaborationForm";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function Collaboration({ id = "collaboration" }: { id?: string }) {
@@ -110,7 +110,7 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
   ];
 
   return (
-    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden snap-start scroll-mt-0">
+    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-visible snap-start scroll-mt-0">
 
       <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center w-full">
         {/* Streamlined Clean Header */}

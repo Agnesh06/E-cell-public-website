@@ -2,10 +2,11 @@ import { expect, test } from '@playwright/test'
 import * as path from 'path'
 import * as fs from 'fs'
 
-test.describe('Our Projects Section', () => {
+test.describe('Our Projects Section - Prism Carousel', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await page.getByRole('heading', { level: 1 }).waitFor()
+    await page.locator('section#projects:not([aria-busy="true"])').waitFor({ timeout: 10000 })
   })
 
   test('h2 "Our Projects" exists', async ({ page }) => {
@@ -23,26 +24,95 @@ test.describe('Our Projects Section', () => {
     }
   })
 
-  test('clicking the carousel centre (front card) navigates to a /projects/ URL', async ({ page }) => {
+  test('landing page shows the Prism carousel with "Click to view" text on visible slide', async ({ page }) => {
     const section = page.locator('section#projects')
     await section.scrollIntoViewIfNeeded()
-    await page.waitForTimeout(500)
 
-    // Find the carousel region / stage bounding box and click centre
-    const carousel = section.locator('[role="region"][aria-label="Image carousel"]')
-    await expect(carousel).toBeVisible()
-    const box = await carousel.boundingBox()
+    const prismCarousel = section.locator('[role="region"][aria-roledescription="carousel"]')
+    await expect(prismCarousel).toBeVisible()
+    await expect(prismCarousel.locator('canvas')).toBeVisible()
+
+    const clickToView = section.getByText('Click to view')
+    await expect(clickToView).toBeVisible()
+  })
+
+  test('clicking "Click to view" goes to /projects/:slug without a full reload', async ({ page }) => {
+    const section = page.locator('section#projects')
+    await section.scrollIntoViewIfNeeded()
+
+    // Mark window to detect full reload
+    await page.evaluate(() => {
+      ;(window as unknown as { __clientNavMarker: boolean }).__clientNavMarker = true
+    })
+
+    const slideLink = section.locator('a[aria-label]').filter({ hasText: 'Click to view' })
+    await expect(slideLink).toBeVisible()
+
+    const targetHref = await slideLink.getAttribute('href')
+    expect(targetHref).toMatch(/\/projects\/.+/)
+
+    await slideLink.click()
+    await page.waitForURL(/\/projects\/.+/, { timeout: 5000 })
+
+    const stillMarked = await page.evaluate(
+      () => (window as unknown as { __clientNavMarker: boolean }).__clientNavMarker === true,
+    )
+    expect(stillMarked).toBe(true)
+    expect(page.url()).toContain(targetHref)
+  })
+
+  test('dragging does not navigate', async ({ page }) => {
+    const section = page.locator('section#projects')
+    await section.scrollIntoViewIfNeeded()
+
+    const slideLink = section.locator('a[aria-label]').filter({ hasText: 'Click to view' })
+    await expect(slideLink).toBeVisible()
+    const box = await slideLink.boundingBox()
     expect(box).toBeTruthy()
 
     if (box) {
-      // Click at the centre of the carousel box where the front card resides
-      await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2)
-      await page.waitForURL(/\/projects\/.+/, { timeout: 5000 })
-      expect(page.url()).toMatch(/\/projects\/.+/)
+      const startX = box.x + box.width / 2
+      const startY = box.y + box.height / 2
+
+      // Perform a drag gesture across the slide
+      await page.mouse.move(startX, startY)
+      await page.mouse.down()
+      await page.mouse.move(startX - 80, startY, { steps: 8 })
+      await page.mouse.up()
+
+      // Short wait to ensure no delayed navigation occurred
+      await page.waitForTimeout(600)
+      expect(page.url()).not.toMatch(/\/projects\/.+/)
     }
   })
 
-  test('"View All Projects" button goes to /projects', async ({ page }) => {
+  test('keyboard can reach the link and Enter opens it', async ({ page }) => {
+    const section = page.locator('section#projects')
+    await section.scrollIntoViewIfNeeded()
+
+    // Mark window to check client-side navigation
+    await page.evaluate(() => {
+      ;(window as unknown as { __clientNavMarker: boolean }).__clientNavMarker = true
+    })
+
+    const slideLink = section.locator('a[aria-label]').filter({ hasText: 'Click to view' })
+    await expect(slideLink).toBeVisible()
+    const targetHref = await slideLink.getAttribute('href')
+
+    await slideLink.focus()
+    await expect(slideLink).toBeFocused()
+
+    await page.keyboard.press('Enter')
+    await page.waitForURL(/\/projects\/.+/, { timeout: 5000 })
+
+    const stillMarked = await page.evaluate(
+      () => (window as unknown as { __clientNavMarker: boolean }).__clientNavMarker === true,
+    )
+    expect(stillMarked).toBe(true)
+    expect(page.url()).toContain(targetHref)
+  })
+
+  test('"View All Projects" goes to /projects', async ({ page }) => {
     const button = page.locator('section#projects').getByRole('link', { name: 'View All Projects' })
     await expect(button).toBeVisible()
     await button.click()
@@ -61,6 +131,7 @@ test.describe('Our Projects Section', () => {
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await page.goto('/')
       await page.getByRole('heading', { level: 1 }).waitFor()
+      await page.locator('section#projects:not([aria-busy="true"])').waitFor({ timeout: 10000 })
 
       const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)
       const clientWidth = await page.evaluate(() => document.documentElement.clientWidth)
@@ -77,49 +148,6 @@ test.describe('Our Projects Section', () => {
     await page.getByRole('heading', { level: 1 }).waitFor()
     await page.waitForTimeout(500)
     expect(errors).toEqual([])
-  })
-  test('carousel rotates continuously with drift', async ({ page }) => {
-    await page.goto('/')
-    await page.getByRole('heading', { level: 1 }).waitFor()
-
-    const section = page.locator('section#projects')
-    await section.scrollIntoViewIfNeeded()
-    await page.waitForTimeout(1000)
-
-    await page.mouse.move(0, 0)
-
-    const ring = page.locator('section#projects .h-0.w-0.relative > .h-0.w-0.absolute').first()
-    
-    // Fallback to get style directly
-    const getTransform = () => ring.evaluate(el => el.style.transform)
-
-    const transform0 = await getTransform()
-    await page.waitForTimeout(3000)
-    const transform3 = await getTransform()
-    await page.waitForTimeout(3000)
-    const transform6 = await getTransform()
-
-    expect(transform0).not.toBe(transform3)
-    expect(transform3).not.toBe(transform6)
-  })
-
-  test('carousel stays still with reducedMotion', async ({ page }) => {
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.goto('/')
-    await page.getByRole('heading', { level: 1 }).waitFor()
-
-    const section = page.locator('section#projects')
-    await section.scrollIntoViewIfNeeded()
-    await page.waitForTimeout(1000)
-
-    const ring = page.locator('section#projects .h-0.w-0.relative > .h-0.w-0.absolute').first()
-    const getTransform = () => ring.evaluate(el => el.style.transform)
-    
-    const transform0 = await getTransform()
-    await page.waitForTimeout(3000)
-    const transform3 = await getTransform()
-
-    expect(transform0).toBe(transform3)
   })
 })
 
