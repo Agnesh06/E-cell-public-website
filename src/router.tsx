@@ -28,6 +28,10 @@ export const router = createBrowserRouter([
         element: <Team />,
       },
       {
+        path: '/teams',
+        element: <Team />,
+      },
+      {
         path: '/collaboration',
         element: <Collaboration />,
       },

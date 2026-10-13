@@ -370,21 +370,21 @@ export function WorksWheel({
           proportions inside a card as well as at full bleed. */}
       <div
         ref={labelRef}
-        className="pointer-events-none absolute inset-0 grid place-items-center tracking-tight"
+        className="pointer-events-none absolute inset-0 grid place-items-center tracking-tight font-display font-normal text-foreground"
         style={{ fontSize: metrics.title }}
       >
         {label}
       </div>
       <div
         ref={titleRef}
-        className="pointer-events-none absolute top-1/2 left-[8%] -translate-y-1/2 tracking-tight opacity-0"
+        className="pointer-events-none absolute top-1/2 left-[8%] -translate-y-1/2 tracking-tight opacity-0 font-display font-normal text-foreground"
         style={{ fontSize: metrics.title }}
       >
         {items[active]?.title}
       </div>
 
       <ol
-        className="text-muted-foreground absolute top-[7.5%] right-[2.5%] text-right leading-[1.75]"
+        className="text-muted-foreground absolute top-[7.5%] right-[2.5%] text-right leading-[1.75] font-sans"
         style={{ fontSize: metrics.index }}
       >
         {items.map((item, i) => (
@@ -393,8 +393,8 @@ export function WorksWheel({
               type="button"
               onClick={() => to(i + 1)}
               className={cn(
-                "focus-visible:outline-foreground cursor-pointer transition-colors outline-none focus-visible:outline-1",
-                i === active && "text-foreground font-medium",
+                "focus-visible:outline-foreground cursor-pointer transition-colors outline-none focus-visible:outline-1 text-sm",
+                i === active ? "text-foreground font-medium" : "font-normal",
               )}
             >
               {item.title}

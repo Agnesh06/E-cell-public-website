@@ -41,8 +41,8 @@ export default function Footer() {
 
       <footer
         id="site-footer"
-        className="relative z-20 bg-[#FAFAFC] text-[#0A0A0A] py-14 px-4 sm:px-6 lg:px-8 border-t border-black/[0.08] overflow-hidden select-text"
-        style={{ fontFamily: '"Plus Jakarta Sans", "Poppins", sans-serif' }}
+        className="relative z-20 bg-[#FAFAFC] text-[#0A0A0A] py-14 px-4 sm:px-6 lg:px-8 border-t border-black/[0.08] overflow-hidden select-text font-sans"
+        style={{ fontFamily: 'var(--font-sans)' }}
       >
         <div className="w-full max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-between gap-y-12 lg:gap-x-8">
@@ -60,7 +60,7 @@ export default function Footer() {
                   className="h-14 sm:h-16 w-auto object-contain rounded-xl shadow-xs border border-black/[0.08] bg-white p-1"
                 />
                 <div className="flex flex-col text-left">
-                  <span className="font-display font-black text-xl tracking-tight text-[#0A0A0A] flex items-center gap-1.5">
+                  <span className="font-display font-normal text-2xl tracking-tight text-[#0A0A0A] flex items-center gap-1.5">
                     E-CELL<span className="text-[#2547FF]">.</span>
                   </span>
                   <span className="font-mono text-[10px] tracking-[0.25em] text-[#262626]/60 uppercase">
@@ -71,24 +71,24 @@ export default function Footer() {
 
               <div className="w-full max-w-52 h-px mt-6 bg-gradient-to-r from-transparent via-black/15 to-transparent md:mr-auto" />
 
-              <p className="text-sm text-[#262626]/75 mt-5 max-w-sm leading-relaxed">
+              <p className="font-sans font-normal text-[14px] text-[#262626]/75 mt-5 max-w-sm leading-[1.6]">
                 The Entrepreneurship Cell of PSG College of Technology fosters student innovation, nurtures high-impact startup ventures, and connects creative minds with real-world industry leaders.
               </p>
             </div>
 
             {/* Column 2: Important Links */}
             <div className="w-full md:w-[45%] lg:w-[15%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h3 className="font-sans font-bold text-[13px] text-[#0A0A0A] tracking-[0.06em] uppercase">
                 Important Links
               </h3>
-              <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
+              <div className="flex flex-col gap-3 mt-4 font-sans text-[14px] font-normal leading-[1.6]">
                 <a
                   href="#home"
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick("home");
                   }}
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Home
                 </a>
@@ -98,7 +98,7 @@ export default function Footer() {
                     e.preventDefault();
                     handleNavClick("projects");
                   }}
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Selected Work
                 </a>
@@ -108,7 +108,7 @@ export default function Footer() {
                     e.preventDefault();
                     handleNavClick("team");
                   }}
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Core Team &apos;26
                 </a>
@@ -118,15 +118,25 @@ export default function Footer() {
                     e.preventDefault();
                     handleNavClick("collaboration");
                   }}
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Collaborate
+                </a>
+                <a
+                  href="#contact"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("contact");
+                  }}
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
+                >
+                  Contact Us
                 </a>
                 <a
                   href="https://psgtech.edu"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   PSG Tech Portal
                 </a>
@@ -135,15 +145,15 @@ export default function Footer() {
 
             {/* Column 3: Social Links */}
             <div className="w-full md:w-[45%] lg:w-[15%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h3 className="font-sans font-bold text-[13px] text-[#0A0A0A] tracking-[0.06em] uppercase">
                 Connect
               </h3>
-              <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
+              <div className="flex flex-col gap-3 mt-4 font-sans text-[14px] font-normal leading-[1.6]">
                 <a
                   href="https://linkedin.com/company/ecell-psgtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   LinkedIn
                 </a>
@@ -151,7 +161,7 @@ export default function Footer() {
                   href="https://instagram.com/ecell_psgtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Instagram
                 </a>
@@ -159,7 +169,7 @@ export default function Footer() {
                   href="https://github.com/Agnesh06"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   DevLabs / GitHub
                 </a>
@@ -167,30 +177,70 @@ export default function Footer() {
                   href="https://twitter.com/ecell_psgtech"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Twitter / X
                 </a>
                 <a
                   href="mailto:ecell@psgtech.ac.in"
-                  className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Official Email
                 </a>
+              </div>
+
+              {/* Social icons row matching Griffin reference style */}
+              <div className="mt-5 pt-1">
+                <span className="font-sans font-bold text-[12px] tracking-[0.06em] uppercase text-[#0A0A0A] block mb-2.5">
+                  Social
+                </span>
+                <div className="flex items-center gap-2">
+                  <a
+                    href="https://linkedin.com/company/ecell-psgtech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all text-xs font-bold leading-none"
+                    aria-label="LinkedIn"
+                  >
+                    in
+                  </a>
+                  <a
+                    href="https://youtube.com/@ecell_psgtech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all"
+                    aria-label="YouTube"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                  </a>
+                  <a
+                    href="https://twitter.com/ecell_psgtech"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all"
+                    aria-label="Twitter / X"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
 
             {/* Column 4: Newsletter Subscription */}
             <div className="w-full md:w-[45%] lg:w-[27%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h3 className="font-sans font-bold text-[13px] text-[#0A0A0A] tracking-[0.06em] uppercase">
                 Subscribe for updates
               </h3>
-              <p className="text-xs text-[#262626]/65 mt-2 max-w-xs leading-relaxed">
+              <p className="font-sans font-normal text-[14px] text-[#262626]/75 mt-3 max-w-xs leading-[1.6]">
                 Stay ahead with announcements on flagship hackathons, startup grants, and incubation calls.
               </p>
 
               {isSubscribed ? (
-                <div className="flex items-center gap-2 mt-4 px-4 py-2.5 rounded-full bg-[#2547FF]/10 border border-[#2547FF]/30 text-[#2547FF] text-xs font-mono">
+                <div className="flex items-center gap-2 mt-4 px-4 py-2.5 rounded-full bg-[#2547FF]/10 border border-[#2547FF]/30 text-[#2547FF] text-xs font-sans font-medium">
                   <CheckCircle2 size={16} />
                   <span>Subscribed! Welcome to E-Cell community.</span>
                 </div>
@@ -204,12 +254,12 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address…"
-                    className="w-full h-full pl-4 pr-2 outline-none text-xs sm:text-sm bg-transparent text-[#0A0A0A] placeholder-[#262626]/40 font-mono rounded-full"
+                    className="w-full h-full pl-4 pr-2 outline-none text-[13px] sm:text-[14px] bg-transparent text-[#0A0A0A] placeholder-[#262626]/40 font-sans rounded-full"
                     required
                   />
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-[#2547FF] to-[#1532D6] hover:from-[#1B3AE5] hover:to-[#0D24AB] active:scale-95 transition-all px-4 sm:px-5 h-9 shrink-0 rounded-full text-xs font-semibold text-white cursor-pointer shadow-xs"
+                    className="bg-gradient-to-r from-[#2547FF] to-[#1532D6] hover:from-[#1B3AE5] hover:to-[#0D24AB] active:scale-95 transition-all px-4 sm:px-5 h-9 shrink-0 rounded-full text-[13px] font-semibold text-white cursor-pointer shadow-xs font-sans"
                   >
                     Subscribe
                   </button>
@@ -222,8 +272,8 @@ export default function Footer() {
           <div className="w-full h-px mt-14 mb-6 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
           {/* Bottom Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-[#262626]/60">
-            <p className="text-center md:text-left">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-[13px] text-[#262626]/65 leading-[1.6]">
+            <p className="text-center md:text-left font-normal">
               © 2026 PSG Tech Entrepreneurship Cell • Built with passion by E-Cell Tech Team.
             </p>
 
@@ -239,7 +289,7 @@ export default function Footer() {
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex items-center gap-1.5 hover:text-[#2547FF] transition-colors cursor-pointer uppercase tracking-wider"
+                className="flex items-center gap-1.5 hover:text-[#2547FF] transition-colors cursor-pointer uppercase tracking-[0.08em] text-[12px] font-medium"
                 aria-label="Scroll to top"
               >
                 <span>Back to Top</span>

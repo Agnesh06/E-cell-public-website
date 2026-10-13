@@ -53,6 +53,10 @@ export const defaultNavItems: iNavItem[] = [
     heading: "Collaboration",
     href: "#collaboration",
   },
+  {
+    heading: "Contact",
+    href: "#contact",
+  },
 ];
 
 export const CustomFooter: React.FC = () => {
@@ -162,9 +166,6 @@ export const NavLink: React.FC<iNavLinkProps> = ({
     >
       <Link ref={ref} onMouseMove={handleMouseMove} to={href}>
         <div className="relative flex items-start">
-          <span className="text-black transition-colors duration-500 text-4xl font-thin mr-2">
-            {index}.
-          </span>
           <div className="flex flex-row gap-2">
             <motion.span
               variants={{
@@ -176,7 +177,14 @@ export const NavLink: React.FC<iNavLinkProps> = ({
                 staggerChildren: 0.075,
                 delayChildren: 0.25,
               }}
-              className="relative z-10 block text-4xl font-extralight text-black transition-colors duration-500 md:text-4xl"
+              className="relative z-10 block text-[clamp(28px,5.5vw,36px)] font-normal text-black transition-colors duration-500 font-['Neuton',Georgia,serif] leading-[1.25] tracking-[0.01em]"
+              style={{
+                fontFamily: '"Neuton", Georgia, serif',
+                fontSize: 'clamp(28px, 5.5vw, 36px)',
+                fontWeight: 400,
+                lineHeight: 1.25,
+                letterSpacing: '0.01em',
+              }}
             >
               {heading.split("").map((letter, i) => {
                 return (
@@ -253,9 +261,19 @@ export const CurvedNavbar: React.FC<
       exit="exit"
       className="h-[100dvh] w-screen max-w-screen-sm fixed right-0 top-0 z-40 bg-white"
     >
-      <div className="h-full pt-11 flex flex-col justify-between">
+      <div
+        className="h-full pt-11 flex flex-col justify-between"
+        style={{ fontFamily: '"Neuton", Georgia, serif' }}
+      >
         <div className="flex flex-col text-5xl gap-3 mt-0 px-10 md:px-24">
-          <div className="text-black border-b border-black/30 uppercase text-sm mb-0">
+          <div
+            className="text-black border-b border-black/30 uppercase text-sm mb-0"
+            style={{
+              fontFamily: '"Neuton", Georgia, serif',
+              fontWeight: 400,
+              letterSpacing: '0.01em',
+            }}
+          >
             <p>Navigation</p>
           </div>
           <section className="bg-transparent mt-0">

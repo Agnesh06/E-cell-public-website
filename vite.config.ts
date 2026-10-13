@@ -12,6 +12,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    allowedHosts: [
+      'able-thwarting-paging.ngrok-free.dev',
+      '.ngrok-free.dev',
+      '.ngrok.io',
+    ],
+  },
   css: {
     postcss: {
       plugins: [
