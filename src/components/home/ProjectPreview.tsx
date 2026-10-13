@@ -50,11 +50,11 @@ export default function ProjectPreview() {
       <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 sm:px-10 pr-20 sm:pr-24 py-6 pointer-events-none">
         <div className="flex items-center gap-3">
           <span className="w-2 h-2 rounded-full bg-[#2547FF] animate-pulse" />
-          <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#0A0A0A]/60">
+          <span className="font-mono text-xs font-normal uppercase tracking-[0.2em] text-[#0A0A0A]/70">
             Selected Work
           </span>
         </div>
-        <div className="font-mono text-xs uppercase tracking-widest text-[#262626]/60 py-1">
+        <div className="font-mono text-xs font-normal uppercase tracking-widest text-[#262626]/70 py-1">
           Innovation Showcase
         </div>
       </div>
@@ -76,7 +76,7 @@ export default function ProjectPreview() {
 
       {/* Bottom Hint & Smooth Scroll to Team button */}
       <div className="absolute bottom-6 left-6 sm:left-10 right-6 sm:right-10 z-20 flex items-center justify-between pointer-events-none">
-        <span className="text-[11px] font-mono tracking-widest text-[#0A0A0A]/40 uppercase">
+        <span className="text-xs font-mono font-normal tracking-widest text-[#0A0A0A]/50 uppercase">
           Scroll / Drag to explore
         </span>
         <button
@@ -84,7 +84,7 @@ export default function ProjectPreview() {
           onClick={() =>
             document.getElementById("team")?.scrollIntoView({ behavior: "smooth" })
           }
-          className="pointer-events-auto text-[11px] font-mono tracking-widest text-[#0A0A0A]/60 hover:text-[#2547FF] uppercase flex items-center gap-1.5 transition-colors cursor-pointer group"
+          className="pointer-events-auto text-sm font-sans font-medium tracking-wider text-[#0A0A0A]/70 hover:text-[#2547FF] uppercase flex items-center gap-1.5 transition-colors cursor-pointer group"
         >
           <span>Meet The Team</span>
           <span className="transition-transform group-hover:translate-y-0.5">↓</span>

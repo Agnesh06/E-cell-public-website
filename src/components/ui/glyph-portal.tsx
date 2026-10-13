@@ -368,8 +368,8 @@ export default function GlyphPortal({
         event.key === "Home"
           ? 0
           : event.key === "End"
-          ? candidates.length - 1
-          : (current + (event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1) + candidates.length) % candidates.length;
+            ? candidates.length - 1
+            : (current + (event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 1) + candidates.length) % candidates.length;
       buttons.find((button) => Number(button.dataset.gpLetter) === candidates[index].index)?.focus({ preventScroll: true });
     };
 

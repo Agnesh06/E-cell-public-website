@@ -124,6 +124,7 @@ out/
 .Trashes
 
 # Windows
+powershell.bat
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db

@@ -34,9 +34,20 @@ export default {
         },
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['Geist', 'ui-monospace', 'monospace'],
+        display: ['"Cambon"', '"Times New Roman"', 'serif'],
+        sans: ['"Geist"', '"Sohne"', 'ui-sans-serif', 'sans-serif'],
+        mono: ['"Sohne Mono"', 'ui-monospace', 'monospace'],
+        cambon: ['"Cambon"', '"Times New Roman"', 'serif'],
+        sohne: ['"Sohne"', '"Geist"', 'ui-sans-serif', 'sans-serif'],
+        neuton: ['"Neuton"', 'Georgia', 'serif'],
+      },
+      fontWeight: {
+        light: '300',
+        regular: '400',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
       },
       keyframes: {
         marquee: {

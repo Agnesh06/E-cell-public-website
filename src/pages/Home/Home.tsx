@@ -2,6 +2,7 @@ import Hero from '@/components/home/Hero';
 import ProjectPreview from '@/components/home/ProjectPreview';
 import TeamSection from '@/components/team/TeamSection';
 import Collaboration from '@/pages/Collaboration/Collaboration';
+import ContactSection from '@/components/contact/ContactSection';
 import Footer from '@/components/layout/Footer';
 import Topography from '@/components/ui/Topography';
 
@@ -50,11 +51,13 @@ export default function Home() {
           <TeamSection
             id="team"
             catchphrase="The minds building the future at PSG Tech E-Cell"
-            subtitle="CORE TEAM '26"
           />
 
           {/* Corporate & Industry Collaboration 5-Step Form */}
           <Collaboration id="collaboration" />
+
+          {/* Direct Communication & Contact Card Section */}
+          <ContactSection id="contact" />
         </div>
       </div>
 

@@ -52,23 +52,23 @@ export default function ProjectDetail() {
         {/* Domain & Meta */}
         <div className="flex flex-wrap items-center gap-3 mb-5">
           {project.domain && (
-            <span className="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-[#EDEFFC] text-[#2547FF] font-medium">
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-normal tracking-wider uppercase bg-[#EDEFFC] text-[#2547FF]">
               {project.domain}
             </span>
           )}
           {project.featured && (
-            <span className="px-3 py-1 rounded-full text-xs font-mono tracking-wider uppercase bg-[#0A0A0A] text-white font-medium">
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-normal tracking-wider uppercase bg-[#0A0A0A] text-white">
               Featured Initiative
             </span>
           )}
         </div>
 
         {/* Title & Tagline */}
-        <h1 className="font-display font-extrabold text-4xl sm:text-5xl md:text-6xl text-[#0A0A0A] tracking-[-0.03em] leading-[1.08]">
+        <h1 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl lg:text-[64px] text-[#0A0A0A] tracking-[-0.035em] leading-[1.05]">
           {project.title}
         </h1>
         {project.tagline && (
-          <p className="mt-3 text-lg sm:text-xl text-[#262626]/70 font-sans tracking-[-0.01em]">
+          <p className="mt-3 text-lg sm:text-xl text-[#262626]/75 font-sans font-normal leading-[1.6]">
             {project.tagline}
           </p>
         )}
@@ -86,23 +86,23 @@ export default function ProjectDetail() {
         <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-14">
           {/* Main Description */}
           <div className="md:col-span-2">
-            <h2 className="text-xs font-mono tracking-[0.2em] uppercase text-[#71717A] mb-4">
+            <h2 className="text-xs font-mono font-normal tracking-[0.2em] uppercase text-[#71717A] mb-4">
               Project Overview
             </h2>
-            <p className="font-sans text-base sm:text-lg text-[#262626] leading-relaxed">
+            <p className="font-sans font-normal text-base text-[#262626] leading-[1.6]">
               {project.description}
             </p>
 
             {/* Technologies */}
             <div className="mt-10">
-              <h2 className="text-xs font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">
+              <h2 className="text-xs font-mono font-normal tracking-[0.2em] uppercase text-[#71717A] mb-3">
                 Technologies & Tools
               </h2>
               <div className="flex flex-wrap gap-2">
                 {project.technologies.map((tech) => (
                   <span
                     key={tech}
-                    className="px-3 py-1.5 rounded-lg text-xs font-mono bg-white border border-[#E5E5E7] text-[#262626]"
+                    className="px-3 py-1.5 rounded-lg text-xs font-mono font-normal bg-white border border-[#E5E5E7] text-[#262626]"
                   >
                     {tech}
                   </span>
@@ -114,20 +114,20 @@ export default function ProjectDetail() {
           {/* Sidebar Meta: Team & Links */}
           <aside className="border-t md:border-t-0 md:border-l border-[#E5E5E7] md:pl-8 pt-8 md:pt-0 space-y-8">
             <div>
-              <h3 className="text-xs font-mono tracking-[0.2em] uppercase text-[#71717A] mb-2">
+              <h3 className="text-xs font-mono font-normal tracking-[0.2em] uppercase text-[#71717A] mb-2">
                 Project Lead
               </h3>
-              <p className="font-display font-semibold text-[#0A0A0A] text-base">
+              <p className="font-sans font-medium text-lg text-[#0A0A0A]">
                 {project.teamLead}
               </p>
             </div>
 
             {project.teamMembers && project.teamMembers.length > 0 && (
               <div>
-                <h3 className="text-xs font-mono tracking-[0.2em] uppercase text-[#71717A] mb-2">
+                <h3 className="text-xs font-mono font-normal tracking-[0.2em] uppercase text-[#71717A] mb-2">
                   Collaborators
                 </h3>
-                <ul className="space-y-1 text-sm text-[#262626]/80 font-sans">
+                <ul className="space-y-1 text-sm text-[#262626]/80 font-sans font-normal leading-[1.5]">
                   {project.teamMembers.map((member) => (
                     <li key={member}>{member}</li>
                   ))}
@@ -137,7 +137,7 @@ export default function ProjectDetail() {
 
             {project.links && project.links.length > 0 && (
               <div>
-                <h3 className="text-xs font-mono tracking-[0.2em] uppercase text-[#71717A] mb-3">
+                <h3 className="text-xs font-mono font-normal tracking-[0.2em] uppercase text-[#71717A] mb-3">
                   External Links
                 </h3>
                 <div className="flex flex-col gap-2">
@@ -147,7 +147,7 @@ export default function ProjectDetail() {
                       href={link.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-sm font-medium text-[#2547FF] hover:underline"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium font-sans text-[#2547FF] hover:underline"
                     >
                       {link.label}
                       <svg
@@ -174,16 +174,16 @@ export default function ProjectDetail() {
         {/* Next Project Footer Bar */}
         <section className="mt-16 sm:mt-24 pt-10 border-t border-[#E5E5E7] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-mono tracking-widest text-[#71717A] uppercase block">
+            <span className="text-xs font-mono font-normal tracking-widest text-[#71717A] uppercase block">
               Up Next
             </span>
-            <span className="font-display font-bold text-xl text-[#0A0A0A]">
+            <span className="font-display font-normal text-2xl text-[#0A0A0A]">
               {nextProject.title}
             </span>
           </div>
           <Link
             to={`/projects/${nextProject.slug}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A0A0A] text-white text-xs font-mono tracking-wider uppercase hover:bg-[#2547FF] transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0A0A0A] text-white text-sm font-sans font-medium tracking-wider uppercase hover:bg-[#2547FF] transition-colors"
           >
             Explore Next Project →
           </Link>
