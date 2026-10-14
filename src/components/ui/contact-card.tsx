@@ -8,7 +8,7 @@ export type ContactInfoProps = React.ComponentProps<'div'> & {
   value: string;
 };
 
-export type ContactCardProps = React.ComponentProps<'div'> & {
+export type ContactCardProps = Omit<React.ComponentProps<'div'>, 'title'> & {
   title?: React.ReactNode;
   description?: string;
   contactInfo?: ContactInfoProps[];

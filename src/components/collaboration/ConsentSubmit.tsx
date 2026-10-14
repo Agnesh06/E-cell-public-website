@@ -160,6 +160,12 @@ export function ConsentSubmit({
             label="I agree to be contacted by the E-Cell team regarding this collaboration request."
             error={errors.agreeContacted}
           />
+
+          {errors.submit && (
+            <p className="text-xs font-medium text-red-600 bg-red-50 p-2.5 rounded-lg border border-red-200" role="alert">
+              {errors.submit}
+            </p>
+          )}
         </div>
       </div>
     </div>

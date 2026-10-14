@@ -494,7 +494,7 @@ export default function GlyphPortal({
       <noscript><style>{`${q} [data-gp-fallback]{display:grid}${q} [data-gp-hint]{display:none}`}</style></noscript>
       <div data-gp-viewport aria-hidden="true" />
       <div data-gp-pin>
-        <div data-gp-field aria-hidden="true" inert={true}>
+        <div data-gp-field aria-hidden="true" {...({ inert: "" } as any)}>
           {background ?? (
             <div
               data-gp-default-field
@@ -532,7 +532,7 @@ export default function GlyphPortal({
             <path />
           </g>
         </svg>
-        <div data-gp-choices role="radiogroup" aria-label="Choose the letter to enter through" inert={true}>
+        <div data-gp-choices role="radiogroup" aria-label="Choose the letter to enter through" {...({ inert: "" } as any)}>
           {characters.map(({ char, index }, i) => (
             <button
               type="button"

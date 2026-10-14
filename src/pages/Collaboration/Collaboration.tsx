@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import Stepper03, { type Step } from "@/components/ui/stepper-03";
-import { Building2, UserCheck, Handshake, CalendarClock, ShieldCheck, Sparkles } from "lucide-react";
+import { Building2, UserCheck, Handshake, CalendarClock, ShieldCheck, Sparkles, AlertCircle } from "lucide-react";
 import { CompanyInfo } from "@/components/collaboration/CompanyInfo";
 import { ContactInfo } from "@/components/collaboration/ContactInfo";
 import { CollaborationDetails } from "@/components/collaboration/CollaborationDetails";
@@ -20,6 +20,8 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
     activeStep,
     isSubmitting,
     isSubmitted,
+    submissionReference,
+    submitError,
     setActiveStep,
     setFieldValue,
     validateStep,
@@ -139,10 +141,24 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
 
         {/* Form Wizard or Post-Submission Result */}
         <div className="w-full">
+          {submitError && !isSubmitted && (
+            <div
+              className="mb-4 p-4 rounded-xl border border-red-500/20 bg-red-50/90 text-red-800 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn shadow-xs"
+              role="alert"
+            >
+              <AlertCircle className="size-4 sm:size-5 shrink-0 text-red-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold text-red-900">Submission Notice</p>
+                <p className="mt-0.5 leading-relaxed">{submitError}</p>
+              </div>
+            </div>
+          )}
+
           {isSubmitted ? (
             <SubmissionResult
               companyName={formData.companyName}
               contactEmail={formData.officialEmail}
+              referenceId={submissionReference || undefined}
               onReset={resetForm}
             />
           ) : (

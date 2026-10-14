@@ -125,6 +125,7 @@ out/
 
 # Windows
 powershell.bat
+powershell.cmd
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db

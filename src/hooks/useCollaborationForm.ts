@@ -9,6 +9,7 @@ import {
   collaborationFormSchema,
 } from "@/schemas/collaboration";
 import { submitCollaborationRequest } from "@/services/collaborationService";
+import { ApiClientError } from "@/lib/api";
 
 export const INITIAL_COLLABORATION_DATA: Partial<CollaborationFormData> = {
   companyName: "",
@@ -53,16 +54,16 @@ export function useCollaborationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionReference, setSubmissionReference] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const setFieldValue = useCallback(<K extends keyof CollaborationFormData>(
-    field: K,
-    value: CollaborationFormData[K]
-  ) => {
+  const setFieldValue = useCallback((field: any, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    setSubmitError(null);
     setErrors((prev) => {
-      if (prev[field]) {
+      if (prev[field] || prev.submit) {
         const next = { ...prev };
         delete next[field];
+        delete next.submit;
         return next;
       }
       return prev;
@@ -95,11 +96,20 @@ export function useCollaborationForm() {
       return false;
     }
 
-    setErrors({});
+    setErrors((prev) => {
+      if (prev.submit) {
+        return { submit: prev.submit };
+      }
+      return {};
+    });
     return true;
   }, [formData]);
 
   const submitForm = useCallback(async (): Promise<boolean> => {
+    if (isSubmitting) return false;
+
+    setSubmitError(null);
+
     const isConsentValid = validateStep(4);
     if (!isConsentValid) return false;
 
@@ -121,14 +131,39 @@ export function useCollaborationForm() {
       const res = await submitCollaborationRequest(fullCheck.data);
       setSubmissionReference(res.referenceId);
       setIsSubmitted(true);
+      setSubmitError(null);
       return true;
-    } catch (err) {
-      console.error("Submission failed:", err);
+    } catch (err: unknown) {
+      console.error("[useCollaborationForm] Submission error:", err);
+      let message = "An error occurred while submitting your request. Please try again.";
+
+      if (err instanceof ApiClientError) {
+        if (err.statusCode === 409) {
+          message =
+            "A pending collaboration request already exists for this contact email. Our team will review your proposal shortly.";
+        } else if (err.statusCode === 422) {
+          message =
+            err.message || "Please check your information and correct any validation issues.";
+        } else if (err.statusCode === 0 || err.code === "NETWORK_ERROR") {
+          message =
+            "Unable to connect to the server. Please check your internet connection and try again.";
+        } else if (err.statusCode >= 500) {
+          message =
+            "A server error occurred while processing your request. Please try again later.";
+        } else {
+          message = err.message || message;
+        }
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setSubmitError(message);
+      setErrors((prev) => ({ ...prev, submit: message }));
       return false;
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, validateStep]);
+  }, [formData, isSubmitting, validateStep]);
 
   const resetForm = useCallback(() => {
     setFormData(INITIAL_COLLABORATION_DATA);
@@ -136,6 +171,7 @@ export function useCollaborationForm() {
     setActiveStep(0);
     setIsSubmitted(false);
     setSubmissionReference(null);
+    setSubmitError(null);
   }, []);
 
   return {
@@ -145,6 +181,7 @@ export function useCollaborationForm() {
     isSubmitting,
     isSubmitted,
     submissionReference,
+    submitError,
     setActiveStep,
     setFieldValue,
     validateStep,
