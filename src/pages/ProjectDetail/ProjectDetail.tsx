@@ -1,5 +1,7 @@
 import { useParams, Link, Navigate } from "react-router-dom";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { getProjectBySlug, PROJECTS } from "@/data/projects";
+import Topography from "@/components/ui/Topography";
 
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -14,41 +16,48 @@ export default function ProjectDetail() {
   const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
 
   return (
-    <div className="min-h-screen bg-[#FAFAFC] text-[#0A0A0A] selection:bg-[#2547FF] selection:text-white">
-      {/* Top Header */}
-      <header className="border-b border-[#E5E5E7] bg-white/70 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between">
-          <Link
-            to="/projects"
-            className="inline-flex items-center gap-2 text-xs font-mono tracking-[0.16em] uppercase text-[#262626]/75 hover:text-[#2547FF] transition-colors"
-          >
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Projects
-          </Link>
+    <div className="relative min-h-screen bg-[#FAFAFC] text-[#0A0A0A] selection:bg-[#2547FF] selection:text-white">
+      {/* Pinned Stationary Background - Identical to Home and Projects */}
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 pointer-events-none z-0 overflow-hidden select-none"
+      >
+        <Topography
+          lowColor="#2547FF"
+          midColor="#4B6FFF"
+          highColor="#8CA6FE"
+          speed={0.08}
+          morphAmount={1.4}
+          morphSpeed={0.012}
+          bands={2.4}
+          thickness={0.007}
+          scale={2.0}
+          pixelSize={1.0}
+          glow={0.0}
+          colorMode="elevation"
+          contrast={1.4}
+          brightness={1.0}
+          fillBands={false}
+          opacity={0.16}
+          grain={false}
+          grainIntensity={0.0}
+          mouseInteraction={false}
+        />
+      </div>
 
-          <Link
-            to="/"
-            className="text-xs font-mono tracking-widest uppercase text-[#262626]/50 hover:text-[#0A0A0A] transition-colors"
-          >
-            PSG Tech E-Cell
-          </Link>
-        </div>
-      </header>
+      {/* Floating Back to Projects Button - No white bar */}
+      <div className="fixed top-4 left-4 sm:top-5 sm:left-6 lg:left-12 z-40 pointer-events-auto">
+        <Link
+          to="/projects"
+          className="inline-flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-[#0A0A0A]/80 hover:text-[#2547FF] transition-all bg-white/95 hover:bg-white border border-black/10 px-3 py-2 sm:px-4 sm:py-2.5 rounded-full shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 group backdrop-blur-md"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:-translate-x-1 text-[#2547FF]" />
+          <span>Back to Projects</span>
+        </Link>
+      </div>
 
       {/* Main Content Area */}
-      <main className="max-w-[1080px] mx-auto px-6 py-12 sm:py-16 md:py-20">
+      <main className="relative z-10 max-w-[1080px] mx-auto px-6 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32">
         {/* Domain & Meta */}
         <div className="flex flex-wrap items-center gap-3 mb-5">
           {project.domain && (
@@ -150,19 +159,7 @@ export default function ProjectDetail() {
                       className="inline-flex items-center gap-1.5 text-sm font-medium font-sans text-[#2547FF] hover:underline"
                     >
                       {link.label}
-                      <svg
-                        className="w-3.5 h-3.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
+                      <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                   ))}
                 </div>

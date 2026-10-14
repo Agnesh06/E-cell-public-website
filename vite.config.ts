@@ -13,11 +13,11 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: [
-      'able-thwarting-paging.ngrok-free.dev',
-      '.ngrok-free.dev',
-      '.ngrok.io',
-    ],
+    host: true,
+    port: 5173,
+    strictPort: false,
+    cors: true,
+    allowedHosts: true,
   },
   css: {
     postcss: {

@@ -150,10 +150,18 @@ export function getProjectBySlug(slug: string): Project | undefined {
   return PROJECTS.find((p) => p.slug === slug);
 }
 
-export function getWorksWheelItems(): WorksWheelItem[] {
-  return PROJECTS.map((project) => ({
+export function getWorksWheelItems(limit: number = 6): WorksWheelItem[] {
+  // Curate 6 flagship projects for the wheel ring
+  const featured = PROJECTS.filter((p) => p.featured);
+  const others = PROJECTS.filter((p) => !p.featured);
+  const selected = [...featured, ...others].slice(0, limit);
+
+  return selected.map((project) => ({
     title: project.title,
     image: project.coverImage,
-    href: `/projects/${project.slug}`
+    href: `/projects/${project.slug}`,
+    description: project.description,
+    domain: project.domain,
+    slug: project.slug,
   }));
 }

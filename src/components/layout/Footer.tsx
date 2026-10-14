@@ -20,6 +20,17 @@ export default function Footer() {
   };
 
   const handleNavClick = (id: string) => {
+    if (id === "about" || id === "about-us") {
+      const aboutEl = document.getElementById("about") || document.getElementById("about-us");
+      const homeEl = document.getElementById("home");
+      if (aboutEl) {
+        aboutEl.scrollIntoView({ behavior: "smooth" });
+      } else if (homeEl) {
+        const travel = (window.innerHeight || 800) * 2.2;
+        window.scrollTo({ top: homeEl.offsetTop + travel * 0.88, behavior: "smooth" });
+      }
+      return;
+    }
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -93,6 +104,16 @@ export default function Footer() {
                   Home
                 </a>
                 <a
+                  href="#about"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNavClick("about");
+                  }}
+                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
+                >
+                  About Us
+                </a>
+                <a
                   href="#projects"
                   onClick={(e) => {
                     e.preventDefault();
@@ -100,7 +121,7 @@ export default function Footer() {
                   }}
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
-                  Selected Work
+                  Projects
                 </a>
                 <a
                   href="#team"
@@ -110,7 +131,7 @@ export default function Footer() {
                   }}
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
-                  Core Team &apos;26
+                  Team
                 </a>
                 <a
                   href="#collaboration"
@@ -133,12 +154,12 @@ export default function Footer() {
                   Contact Us
                 </a>
                 <a
-                  href="https://psgtech.edu"
+                  href="https://csea.psgtech.ac.in/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
-                  PSG Tech Portal
+                  CSEA Official Portal
                 </a>
               </div>
             </div>
@@ -150,7 +171,7 @@ export default function Footer() {
               </h3>
               <div className="flex flex-col gap-3 mt-4 font-sans text-[14px] font-normal leading-[1.6]">
                 <a
-                  href="https://linkedin.com/company/ecell-psgtech"
+                  href="https://www.linkedin.com/company/cse-association-psg-tech/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
@@ -158,7 +179,7 @@ export default function Footer() {
                   LinkedIn
                 </a>
                 <a
-                  href="https://instagram.com/ecell_psgtech"
+                  href="https://www.instagram.com/cseapsgtech"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
@@ -166,37 +187,29 @@ export default function Footer() {
                   Instagram
                 </a>
                 <a
-                  href="https://github.com/Agnesh06"
+                  href="https://github.com/CSEA-PSGTech"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
-                  DevLabs / GitHub
+                  GitHub
                 </a>
                 <a
-                  href="https://twitter.com/ecell_psgtech"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
-                >
-                  Twitter / X
-                </a>
-                <a
-                  href="mailto:ecell@psgtech.ac.in"
+                  href="mailto:csea.cse@psgtech.ac.in"
                   className="text-[#262626]/75 hover:text-[#0A0A0A] sm:hover:text-[#2547FF] transition-colors"
                 >
                   Official Email
                 </a>
               </div>
 
-              {/* Social icons row matching Griffin reference style */}
+              {/* Social icons row */}
               <div className="mt-5 pt-1">
                 <span className="font-sans font-bold text-[12px] tracking-[0.06em] uppercase text-[#0A0A0A] block mb-2.5">
                   Social
                 </span>
                 <div className="flex items-center gap-2">
                   <a
-                    href="https://linkedin.com/company/ecell-psgtech"
+                    href="https://www.linkedin.com/company/cse-association-psg-tech/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all text-xs font-bold leading-none"
@@ -205,25 +218,37 @@ export default function Footer() {
                     in
                   </a>
                   <a
-                    href="https://youtube.com/@ecell_psgtech"
+                    href="https://instagram.com/cseapsgtech?psln=MTVjcW5lanBlcGducQ%3D%3D"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all"
-                    aria-label="YouTube"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all text-xs"
+                    aria-label="Instagram"
                   >
-                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                      <polygon points="5 3 19 12 5 21 5 3" />
+                    <svg className="w-3.5 h-3.5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                     </svg>
                   </a>
                   <a
-                    href="https://twitter.com/ecell_psgtech"
+                    href="https://github.com/CSEA-PSGTech"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all"
-                    aria-label="Twitter / X"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all text-xs"
+                    aria-label="GitHub"
                   >
                     <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="mailto:csea.cse@psgtech.ac.in"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-black/30 text-[#0A0A0A] hover:border-black hover:bg-black/5 transition-all text-xs"
+                    aria-label="Email"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
+                      <rect width="20" height="16" x="2" y="4" rx="2" />
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                     </svg>
                   </a>
                 </div>
