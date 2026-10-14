@@ -68,10 +68,10 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
   return (
     <section
       id={id}
-      className={`relative w-full min-h-screen flex flex-col justify-center py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] scroll-mt-0 ${className}`}
+      className={`relative w-full min-h-screen flex flex-col justify-center py-12 sm:py-24 px-3 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] scroll-mt-0 overflow-hidden ${className}`}
       aria-label="Direct Contact Section"
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div className="mx-auto w-full max-w-6xl min-w-0">
         <ContactCard
           title={
             <>

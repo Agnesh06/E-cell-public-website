@@ -49,7 +49,7 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
   const activeProject = projects[currentIndex] || projects[0];
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col justify-center items-center py-6 px-4 sm:px-8 max-w-lg mx-auto select-none gap-4 sm:gap-5">
+    <div className="w-full min-h-0 flex flex-col justify-center items-center py-2 sm:py-6 px-4 sm:px-8 max-w-lg mx-auto select-none gap-4 sm:gap-5">
       {/* 1. Section Heading: "Our Projects" */}
       <div className="text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[-0.02em] text-[#0A0A0A]">

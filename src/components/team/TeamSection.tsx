@@ -424,7 +424,7 @@ export function TeamSection({
   return (
     <section
       id={id}
-      className={`relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-transparent py-8 sm:py-12 text-[#0A0A0A] scroll-mt-0 ${className}`}
+      className={`relative w-full min-h-0 lg:min-h-screen flex flex-col justify-center overflow-hidden bg-transparent py-10 sm:py-14 md:py-16 text-[#0A0A0A] scroll-mt-0 ${className}`}
       aria-labelledby="team-heading"
     >
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
