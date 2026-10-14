@@ -25,7 +25,9 @@ export function buildApiUrl(endpoint: string, baseUrl?: string): string {
   const envBase = (
     baseUrl !== undefined
       ? baseUrl
-      : (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) || ""
+      : (typeof import.meta !== "undefined" &&
+          (import.meta.env?.VITE_API_URL || import.meta.env?.VITE_API_BASE_URL)) ||
+        ""
   ).trim();
 
   // Strip trailing slashes
@@ -35,6 +37,18 @@ export function buildApiUrl(endpoint: string, baseUrl?: string): string {
 
   if (!base) {
     return path;
+  }
+
+  // In local browser development, if targeting localhost/127.0.0.1 on port 5000,
+  // route through Vite's local dev proxy (/api) to prevent browser CORS blocks
+  if (
+    typeof window !== "undefined" &&
+    typeof import.meta !== "undefined" &&
+    import.meta.env?.DEV &&
+    baseUrl === undefined &&
+    /^(https?:\/\/)?(127\.0\.0\.1|localhost):5000(\/api)?\/?$/i.test(base)
+  ) {
+    return path.startsWith("/api") ? path : `/api${path}`;
   }
 
   // Prevent /api/api/collaborate if base already ends with /api and path starts with /api/
