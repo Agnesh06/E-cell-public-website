@@ -54,9 +54,9 @@ export function useCollaborationForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionReference, setSubmissionReference] = useState<string | null>(null);
 
-  const setFieldValue = useCallback(<K extends keyof CollaborationFormData>(
-    field: K,
-    value: CollaborationFormData[K]
+  const setFieldValue = useCallback((
+    field: any,
+    value: any
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => {

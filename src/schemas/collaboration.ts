@@ -102,15 +102,11 @@ export const commercialTimelineSchema = z.object({
 
 // Step 5: Consent & Submission
 export const consentSchema = z.object({
-  confirmAuthorized: z.literal(true, {
-    errorMap: () => ({
-      message: "You must confirm that information is accurate and you are authorized.",
-    }),
+  confirmAuthorized: z.boolean().refine((val) => val === true, {
+    message: "You must confirm that information is accurate and you are authorized.",
   }),
-  agreeContacted: z.literal(true, {
-    errorMap: () => ({
-      message: "You must agree to be contacted by the E-Cell team.",
-    }),
+  agreeContacted: z.boolean().refine((val) => val === true, {
+    message: "You must agree to be contacted by the E-Cell team.",
   }),
 });
 
