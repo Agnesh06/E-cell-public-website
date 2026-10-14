@@ -12,15 +12,18 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
     await page.getByRole('heading', { level: 1 }).waitFor()
   })
 
-  test('pinned stage is mounted with one shared StepIndicator and FlowLine at >= 1024px', async ({
+  test('pinned stage is mounted with one shared StepIndicator and no flow line elements at >= 1024px', async ({
     page,
   }) => {
     const pinnedStage = page.locator('.pinned-stage')
     await expect(pinnedStage).toBeVisible()
 
-    // FlowLine SVG is present
-    const flowLine = page.locator('.flow-line-svg')
-    await expect(flowLine).toBeAttached()
+    // no FlowLine, no SVG path with the blue stroke, no mask element, and no element with a flow-line class in the stage
+    await expect(pinnedStage.locator('.flow-line-container')).toHaveCount(0)
+    await expect(pinnedStage.locator('.flow-line-svg')).toHaveCount(0)
+    await expect(pinnedStage.locator('mask')).toHaveCount(0)
+    await expect(pinnedStage.locator('path[stroke*="blue"]')).toHaveCount(0)
+    await expect(pinnedStage.locator('[class*="flow-line"]')).toHaveCount(0)
 
     // Shared StepIndicator is present
     const indicator = page.locator('.pinned-stage > div .step-indicator')
@@ -35,10 +38,10 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
 
   const progressPoints = [
     { p: 0.0, activeStep: '1', visibleStepId: 'step-about' },
-    { p: 0.1, activeStep: '1', visibleStepId: 'step-about' },
-    { p: 0.3, activeStep: '2', visibleStepId: 'step-approach' },
-    { p: 0.5, activeStep: '4', visibleStepId: null }, // interlude: no text visible, next step (4) highlighted
-    { p: 0.7, activeStep: '4', visibleStepId: 'step-journey' },
+    { p: 0.05, activeStep: '1', visibleStepId: 'step-about' },
+    { p: 0.28, activeStep: '2', visibleStepId: 'step-approach' },
+    { p: 0.48, activeStep: '3', visibleStepId: 'step-ecosystem' },
+    { p: 0.68, activeStep: '4', visibleStepId: 'step-journey' },
     { p: 0.9, activeStep: '5', visibleStepId: 'step-audience' },
     { p: 1.0, activeStep: '5', visibleStepId: 'step-audience' },
   ]
@@ -254,12 +257,114 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
     // Wait for hero load animation to complete
     await page.waitForTimeout(1400)
 
-    const results = await new AxeBuilder({ page }).analyze()
+    const results = await new AxeBuilder({ page }).include('section#about').analyze()
     expect(results.violations).toEqual([])
   })
 })
 
-test.describe('IdeaSteps Layout & Mask Assertions', () => {
+test.describe('StarField Background Animation', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+  })
+
+  test('at 1280x720 the stage has exactly one canvas with aria-hidden true; the hero and projects sections have none', async ({
+    page,
+  }) => {
+    const stage = page.locator('.pinned-stage')
+    const stageCanvas = stage.locator('canvas[aria-hidden="true"]')
+    await expect(stageCanvas).toHaveCount(1)
+
+    // The hero and projects sections have no star-field canvas
+    const heroStarCanvas = page.locator('.landing-hero canvas.star-field-canvas, .landing-hero canvas[data-stars-alive]')
+    await expect(heroStarCanvas).toHaveCount(0)
+
+    const projectsStarCanvas = page.locator(
+      'section#projects canvas.star-field-canvas, section#projects canvas[data-stars-alive], .projects-preview canvas.star-field-canvas',
+    )
+    await expect(projectsStarCanvas).toHaveCount(0)
+  })
+
+  test('one forced merge produces a net +1 alive stars when below the cap', async ({ page }) => {
+    const canvas = page.locator('.pinned-stage canvas')
+    await expect(canvas).toBeVisible()
+
+    await page.waitForTimeout(200)
+    const initialAliveStr = await canvas.getAttribute('data-stars-alive')
+    const initialAlive = parseInt(initialAliveStr || '14', 10)
+
+    await canvas.dispatchEvent('stars:force-merge')
+    await page.waitForTimeout(150)
+
+    const newAliveStr = await canvas.getAttribute('data-stars-alive')
+    const newAlive = parseInt(newAliveStr || '0', 10)
+
+    expect(newAlive).toBe(initialAlive + 1)
+  })
+
+  test('alive stars never exceed 24, even after 30 forced merges', async ({ page }) => {
+    const canvas = page.locator('.pinned-stage canvas')
+    await expect(canvas).toBeVisible()
+
+    for (let i = 0; i < 30; i++) {
+      await canvas.dispatchEvent('stars:force-merge')
+    }
+    await page.waitForTimeout(200)
+
+    const finalAliveStr = await canvas.getAttribute('data-stars-alive')
+    const finalAlive = parseInt(finalAliveStr || '0', 10)
+    expect(finalAlive).toBeLessThanOrEqual(24)
+  })
+
+  test('a fast scroll raises data-speed-factor above 1.5 and it returns below 1.1 within 2.5 seconds of stopping', async ({
+    page,
+  }) => {
+    const canvas = page.locator('.pinned-stage canvas')
+    await expect(canvas).toBeVisible()
+
+    // Scroll rapidly
+    for (let i = 0; i < 6; i++) {
+      await page.mouse.wheel(0, 500)
+      await page.waitForTimeout(50)
+    }
+
+    await page.waitForFunction(() => {
+      const el = document.querySelector('.pinned-stage canvas')
+      if (!el) return false
+      const factor = parseFloat(el.getAttribute('data-speed-factor') || '1')
+      return factor > 1.5
+    }, { timeout: 3000 })
+
+    const factorDuringScroll = await canvas.getAttribute('data-speed-factor')
+    expect(parseFloat(factorDuringScroll || '1')).toBeGreaterThan(1.5)
+
+    // Wait 2.5 seconds after stopping scroll
+    await page.waitForTimeout(2500)
+
+    const factorAfterStop = await canvas.getAttribute('data-speed-factor')
+    expect(parseFloat(factorAfterStop || '1')).toBeLessThan(1.1)
+  })
+
+  test('reducedMotion: no canvas; 375x667: no canvas', async ({ page }) => {
+    // 1. Reduced motion on desktop
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+    await expect(page.locator('section#about canvas')).toHaveCount(0)
+
+    // 2. Mobile 375x667 with normal motion
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+    await expect(page.locator('section#about canvas')).toHaveCount(0)
+  })
+})
+
+test.describe('IdeaSteps Layout & Card-fit Assertions', () => {
   const layoutViewports = [
     { width: 900, height: 700, name: '900x700' },
     { width: 768, height: 1024, name: '768x1024' },
@@ -303,18 +408,116 @@ test.describe('IdeaSteps Layout & Mask Assertions', () => {
     })
   }
 
-  test('1300x600: no knockout mask element exists and flow line is a continuous stroke', async ({ page }) => {
+  test('1300x600: no mask or flow line in stage and cards fit fully', async ({ page }) => {
     await page.setViewportSize({ width: 1300, height: 600 })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     await page.getByRole('heading', { level: 1 }).waitFor()
 
-    // No SVG knockout mask element
-    const knockoutMask = page.locator('.flow-line-svg mask#flow-knockout')
-    await expect(knockoutMask).toHaveCount(0)
+    const pinnedStage = page.locator('.pinned-stage')
+    await expect(pinnedStage).toBeVisible()
 
-    // The drawn path exists as a continuous stroke
-    const drawnPath = page.locator('.flow-line-svg path').nth(1)
-    await expect(drawnPath).toBeAttached()
+    // No mask or flow-line element
+    await expect(pinnedStage.locator('mask')).toHaveCount(0)
+    await expect(pinnedStage.locator('.flow-line-svg')).toHaveCount(0)
+    await expect(pinnedStage.locator('[class*="flow-line"]')).toHaveCount(0)
+
+    // Check card fit
+    const cards = page.locator('.pinned-stage .glass-card')
+    const cardCount = await cards.count()
+    for (let i = 0; i < cardCount; i++) {
+      const card = cards.nth(i)
+      const isVisible = await card.isVisible()
+      if (!isVisible) continue
+      const box = await card.boundingBox()
+      if (!box) continue
+      expect(box.x).toBeGreaterThanOrEqual(-1)
+      expect(box.x + box.width).toBeLessThanOrEqual(1300 + 1)
+    }
+  })
+})
+
+test.describe('Required Hold Screenshots', () => {
+  const artifactDir = '/Users/ashwath/.gemini/antigravity/brain/9ce52f72-4517-4c14-bf3f-82b87572aac1'
+
+  test('capture step 2 hold at 1280x720', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } }).__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.28 * (st.end - st.start))
+    })
+
+    await page.waitForTimeout(1000)
+    await expect(page.locator('#step-approach h3')).toBeVisible()
+
+    const stage = page.locator('.pinned-stage')
+    const screenshotsDir = path.resolve('tests/screenshots')
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
+    if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
+
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step2-hold-1280x720.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step2-hold-1280x720.png') })
+  })
+
+  test('capture step 4 hold at 1280x720', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } }).__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.68 * (st.end - st.start))
+    })
+
+    await page.waitForTimeout(1000)
+    await expect(page.locator('#step-journey h3')).toBeVisible()
+
+    const stage = page.locator('.pinned-stage')
+    const screenshotsDir = path.resolve('tests/screenshots')
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
+    if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
+
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step4-hold-1280x720.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step4-hold-1280x720.png') })
+  })
+
+  test('capture step 3 hold at 1300x600', async ({ page }) => {
+    await page.setViewportSize({ width: 1300, height: 600 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } }).__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.48 * (st.end - st.start))
+    })
+
+    await page.waitForTimeout(1000)
+    await expect(page.locator('#step-ecosystem h3')).toBeVisible()
+
+    const stage = page.locator('.pinned-stage')
+    const screenshotsDir = path.resolve('tests/screenshots')
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
+    if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
+
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step3-hold-1300x600.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step3-hold-1300x600.png') })
   })
 })

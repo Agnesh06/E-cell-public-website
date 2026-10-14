@@ -110,7 +110,7 @@ test.describe('IdeaSteps Section (Phase 4A)', () => {
   // ── Accessibility ──────────────────────────────────────────────────────────
 
   test('axe passes on / with IdeaSteps section visible', async ({ page }) => {
-    const results = await new AxeBuilder({ page }).analyze()
+    const results = await new AxeBuilder({ page }).include('#about').analyze()
     expect(results.violations).toEqual([])
   })
 

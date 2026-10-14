@@ -1,13 +1,11 @@
-import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { ideas } from '@/data/ideas'
 import { GridBackdrop } from '@/components/common/GridBackdrop'
 import { GlowBlob } from '@/components/common/GlowBlob'
 import { Step } from './Step'
-import { FlowLine } from './FlowLine'
 import { StepIndicator } from './StepIndicator'
 import { useIdeaStepsTimeline } from './useIdeaStepsTimeline'
-
-const FlowArrow3D = React.lazy(() => import('./FlowArrow3D'))
+import { StarField } from './StarField'
 
 const PinnedStepIndicator: React.FC<{
   count: number
@@ -31,10 +29,8 @@ const PinnedStepIndicator: React.FC<{
 
 export const PinnedIdeaSteps: React.FC = () => {
   const stageRef = useRef<HTMLDivElement>(null)
-  const drawnPathRef = useRef<SVGPathElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
   const stepRefs = useRef<(HTMLDivElement | null)[]>([])
-  const renderArrowRef = useRef<((p?: number) => void) | null>(null)
   const indexListenerRef = useRef<((idx: number) => void) | null>(null)
 
   const handleActiveIndexChange = useCallback((idx: number) => {
@@ -48,13 +44,11 @@ export const PinnedIdeaSteps: React.FC = () => {
     }
   }, [])
 
-  const { goToStep, progressRef } = useIdeaStepsTimeline({
+  const { goToStep } = useIdeaStepsTimeline({
     scopeRef: stageRef,
-    drawnPathRef,
     glowRef,
     stepRefs,
     totalSteps: ideas.length,
-    onTimelineUpdate: (p) => renderArrowRef.current?.(p),
     onActiveIndexChange: handleActiveIndexChange,
   })
 
@@ -69,21 +63,11 @@ export const PinnedIdeaSteps: React.FC = () => {
       {/* Background grid */}
       <GridBackdrop className="opacity-70" />
 
+      {/* Star-field background animation */}
+      <StarField />
+
       {/* Animated glow blob */}
       <GlowBlob ref={glowRef} corner="bottom-left" />
-
-      {/* Decorative flow line — z-0, renders below step content */}
-      <FlowLine drawnPathRef={drawnPathRef} />
-
-      {/* 3D Paper-Plane Arrow riding the scroll line */}
-      <Suspense fallback={null}>
-        <FlowArrow3D
-          drawnPathRef={drawnPathRef}
-          stageRef={stageRef}
-          progressRef={progressRef}
-          renderRef={renderArrowRef}
-        />
-      </Suspense>
 
       {/* The five Step components stacked absolutely (inset 0) on layer z-10 above canvas */}
       {ideas.map((step, index) => {

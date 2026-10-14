@@ -13,11 +13,6 @@ export interface StepProps {
   hideIndicator?: boolean
 }
 
-const haloStyle: React.CSSProperties = {
-  textShadow:
-    '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg)',
-}
-
 export const Step: React.FC<StepProps> = React.memo(({
   step,
   stepIndex,
@@ -75,7 +70,7 @@ export const Step: React.FC<StepProps> = React.memo(({
           {step.sideLabel && (
             <span
               className="text-[var(--color-ink-muted)] tracking-wider"
-              style={{ fontWeight: 500, ...haloStyle }}
+              style={{ fontWeight: 500 }}
             >
               {step.sideLabel}
             </span>
@@ -86,7 +81,7 @@ export const Step: React.FC<StepProps> = React.memo(({
         {step.microLabels[0] && (
           <div
             className="ml-auto text-[#6E6E70] tracking-[0.2em] uppercase"
-            style={{ fontWeight: 500, ...haloStyle }}
+            style={{ fontWeight: 500 }}
           >
             {step.microLabels[0]}
           </div>

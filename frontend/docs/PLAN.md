@@ -7,7 +7,7 @@
 3. ~~Hero~~ ✅ done
 4. ~~Idea-steps scroll sequence~~ ✅ done:
    - ~~Phase 4A: Content, data, and static layout~~ ✅ done
-   - ~~Phase 4B: Pinning stage, GSAP timeline, flow-line drawing, and scroll scrubbing~~ ✅ done
+   - ~~Phase 4B: Pinning stage, GSAP timeline, star-field background, and scroll scrubbing~~ ✅ done
 5. Projects preview + leadership
 6. Data layer + projects page + details
 7. Contact form

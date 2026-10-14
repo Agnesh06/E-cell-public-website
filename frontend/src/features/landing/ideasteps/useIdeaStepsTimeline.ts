@@ -4,7 +4,6 @@ import { useLenis } from '@/app/smoothScroll'
 
 export interface UseIdeaStepsTimelineProps {
   scopeRef: React.RefObject<HTMLDivElement | null>
-  drawnPathRef: React.RefObject<SVGPathElement | null>
   glowRef: React.RefObject<HTMLDivElement | null>
   stepRefs: React.MutableRefObject<(HTMLDivElement | null)[]>
   totalSteps: number
@@ -17,8 +16,8 @@ export interface UseIdeaStepsTimelineReturn {
   progressRef: React.RefObject<number>
 }
 
-// Start of hold segment for each step in master progress (0 to 1)
-const HOLD_PROGRESS_MAP = [0.05, 0.23, 0.43, 0.63, 0.83]
+// Start/center of hold segment for each step in master progress (0 to 1)
+const HOLD_PROGRESS_MAP = [0.05, 0.28, 0.48, 0.68, 0.90]
 
 /**
  * Calculates the active step index (0-4) from master timeline progress (0-1).
@@ -27,16 +26,15 @@ const HOLD_PROGRESS_MAP = [0.05, 0.23, 0.43, 0.63, 0.83]
  * - During an interlude, the NEXT step is already highlighted.
  */
 export function calculateActiveIndex(progress: number): number {
-  if (progress < 0.165) return 0 // Step 1 hold & enter
-  if (progress < 0.345) return 1 // Interlude 1 & Step 2
-  if (progress < 0.48) return 2 // Interlude 2 & Step 3
-  if (progress < 0.745) return 3 // Interlude 3 (including 0.50) & Step 4
+  if (progress < 0.17) return 0 // Step 1 enter, hold & exit
+  if (progress < 0.37) return 1 // Interlude 1 & Step 2
+  if (progress < 0.57) return 2 // Interlude 2 & Step 3
+  if (progress < 0.77) return 3 // Interlude 3 & Step 4
   return 4 // Interlude 4 & Step 5
 }
 
 export function useIdeaStepsTimeline({
   scopeRef,
-  drawnPathRef,
   glowRef,
   stepRefs,
   totalSteps,
@@ -60,28 +58,10 @@ export function useIdeaStepsTimeline({
       const stageEl = scopeRef.current
       if (!stageEl) return
 
-      // Measure SVG path length
-      let pathLength = 3600
-      if (drawnPathRef.current) {
-        pathLength = drawnPathRef.current.getTotalLength() || 3600
-        drawnPathRef.current.style.strokeDasharray = `${pathLength} ${pathLength * 2 + 1000}`
-        drawnPathRef.current.style.strokeDashoffset = `${pathLength}`
-      }
-
       // Master timeline (duration = 100 relative units)
       const tl = gsap.timeline({
         paused: true,
       })
-
-      // Linear flow-line drawing: draws smoothly from progress 0.0 (t=0) to 1.0 (t=100)
-      if (drawnPathRef.current) {
-        tl.fromTo(
-          drawnPathRef.current,
-          { strokeDashoffset: pathLength },
-          { strokeDashoffset: 0, ease: 'none', duration: 100 },
-          0,
-        )
-      }
 
       // Initial state: Step 1 is rendered and fully visible at scroll progress 0 on load; later steps start hidden
       stepRefs.current.forEach((el, index) => {
@@ -139,44 +119,44 @@ export function useIdeaStepsTimeline({
       if (glowRef.current) {
         gsap.set(glowRef.current, { xPercent: 0, yPercent: 0, opacity: 0.7 })
 
-        // Interlude 1 (t=16.5 to 20): moves toward top-right
+        // Interlude 1 (t=17 to 20): moves toward top-right
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: -80, opacity: 0.85, ease: 'power2.inOut', duration: 3.5 },
-          16.5,
+          { xPercent: 110, yPercent: -80, opacity: 0.85, ease: 'power2.inOut', duration: 3 },
+          17,
         )
-        // Interlude 2 (t=34.5 to 40): moves toward bottom-left
+        // Interlude 2 (t=37 to 40): moves toward bottom-left
         tl.to(
           glowRef.current,
-          { xPercent: 10, yPercent: 10, opacity: 0.7, ease: 'power2.inOut', duration: 4.5 },
-          34.5,
+          { xPercent: 10, yPercent: 10, opacity: 0.7, ease: 'power2.inOut', duration: 3 },
+          37,
         )
-        // Interlude 3 (t=48 to 58): moves toward bottom-right
+        // Interlude 3 (t=57 to 60): moves toward bottom-right
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: 10, opacity: 0.85, ease: 'power2.inOut', duration: 7 },
-          48,
+          { xPercent: 110, yPercent: 10, opacity: 0.85, ease: 'power2.inOut', duration: 3 },
+          57,
         )
-        // Interlude 4 (t=74.5 to 80): subtle drift
+        // Interlude 4 (t=77 to 80): subtle drift
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: -30, opacity: 0.8, ease: 'power2.inOut', duration: 4.5 },
-          74.5,
+          { xPercent: 110, yPercent: -30, opacity: 0.8, ease: 'power2.inOut', duration: 3 },
+          77,
         )
       }
 
       // Build each step's enter, hold, exit, interlude
-      // Step timings in master units (0..100):
-      // Step 1 (0): Holds from 0..14 (0.10 in hold), Exit 14..16.5, Interlude 16.5..20
-      // Step 2 (1): Enter 20..23, Hold 23..32 (0.30 in hold), Exit 32..34.5, Interlude 34.5..40
-      // Step 3 (2): Enter 40..42.5, Hold 42.5..45.5, Exit 45.5..48, Interlude 48..60 (0.50 in interlude)
-      // Step 4 (3): Enter 60..63, Hold 63..72 (0.70 in hold), Exit 72..74.5, Interlude 74.5..80
+      // Step timings in master units (0..100) per COMPONENT.md (shares 0.15 enter, 0.55 hold, 0.15 exit, 0.15 interlude):
+      // Step 1 (0): Holds from 0..14 (0.10 in hold), Exit 14..17, Interlude 17..20
+      // Step 2 (1): Enter 20..23, Hold 23..34 (0.30 in hold), Exit 34..37, Interlude 37..40
+      // Step 3 (2): Enter 40..43, Hold 43..54 (0.50 in hold), Exit 54..57, Interlude 57..60
+      // Step 4 (3): Enter 60..63, Hold 63..74 (0.70 in hold), Exit 74..77, Interlude 77..80
       // Step 5 (4): Enter 80..83, Hold 83..100 (0.90 in hold, pin releases at 100)
       const stepTimings = [
-        { enter: 0, enterDur: 0, exit: 14, exitDur: 2.5 },
-        { enter: 20, enterDur: 3, exit: 32, exitDur: 2.5 },
-        { enter: 40, enterDur: 2.5, exit: 45.5, exitDur: 2.5 },
-        { enter: 60, enterDur: 3, exit: 72, exitDur: 2.5 },
+        { enter: 0, enterDur: 0, exit: 14, exitDur: 3 },
+        { enter: 20, enterDur: 3, exit: 34, exitDur: 3 },
+        { enter: 40, enterDur: 3, exit: 54, exitDur: 3 },
+        { enter: 60, enterDur: 3, exit: 74, exitDur: 3 },
         { enter: 80, enterDur: 3, exit: null, exitDur: null },
       ]
 
@@ -230,6 +210,9 @@ export function useIdeaStepsTimeline({
           )
         }
       })
+
+      // Anchor master timeline duration at 100 relative units
+      tl.set({}, {}, 100)
 
       const aboutSection = document.getElementById('about')
       if (aboutSection) {
@@ -288,14 +271,8 @@ export function useIdeaStepsTimeline({
         ;(window as unknown as { __ideaStepsScrollTrigger: ScrollTrigger }).__ideaStepsScrollTrigger = st
       }
 
-      // Re-measure path length on resize and fonts loaded
+      // Safety net: measure blocks against available height and scale if needed
       const handleResizeOrFonts = () => {
-        if (drawnPathRef.current) {
-          const len = drawnPathRef.current.getTotalLength() || 3600
-          drawnPathRef.current.style.strokeDasharray = `${len} ${len * 2 + 1000}`
-        }
-
-        // Safety net: measure blocks against available height and scale if needed
         stepRefs.current.forEach((stepEl) => {
           if (!stepEl) return
           const container = stepEl.querySelector('.step-content-block') as HTMLElement

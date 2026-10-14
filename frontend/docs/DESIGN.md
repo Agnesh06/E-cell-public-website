@@ -81,7 +81,7 @@ Mobile: scale with the clamps; never below 2.25rem for headlines or 1rem for bod
 
 ## 7. Signature elements
 
-**Flow line.** A thick blue SVG stroke (about 10-12px, round caps, constant width via `vector-effect: non-scaling-stroke`) over an identical ghost path in `blue-ghost`. It draws progressively with scroll and continues across steps.
+**Star field.** A responsive canvas background inside the pinned stage featuring drifting blue stars with straight-line motion, edge bouncing, merging mechanics capped at 24 alive stars, and an exponential scroll-velocity response (1x to 4x). Renders behind the cards and disables under `prefers-reduced-motion` and on mobile.
 
 **Hairline grid.** Three columns of 1px `hairline` lines with tiny crosshair marks at intersections, behind the content in the pinned section and hero. Very low contrast.
 

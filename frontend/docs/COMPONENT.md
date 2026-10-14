@@ -6,13 +6,13 @@ Suggested location: `src/features/landing/ideasteps/COMPONENT.md`. Read `docs/DE
 
 ## 1. Purpose
 
-A pinned, scroll-driven section on the landing page that presents E-Cell's story in **five steps**. As the user scrolls, one blue line draws itself across the stage while each step's text and cards fade in, hold, and fade out. Modelled on the "Who we are" sequence of csea.psgtech.ac.in, in a more official tone.
+A pinned, scroll-driven section on the landing page that presents E-Cell's story in **five steps**. As the user scrolls, a star-field background animates behind the cards while each step's text and cards fade in, hold, and fade out. Modelled on the "Who we are" sequence of csea.psgtech.ac.in, in a more official tone.
 
 ## 2. Scope
 
 **Does:**
 - Pin a full-viewport stage on desktop (>= 1024px) and play five steps from one scrubbed GSAP timeline.
-- Draw the flow line progressively and move the glow blob per step.
+- Animate a dynamic star-field background and move the glow blob per step.
 - Show an indicator (01-05) that reflects progress and scrolls to a step when clicked.
 - Provide a static, stacked fallback for mobile, tablet, and reduced-motion users.
 - Read all content from `src/data/ideas.ts`.
@@ -33,24 +33,24 @@ One `ScrollTrigger` pins the stage with `scrub: true` (a small smoothing value i
 | Segment of a step | Share | What happens |
 |---|---|---|
 | Enter | 0.15 | Eyebrow, headline lines, body, pills rise 24px and fade in with 60-90ms stagger; cards fade and rise with stagger |
-| Hold | 0.45 | Content static; the line keeps drawing |
+| Hold | 0.55 | Content static; stars drift and merge in background |
 | Exit | 0.15 | Text and cards fade out (and drift up 12px) |
-| Interlude | 0.25 | Empty stage; the line sweeps; glow blob moves to its next position |
+| Interlude | 0.15 | Empty stage; glow blob moves to its next position |
 
-The last step has no exit or interlude; after its hold the pin releases and the line scrolls away with the section. Step 1 has a short lead-in so the line appears to arrive from the hero.
+The last step has no exit or interlude; after its hold the pin releases and the section scrolls away.
 
 The indicator highlights the step whose enter-to-exit span contains the progress. During interludes the *next* step is already highlighted. Set React state only when the active index changes, never every frame.
 
-### 3.2 Flow line
+### 3.2 Star field
 
-- SVG with two identical paths: **ghost** (`blue-ghost`, always fully visible) and **drawn** (`blue`, revealed by `stroke-dashoffset`).
-- `viewBox` 1440 x 900, `preserveAspectRatio="xMidYMid slice"`, `vector-effect: non-scaling-stroke` so stroke width stays constant.
-- Dash length from `path.getTotalLength()`; remeasure on resize. Draw progress is linear in master progress, from about 0.02 to about 0.97.
-- The path enters from the top edge, loops across the stage, and ends past the bottom-left. The starting path below is a **placeholder [TBD]**; the final path is authored in a vector tool and approved visually.
-
-```
-M 1000 -20 C 1000 150, 1250 250, 1150 420 S 700 620, 520 560 S 260 760, 480 860 S 1100 800, 1200 600 S 1000 300, 760 420 S 420 700, 300 880
-```
+- One `<canvas>`, position absolute, inset 0, pointer-events none, aria-hidden true, z-index 0, clipped to stage. Step content and cards keep a higher z-index (cards are opaque).
+- Sized to stage with `ResizeObserver`, scaled by `devicePixelRatio` capped at 2. On resize, star positions rescale proportionally.
+- Resolves `--color-blue` at mount; pre-renders a single glow sprite on an offscreen canvas and draws stars via `drawImage` scaled by radius. No per-frame gradients.
+- Starts with 14 stars at random positions/directions, base speed 18-36 px/s, radius 2-4 px, opacity 0.55-0.8. Straight-line motion, bounces off stage edges with random angle change up to 10 degrees.
+- Merging: Two alive stars merge when distance < sum of radii and neither is in its 800 ms spawn grace period. Parents fade out over 500 ms; 3 children spawn at midpoint (radius max(1.8, 0.6 x larger parent radius), 120° apart, fading in over 500 ms, 800 ms grace period). Merge point features an expanding ring (radius 0 to 28 px over 450 ms).
+- Population cap: At most 24 alive stars. Merges exceeding cap fade out the oldest alive star not in the merge.
+- Scroll reaction: Samples `window.scrollY` per frame (no listener), exponential filter with attack ~120 ms, release ~550-900 ms. `speedFactor = 1 + min(3, smoothedSpeed / 1500)` (1x to 4x).
+- Desktop-only, RAF loop pauses when hidden / tab inactive, completely disabled under `prefers-reduced-motion` (no canvas rendered).
 
 ### 3.3 Indicator
 
@@ -58,7 +58,7 @@ M 1000 -20 C 1000 150, 1250 250, 1150 420 S 700 620, 520 560 S 260 760, 480 860 
 
 ### 3.4 Static fallback (< 1024px or `prefers-reduced-motion`)
 
-Five stacked sections using the same text block and cards. No pin, no scrub. A simple reveal-on-enter is allowed only if motion is not reduced. The flow line is a fully drawn decorative background, or omitted if it harms legibility. Selection happens with `gsap.matchMedia()`; there is exactly one code path per mode and no duplicated content in the DOM.
+Five stacked sections using the same text block and cards. No pin, no scrub, no star field canvas. A simple reveal-on-enter is allowed only if motion is not reduced. Selection happens with `gsap.matchMedia()`; there is exactly one code path per mode and no duplicated content in the DOM.
 
 ## 4. Content
 
@@ -125,9 +125,9 @@ Card layouts by step: 1 = `quote`, 2 and 3 = `trio` (three stacked or staggered 
 ```
 src/features/landing/ideasteps/
   IdeaSteps.tsx            container: gsap.matchMedia switch between PinnedIdeaSteps and StaticIdeaSteps
-  PinnedIdeaSteps.tsx      desktop pinned stage: 100svh stage, FlowLine, GlowBlob, stacked Step slides, shared indicator
+  PinnedIdeaSteps.tsx      desktop pinned stage: 100svh stage, StarField, GlowBlob, stacked Step slides, shared indicator
   useIdeaStepsTimeline.ts  builds the single master GSAP timeline & pin ScrollTrigger; provides activeIndex and goToStep
-  FlowLine.tsx             SVG with ghost and drawn paths (stroke-width: 11px, linear drawing from 0.02 to 0.97)
+  StarField.tsx            canvas background with dynamic stars, merging mechanics, and scroll-responsive speedFactor
   StaticIdeaSteps.tsx      stacked presentation: renders all five Step components with GridBackdrop and GlowBlob (mobile & reduced-motion)
   Step.tsx                 single step stage: 12-column grid composing StepText, StepCards, and bottom bar
   StepText.tsx             eyebrow, two-line headline, body, pills
@@ -143,8 +143,8 @@ src/components/common/
 Responsibilities:
 - `IdeaSteps` uses `gsap.matchMedia()` to switch between `<PinnedIdeaSteps />` (desktop >= 1024px and motion allowed) and `<StaticIdeaSteps />` (mobile/tablet < 1024px or reduced-motion). Exactly one mode is in the DOM at a time.
 - `PinnedIdeaSteps` mounts the 100svh stage, background layers, stacked `Step` slides (`absolute inset-0`), and the shared bottom-left `StepIndicator`.
-- `useIdeaStepsTimeline` is the sole owner of the master timeline and single pin ScrollTrigger (`scrub: 0.6`, pin length: 5x viewport height, `start: "top top"`, `invalidateOnRefresh`). Calculates activeIndex on change, drives flow-line drawing and glow blob movement.
-- `FlowLine` renders the decorative ghost and drawn paths using `FLOW_PATH` from `src/data/flowPath.ts`.
+- `useIdeaStepsTimeline` is the sole owner of the master timeline and single pin ScrollTrigger (`scrub: 0.6`, pin length: 5x viewport height, `start: "top top"`, `invalidateOnRefresh`). Calculates activeIndex on change and drives glow blob movement.
+- `StarField` renders the canvas star-field background, handling 14 initial stars, edge bouncing, merging capped at 24 alive stars, and scroll speed reactivity.
 - `StaticIdeaSteps` maps over `ideas` data from `src/data/ideas.ts`, handles Lenis/native smooth-scrolling for indicator clicks, and renders background layers.
 - `Step` represents one full stage layout with responsive 12-column grid (text on cols 1-5, cards on cols 7-12) and bottom bar (indicator, sideLabel, microLabels).
 - Presentational components receive data and props; they hold no animation logic.
@@ -154,9 +154,9 @@ Responsibilities:
 
 - All GSAP code runs inside `useGSAP` with a scope ref so cleanup is automatic.
 - One master timeline and one pin `ScrollTrigger`. No per-step ScrollTriggers; derive step state from timeline progress in `onUpdate`.
-- Animate `transform` and `opacity` only (plus `stroke-dashoffset` on the line).
-- No scroll event listeners and no `requestAnimationFrame` loops of our own.
-- Refresh on resize and after fonts load (`document.fonts.ready`) so pin length and path length stay correct.
+- Animate `transform` and `opacity` only.
+- Star field uses an internal RAF loop sampling `window.scrollY` directly (no scroll listener) paused when off-screen.
+- Refresh on resize and after fonts load (`document.fonts.ready`) so pin length stays correct.
 - Inactive steps are `aria-hidden` and `inert`, still in the DOM.
 - Do not set React state per frame.
 
@@ -166,7 +166,7 @@ Responsibilities:
 - Each step title is an `h3`.
 - Reduced-motion and mobile users read all five steps in normal document order.
 - Indicator buttons are keyboard operable; clicking moves focus-neutral (focus stays on the button).
-- Decorative layers (line, grid, glow) are `aria-hidden`.
+- Decorative layers (star field canvas, grid, glow) are `aria-hidden`.
 
 ## 8. Files you may and may not touch
 
@@ -188,7 +188,7 @@ Responsibilities:
 ## 10. Definition of done
 
 - [x] Five steps play in order with enter, hold, exit, interlude.
-- [x] Flow line draws smoothly, constant stroke width, no dash jumps.
+- [x] Star field renders smoothly with population cap, merges, and scroll responsiveness.
 - [x] Glow blob moves per step.
 - [x] Indicator syncs and is clickable.
 - [x] Static fallback verified at mobile and reduced-motion.

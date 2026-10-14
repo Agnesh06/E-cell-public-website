@@ -1,5 +1,6 @@
 import { useContact } from './ContactContext'
 import { cn } from '@/lib/utils'
+import {MailPen} from "lucide-react";
 
 export interface ContactButtonProps {
   isMenuOpen?: boolean
@@ -27,8 +28,7 @@ export function ContactButton({ isMenuOpen = false, className }: ContactButtonPr
         className
       )}
     >
-      <span className="hidden min-[480px]:inline">Contact Us</span>
-      <span className="inline min-[480px]:hidden">Contact</span>
+      <span><MailPen className="w-6 h-6" /></span>
     </button>
   )
 }

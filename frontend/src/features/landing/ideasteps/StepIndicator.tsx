@@ -1,10 +1,5 @@
 import React from 'react'
 
-const haloStyle: React.CSSProperties = {
-  textShadow:
-    '0 0 8px var(--color-bg), 0 0 8px var(--color-bg), 0 0 14px var(--color-bg)',
-}
-
 export interface StepIndicatorProps {
   count?: number
   activeIndex: number
@@ -42,7 +37,7 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                 ? 'text-[var(--color-blue)] font-semibold'
                 : 'text-[#6E6E70] hover:text-[var(--color-ink)]'
             }`}
-            style={{ fontWeight: 500, ...haloStyle }}
+            style={{ fontWeight: 500 }}
           >
             <span>{label}</span>
             {isActive && (

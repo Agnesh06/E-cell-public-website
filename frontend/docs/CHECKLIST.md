@@ -214,7 +214,7 @@
 - [x] Resize across 1024px breakpoint cleanly cleans up (no leftover pin spacers, no stuck inline styles) and rebuilds
 
 ### 2. Pinned stage (`PinnedIdeaSteps.tsx`)
-- [x] 100svh pinned stage with `GridBackdrop`, `GlowBlob`, `FlowLine`, and the five `<Step />` elements stacked absolutely (`inset 0`)
+- [x] 100svh pinned stage with `GridBackdrop`, `GlowBlob`, `StarField`, and the five `<Step />` elements stacked absolutely (`inset 0`)
 - [x] Single shared `StepIndicator` at bottom-left replaces per-step indicators in pinned mode
 - [x] Step slides use `aria-hidden={!isActive}` and `inert={!isActive}`
 - [x] Section exposes `data-active-step`, `data-active-index`, and throttled `data-progress`
@@ -222,15 +222,18 @@
 ### 3. Timeline & ScrollTrigger (`useIdeaStepsTimeline.ts`)
 - [x] Single pin `ScrollTrigger`: `scrub: 0.6`, pin distance `5 * window.innerHeight`, `start: "top top"`, `invalidateOnRefresh: true`
 - [x] Scoped with `useGSAP` for automatic cleanup
-- [x] Step timings: Enter (0.15), Hold (0.45), Exit (0.15), Interlude (0.25); last step holds through pin release with no exit
+- [x] Step timings: Enter (0.15), Hold (0.55), Exit (0.15), Interlude (0.15); last step holds through pin release with no exit
 - [x] Active index updates only on step change in `onUpdate`
 - [x] Indicator click smoothly scrolls to the start of that step's hold segment via Lenis / native fallback
 
-### 4. FlowLine (`FlowLine.tsx`)
-- [x] SVG with two identical paths: ghost (`--color-blue-ghost`) and drawn (`--color-blue`, stroke width 11px, round caps, `vector-effect: non-scaling-stroke`)
-- [x] `viewBox="0 0 1440 900"`, `preserveAspectRatio="xMidYMid slice"`, `aria-hidden="true"`
-- [x] Linear draw tween in master progress from 0.02 to 0.97 (`ease: 'none'`)
-- [x] `getTotalLength()` re-measured on resize and `document.fonts.ready`
+### 4. StarField (`StarField.tsx`)
+- [x] One `<canvas>` background, `aria-hidden="true"`, pointer-events none, z-index 0 behind cards
+- [x] Sized with `ResizeObserver`, DPR capped at 2, pre-rendered offscreen radial gradient glow sprite
+- [x] 14 initial stars, straight-line motion, edge bounce with up to 10° angle change
+- [x] Merging logic (parents fade out 500ms, 3 children spawn with 120° offsets, 800ms grace period, expanding shockwave ring)
+- [x] Population cap: max 24 alive stars, oldest non-merging star fades out if cap exceeded
+- [x] Exponential scroll speed factor (1x up to 4x) sampled via `window.scrollY`
+- [x] IntersectionObserver & visibilitychange pause RAF; disabled under `prefers-reduced-motion`
 
 ### 5. GlowBlob animation
 - [x] Animated between corner presets during interludes (`xPercent`, `yPercent`, opacity 0.6–0.85)
@@ -253,7 +256,7 @@
 - [x] Decorative DotGrid canvas responds to pointer proximity, fast movement, and clicks
 - [x] DotGrid is aria-hidden, resizes with its hero, and honors reduced-motion preferences
 - [x] Five IdeaSteps stages rendered with custom cards (quote, trio, quad timeline, 2x2 grid)
-- [x] Pinned scroll sequence with smooth scrubbed timeline, drawing flow-line, moving glow, and interlude stage clears
+- [x] Pinned scroll sequence with smooth scrubbed timeline, dynamic star-field canvas, moving glow, and interlude stage clears
 
 ## Content and data
 
