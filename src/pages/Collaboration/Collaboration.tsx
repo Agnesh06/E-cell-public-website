@@ -123,7 +123,7 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
   ];
 
   return (
-    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden snap-start lg:snap-align-none scroll-mt-0">
+    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden scroll-mt-0">
 
       <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center w-full">
         {/* Streamlined Clean Header */}

@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, useMotionValue, AnimatePresence } from "framer-motion";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Linkedin, Github, Instagram, Twitter } from "lucide-react";
+import { Linkedin, Github, Instagram, Mail } from "lucide-react";
 
 export interface iNavItem {
   heading: string;
@@ -42,6 +42,10 @@ export const defaultNavItems: iNavItem[] = [
     href: "#home",
   },
   {
+    heading: "About Us",
+    href: "#about",
+  },
+  {
     heading: "Projects",
     href: "#projects",
   },
@@ -63,7 +67,7 @@ export const CustomFooter: React.FC = () => {
   return (
     <div className="flex w-full text-sm justify-between text-black px-10 md:px-24 py-6">
       <a
-        href="https://linkedin.com/company/ecell-psgtech"
+        href="https://www.linkedin.com/company/cse-association-psg-tech/"
         target="_blank"
         rel="noopener noreferrer"
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
@@ -72,7 +76,7 @@ export const CustomFooter: React.FC = () => {
         <Linkedin size={24} />
       </a>
       <a
-        href="https://github.com/Agnesh06"
+        href="https://github.com/CSEA-PSGTech"
         target="_blank"
         rel="noopener noreferrer"
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
@@ -81,7 +85,7 @@ export const CustomFooter: React.FC = () => {
         <Github size={24} />
       </a>
       <a
-        href="https://instagram.com/ecell_psgtech"
+        href="https://instagram.com/cseapsgtech?psln=MTVjcW5lanBlcGducQ%3D%3D"
         target="_blank"
         rel="noopener noreferrer"
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
@@ -90,13 +94,11 @@ export const CustomFooter: React.FC = () => {
         <Instagram size={24} />
       </a>
       <a
-        href="https://twitter.com/ecell_psgtech"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="mailto:csea.cse@psgtech.ac.in"
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
-        aria-label="Twitter"
+        aria-label="Official Email"
       >
-        <Twitter size={24} />
+        <Mail size={24} />
       </a>
     </div>
   );
@@ -132,21 +134,28 @@ export const NavLink: React.FC<iNavLinkProps> = ({
       e.preventDefault();
       const targetId = href.replace("#", "");
 
-      if (location.pathname !== "/") {
-        navigate(`/${href}`);
-        setTimeout(() => {
-          if (targetId === "home") {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-          } else {
-            document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
-          }
-        }, 150);
-      } else {
+      const scrollToTarget = () => {
         if (targetId === "home") {
           window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (targetId === "about" || targetId === "about-us") {
+          const aboutEl = document.getElementById("about") || document.getElementById("about-us");
+          const homeEl = document.getElementById("home");
+          if (aboutEl) {
+            aboutEl.scrollIntoView({ behavior: "smooth" });
+          } else if (homeEl) {
+            const travel = (window.innerHeight || 800) * 2.2;
+            window.scrollTo({ top: homeEl.offsetTop + travel * 0.88, behavior: "smooth" });
+          }
         } else {
           document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth" });
         }
+      };
+
+      if (location.pathname !== "/") {
+        navigate(`/${href}`);
+        setTimeout(scrollToTarget, 150);
+      } else {
+        scrollToTarget();
       }
     }
   };

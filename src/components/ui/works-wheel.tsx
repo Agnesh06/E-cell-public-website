@@ -22,6 +22,12 @@ export interface WorksWheelItem {
   image: string;
   /** Where the card links to. Omit for a wheel that only browses. */
   href?: string;
+  /** Project description for the 2-line detail preview. */
+  description?: string;
+  /** Domain / sector tag. */
+  domain?: string;
+  /** Project slug. */
+  slug?: string;
 }
 
 export interface WorksWheelProps extends Omit<
@@ -43,13 +49,13 @@ export interface WorksWheelProps extends Omit<
    swinging on a huge drum. The three that matter are tuned together: STEP
    against DRUM sets how hard the neighbours rotate away, and DRUM against LENS
    decides whether they land inside the frame or run off it. */
-const CARD_H = 0.34; // front card height, scaled so cards fill the stage beautifully with safe top/bottom margins
-const CARD_MAX_W = 0.31; // ... but never wider than this much of the stage
+const CARD_H = 0.27; // scaled down so 6 cards in ring float comfortably inside viewport without cropping
+const CARD_MAX_W = 0.25; // max card width relative to stage
 const CARD_RATIO = 1.45; // card width / height
-const STEP = 40; // degrees between cards on the drum
-const DRUM = 2.22; // drum radius, in card heights - and everything below likewise
+const STEP = 42; // degrees between cards on the drum
+const DRUM = 2.1; // drum radius
 const LENS = 2.7; // perspective distance
-const RING_R = 1.18; // ring radius
+const RING_R = 1.06; // calibrated ring radius: prevents cards from touching top/bottom boundaries
 /* The drum alone hangs the work on a plumb line. It isn't one: the strip curves
    away round an arc whose centre sits off to the LEFT, so the piece at the front
    is at the arc's near point - dead centre - and its neighbours have already
@@ -377,15 +383,40 @@ export function WorksWheel({
       </div>
       <div
         ref={titleRef}
-        className="pointer-events-none absolute top-1/2 left-[8%] -translate-y-1/2 tracking-tight opacity-0 font-display font-normal text-foreground"
-        style={{ fontSize: metrics.title }}
+        className="pointer-events-auto absolute top-1/2 left-[5%] lg:left-[8%] -translate-y-1/2 opacity-0 text-foreground max-w-xs xl:max-w-sm z-20 flex flex-col gap-2.5 transition-opacity duration-300"
       >
-        {items[active]?.title}
+        {items[active]?.domain && (
+          <div className="flex items-center">
+            <span className="font-mono text-xs font-semibold uppercase tracking-wider text-[#2547FF]">
+              {items[active]?.domain}
+            </span>
+          </div>
+        )}
+        <h3
+          className="tracking-tight font-display font-bold text-2xl lg:text-3xl text-[#0A0A0A] leading-tight"
+        >
+          {items[active]?.title}
+        </h3>
+        {items[active]?.description && (
+          <p className="font-sans text-xs lg:text-sm text-[#0A0A0A]/70 line-clamp-2 leading-relaxed">
+            {items[active]?.description}
+          </p>
+        )}
+        <div className="flex items-center gap-4 pt-1">
+          {items[active]?.href && (
+            <a
+              href={items[active]?.href}
+              className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-[#2547FF] hover:text-[#1b3ae5] transition-colors group/link"
+            >
+              <span>Explore Project</span>
+              <span className="transition-transform group-hover/link:translate-x-0.5">→</span>
+            </a>
+          )}
+        </div>
       </div>
 
       <ol
-        className="text-muted-foreground absolute top-[7.5%] right-[2.5%] text-right leading-[1.75] font-sans"
-        style={{ fontSize: metrics.index }}
+        className="text-muted-foreground absolute top-1/2 -translate-y-1/2 right-[3%] lg:right-[4%] text-right leading-[2] font-sans z-20 pointer-events-auto"
       >
         {items.map((item, i) => (
           <li key={item.title}>
@@ -393,11 +424,13 @@ export function WorksWheel({
               type="button"
               onClick={() => to(i + 1)}
               className={cn(
-                "focus-visible:outline-foreground cursor-pointer transition-colors outline-none focus-visible:outline-1 text-sm",
-                i === active ? "text-foreground font-medium" : "font-normal",
+                "cursor-pointer transition-colors outline-none py-1 text-xs lg:text-sm block ml-auto",
+                i === active
+                  ? "text-[#2547FF] font-semibold tracking-wide"
+                  : "text-[#0A0A0A]/40 hover:text-[#0A0A0A]/80 font-normal",
               )}
             >
-              {item.title}
+              <span>{item.title}</span>
             </button>
           </li>
         ))}

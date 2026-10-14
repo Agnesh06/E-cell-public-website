@@ -68,7 +68,7 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
   return (
     <section
       id={id}
-      className={`relative w-full min-h-screen flex flex-col justify-center py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] snap-start lg:snap-align-none scroll-mt-0 ${className}`}
+      className={`relative w-full min-h-screen flex flex-col justify-center py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] scroll-mt-0 ${className}`}
       aria-label="Direct Contact Section"
     >
       <div className="mx-auto w-full max-w-6xl">
@@ -83,7 +83,7 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
             {
               icon: Mail,
               label: 'Email',
-              value: 'ecell@psgtech.ac.in',
+              value: 'csea.cse@psgtech.ac.in',
             },
             {
               icon: Phone,

@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
+import { Link } from "react-router-dom";
 import GlyphPortal from "@/components/ui/glyph-portal";
 import Topography from "@/components/ui/Topography";
+import HeroBackground from "@/components/layout/HeroBackground";
+import HeroLine from "@/components/layout/HeroLine";
+import HeroTopographyBackground from "@/components/home/HeroTopographyBackground";
 import ReadyWord, { type ReadyWordRef } from "@/components/home/ReadyWord";
 import ClickSpark from "@/components/ui/ClickSpark";
 import { Eye, Target, Users, ArrowRight } from "lucide-react";
@@ -76,55 +80,51 @@ export default function Hero({
       id="home"
       data-slipstream-hero
       data-pillars-ready="false"
-      className="relative w-full overflow-x-clip select-text bg-transparent snap-start scroll-mt-0"
+      className="relative w-full overflow-x-clip select-text bg-transparent scroll-mt-0"
       style={{
         containerType: "inline-size",
         fontFamily: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif',
       }}
     >
-      {/* React Bits Topography Background pinned across both opening frame & text reading buffer */}
+      {/* Anchor for direct smooth navigation to About Us blue portal stage */}
+      <div
+        id="about"
+        className="absolute left-0 w-px h-px pointer-events-none opacity-0 select-none"
+        style={{ top: "calc(2.2 * 100svh * 0.88)" }}
+        aria-hidden="true"
+      />
+      {/* Hero Background: React Bits DotGrid + Flowing Vector Curve (To rollback anytime: swap with <HeroTopographyBackground />) */}
       <div
         aria-hidden="true"
         className="sticky top-0 h-[100svh] w-full pointer-events-none z-0 -mb-[100svh] overflow-hidden select-none"
       >
-        <Topography
-          lowColor="#1B3AE5"
-          midColor="#38BDF8"
-          highColor="#FFFFFF"
-          speed={0.35}
-          morphAmount={3}
-          morphSpeed={0.05}
-          bands={2}
-          thickness={0.01}
-          scale={2}
-          pixelSize={1}
-          glow={0.05}
-          colorMode="elevation"
-          contrast={3}
-          brightness={1}
-          fillBands={false}
-          grain={false}
-          grainIntensity={0.05}
-          opacity={1}
-          mouseInteraction={true}
-          mouseRadius={0.3}
-          mouseStrength={0.4}
-        />
+        <HeroBackground />
+        <HeroLine />
       </div>
 
       <style>{`
         :root, [data-slipstream-hero] {
-          --hero-left-edge: clamp(24px, 10vw, 150px);
+          --hero-left-edge: clamp(24px, 8.5vw, 128px);
         }
         @media (max-width: 767px) {
           :root, [data-slipstream-hero] {
-            --hero-left-edge: 20px;
+            --hero-left-edge: 22px;
           }
         }
 
         /* Ensure front layer stays visible through the zoom transition instead of premature fading */
         [data-slipstream-hero] [data-gp-front] {
           opacity: 1 !important;
+          z-index: 45 !important;
+          pointer-events: none !important;
+        }
+
+        [data-slipstream-hero] [data-gp-front] a,
+        [data-slipstream-hero] [data-gp-front] button,
+        [data-slipstream-hero] [data-gp-front] .hero-cta-btn,
+        [data-slipstream-hero] [data-gp-front] .hero-brand-block {
+          pointer-events: var(--hero-front-events, auto) !important;
+          cursor: pointer !important;
         }
 
         /* Hide the centered giant SVG glyph from GlyphPortal so right side remains completely open */
@@ -147,10 +147,7 @@ export default function Hero({
 
         /* Top-Left: Logo & PSG Tech Club Name */
         .hero-brand-block {
-          position: absolute;
-          top: 36px;
-          left: var(--hero-left-edge);
-          display: flex;
+          display: inline-flex;
           align-items: center;
           gap: 14px;
           z-index: 20;
@@ -159,26 +156,10 @@ export default function Hero({
           opacity: var(--hero-aux-opacity, 1);
           transition: opacity 0.15s ease;
         }
-        @media (max-width: 767px) {
-          .hero-brand-block {
-            top: 24px;
-            gap: 10px;
-          }
-        }
-
-        /* Soft white glow behind brand block so blue topography lines don't make it look dim */
-        .hero-brand-glow {
-          position: absolute;
-          inset: -14px -28px -14px -14px;
-          background: radial-gradient(ellipse at 40% 50%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.88) 65%, rgba(255, 255, 255, 0) 100%);
-          filter: blur(18px);
-          pointer-events: none;
-          z-index: -1;
-        }
 
         .hero-logo-box {
-          width: 50px;
-          height: 50px;
+          width: 48px;
+          height: 48px;
           border-radius: 12px;
           background: #FFFFFF;
           border: 1px solid rgba(0, 0, 0, 0.1);
@@ -212,7 +193,7 @@ export default function Hero({
         }
 
         .hero-logo-text {
-          font-size: 28px;
+          font-size: 26px;
           font-weight: 800;
           line-height: 1.05;
           letter-spacing: -0.035em;
@@ -238,48 +219,26 @@ export default function Hero({
           }
         }
 
-        /* Main Headline Block (~55% vertical height) - Surrounding sentence remains static */
+        /* Main Headline Block */
         .hero-headline-block {
-          position: absolute;
-          top: 55%;
-          transform: translateY(-50%);
-          left: var(--hero-left-edge);
-          max-width: 620px;
           z-index: 20;
           pointer-events: auto;
           opacity: var(--hero-headline-opacity, 1);
         }
-        @media (max-width: 767px) {
-          .hero-headline-block {
-            top: 45%;
-            max-width: calc(100vw - 40px);
-          }
-        }
-
-        /* Soft radial fade behind headline block for contour line readability */
-        .hero-text-glow {
-          position: absolute;
-          inset: -36px -60px -40px -40px;
-          background: radial-gradient(ellipse at 35% 45%, rgba(250, 250, 252, 0.88) 0%, rgba(250, 250, 252, 0.76) 45%, rgba(250, 250, 252, 0) 100%);
-          filter: blur(48px);
-          pointer-events: none;
-          z-index: -1;
-        }
 
         .hero-headline-text {
-          margin: 0;
+          margin: 0 0 24px 0;
           font-family: inherit;
-          font-size: clamp(44px, 5.2vw, 76px);
-          font-weight: 700;
-          line-height: 1.05;
-          letter-spacing: -0.035em;
-          color: #0A0A0A;
+          font-size: clamp(3rem, 7vw, 6.5rem);
+          font-weight: 500;
+          line-height: 0.95;
+          letter-spacing: -0.03em;
+          color: #0B0B0F;
           text-wrap: balance;
         }
-        @media (max-width: 767px) {
+        @media (min-width: 768px) {
           .hero-headline-text {
-            font-size: 40px;
-            line-height: 1.1;
+            margin-bottom: 32px;
           }
         }
 
@@ -288,43 +247,71 @@ export default function Hero({
         }
 
         .hero-supporting-text {
-          margin: 28px 0 0 0;
-          font-size: 17px;
-          font-weight: 400;
-          line-height: 1.6;
-          color: #262626;
-          max-width: 520px;
+          margin: 0 0 32px 0;
+          font-family: inherit;
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.625;
+          color: rgba(11, 11, 15, 0.62);
+          max-width: 52ch;
           text-wrap: pretty;
           will-change: opacity;
           opacity: var(--hero-aux-opacity, 1);
           transition: opacity 0.15s ease;
         }
-        @media (max-width: 767px) {
+        @media (min-width: 768px) {
           .hero-supporting-text {
-            font-size: 15px;
-            max-width: 300px;
-            margin-top: 20px;
+            font-size: 18px;
+            margin-bottom: 40px;
           }
         }
 
-        /* Bottom-Center Scroll Indicator */
-        .hero-scroll-indicator {
-          position: absolute;
-          bottom: 40px;
-          left: 50%;
-          transform: translateX(-50%);
+        .hero-cta-wrapper {
           display: flex;
-          flex-direction: column;
           align-items: center;
-          gap: 6px;
-          color: #262626;
-          opacity: 0.6;
-          font-size: 11px;
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
-          pointer-events: none;
-          z-index: 20;
+          gap: 16px;
+          will-change: opacity;
+          opacity: var(--hero-aux-opacity, 1);
+          transition: opacity 0.15s ease;
+        }
+
+        .hero-cta-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          padding: 14px 28px;
+          border-radius: 9999px;
+          background: #2547FF;
+          color: #FFFFFF;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 1;
+          letter-spacing: -0.01em;
+          box-shadow: 0 4px 14px rgba(37, 71, 255, 0.28);
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+          text-decoration: none;
+          cursor: pointer;
+          pointer-events: auto;
+        }
+        .hero-cta-btn:hover {
+          background: #1a38db;
+          box-shadow: 0 6px 22px rgba(37, 71, 255, 0.4);
+          transform: translateY(-2px);
+        }
+        .hero-cta-btn:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(37, 71, 255, 0.3);
+        }
+        @media (max-width: 767px) {
+          .hero-cta-btn {
+            padding: 12px 24px;
+            font-size: 14px;
+          }
+        }
+
+        /* Bottom Micro-Bar */
+        .hero-bottom-bar {
           will-change: opacity;
           opacity: var(--hero-aux-opacity, 1);
           transition: opacity 0.15s ease;
@@ -342,8 +329,13 @@ export default function Hero({
           font-family: inherit;
           background: transparent !important;
           overflow: hidden;
-          z-index: 40 !important;
+          z-index: 20 !important;
           opacity: 1 !important;
+          pointer-events: none !important;
+        }
+
+        [data-slipstream-hero][data-pillars-ready="true"] [data-gp-content]{
+          z-index: 55 !important;
           pointer-events: auto !important;
         }
 
@@ -359,6 +351,53 @@ export default function Hero({
           pointer-events: auto;
         }
 
+        /* Desktop-Only Full-Height Balanced Bento Grid Layout (Leaves Mobile 100% Untouched) */
+        @media (min-width: 1024px) {
+          [data-slipstream-hero] [data-gp-content] {
+            align-items: center !important;
+            padding: clamp(2.5rem, 5svh, 4.5rem) clamp(2rem, 5cqw, 6rem) !important;
+          }
+
+          .hero-copy-wrapper {
+            height: 100% !important;
+            max-height: clamp(680px, 82svh, 800px) !important;
+            justify-content: space-between !important;
+            gap: clamp(1.5rem, 2.5svh, 2.5rem) !important;
+          }
+
+          .hero-pillars-grid {
+            border-top: none !important;
+            padding-top: 0 !important;
+          }
+
+          .hero-col-1, .hero-col-2 {
+            border-right: none !important;
+          }
+
+          .hero-bento-card {
+            height: 100%;
+            min-height: 270px;
+            border-radius: 20px;
+            padding: 32px 28px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+          }
+
+          [data-slipstream-hero][data-pillars-ready="true"] .hero-bento-card:hover {
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(255, 255, 255, 0.38);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+          }
+        }
+
         .hero-eyebrow-flow {
           will-change: transform, opacity;
           opacity: var(--hero-head-opacity, 0);
@@ -372,18 +411,36 @@ export default function Hero({
           transform: translateY(var(--hero-head-y, 90px));
         }
 
+        .hero-sublead-flow {
+          will-change: transform, opacity;
+          opacity: var(--hero-head-opacity, 0);
+          transform: translateY(var(--hero-head-y, 90px));
+        }
+
         .hero-pillars-grid {
           border-color: rgba(255, 255, 255, calc(0.22 * var(--hero-grid-border-opacity, 0)));
         }
 
         .hero-col-1 {
+          will-change: transform, opacity;
+          opacity: var(--hero-c1-head-opacity, 0);
+          transform: translateY(var(--hero-c1-head-y, 60px));
           border-color: rgba(255, 255, 255, calc(0.22 * var(--hero-div1-opacity, 0)));
           transition: border-color 0.35s ease;
         }
 
         .hero-col-2 {
+          will-change: transform, opacity;
+          opacity: var(--hero-c2-head-opacity, 0);
+          transform: translateY(var(--hero-c2-head-y, 60px));
           border-color: rgba(255, 255, 255, calc(0.22 * var(--hero-div2-opacity, 0)));
           transition: border-color 0.35s ease;
+        }
+
+        .hero-col-3 {
+          will-change: transform, opacity;
+          opacity: var(--hero-c3-head-opacity, 0);
+          transform: translateY(var(--hero-c3-head-y, 60px));
         }
 
         /* Pillars Column Base: Non-interactive while text is rising in */
@@ -617,6 +674,7 @@ export default function Hero({
           hero.style.setProperty("--hero-headline-opacity", headlineOpacity.toFixed(4));
           hero.style.setProperty("--hero-aux-opacity", auxOpacity.toFixed(4));
           hero.style.setProperty("--hero-portal-opacity", portalOpacity.toFixed(4));
+          hero.style.setProperty("--hero-front-events", p > 0.08 ? "none" : "auto");
 
           hero.style.setProperty("--hero-head-opacity", headOpacity.toFixed(4));
           hero.style.setProperty("--hero-head-y", `${headY.toFixed(2)}px`);
@@ -681,58 +739,101 @@ export default function Hero({
           </div>
         }
         front={
-          <div className="absolute inset-0 pointer-events-none select-text">
-            {/* Top-Left: Logo & PSG Tech Club Name */}
-            <a
-              href="#home"
-              className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer"
-              aria-label="PSG Tech E-Cell Home"
-            >
-              {/* Soft Radial Fade for Readability over Topography Lines */}
-              <div className="hero-brand-glow" aria-hidden="true" />
-
-              <div className="hero-logo-box">
-                <img
-                  src="/images/ecell-logo.png"
-                  alt="PSG Tech E-Cell Logo"
-                  className="hero-logo-img"
-                />
-              </div>
-              <div className="hero-brand-text">
-                <span className="hero-logo-text">
-                  E-Cell
-                </span>
-                <span className="hero-college-text">
-                  PSG College of Technology
-                </span>
-              </div>
-            </a>
-
-            {/* Center-Left: Headline & Supporting Text Block at ~55% height */}
-            <div ref={headlineRef} className="hero-headline-block">
-              {/* Soft Radial Fade for Readability over Topography Lines */}
-              <div className="hero-text-glow" aria-hidden="true" />
-
-              {/* Main Headline */}
-              <h1 className="hero-headline-text">
-                <span>Build before</span>
-                <br />
-                <span>you&apos;re </span>
-                <ReadyWord ref={readyWordRef} word={word} focusChar={focusChar} />
-                <span className="text-[#2547FF]">.</span>
-              </h1>
-
-              {/* Supporting Text */}
-              <p className="hero-supporting-text">
-                A place to start, learn, and build. Turn your ideas into ventures and
-                your ventures into impact.
-              </p>
+          <div className="absolute inset-0 pointer-events-none select-text flex flex-col justify-between min-h-[100svh] h-full pt-8 pb-4 md:pb-6">
+            {/* Top Bar: Brand Logo on Left */}
+            <div className="w-full px-6 md:px-10 lg:px-12 pointer-events-auto">
+              <a
+                href="#home"
+                className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer"
+                aria-label="PSG Tech E-Cell Home"
+              >
+                <div className="hero-logo-box">
+                  <img
+                    src="/images/ecell-logo.png"
+                    alt="PSG Tech E-Cell Logo"
+                    className="hero-logo-img"
+                  />
+                </div>
+                <div className="hero-brand-text">
+                  <span className="hero-logo-text">
+                    E-Cell
+                  </span>
+                  <span className="hero-college-text">
+                    PSG College of Technology
+                  </span>
+                </div>
+              </a>
             </div>
 
-            {/* Bottom-Center: Scroll to Explore Indicator */}
-            <div className="hero-scroll-indicator">
-              <span>SCROLL TO EXPLORE</span>
-              <span className="text-[12px] animate-bounce">↓</span>
+            {/* Main Content Area: my-auto vertically centers between top bar and bottom bar */}
+            <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 my-auto">
+              <div
+                ref={headlineRef}
+                className="hero-headline-block w-full lg:max-w-[62%] pointer-events-auto"
+              >
+                {/* Main Headline */}
+                <h1 className="hero-headline-text">
+                  <span className="block">Build before</span>
+                  <span className="block">
+                    you&apos;re{" "}
+                    <ReadyWord ref={readyWordRef} word={word} focusChar={focusChar} />
+                    <span className="text-[#2547FF]">.</span>
+                  </span>
+                </h1>
+
+                {/* Subtitle / Lead Paragraph */}
+                <p className="hero-supporting-text">
+                  A place to start, learn, and build. Turn your ideas into ventures and
+                  your ventures into impact.
+                </p>
+
+                {/* CTA Button */}
+                <div className="hero-cta-wrapper pointer-events-auto">
+                  <a
+                    href="#collaboration"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("collaboration")?.scrollIntoView({ behavior: "smooth" });
+                      window.history.pushState(null, "", "#collaboration");
+                    }}
+                    className="hero-cta-btn group"
+                    aria-label="Get Involved - Go to collaboration form section"
+                  >
+                    <span>Get Involved</span>
+                    <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Bar: Clean, minimalist centered scroll stroke */}
+            <div className="hero-bottom-bar absolute bottom-6 sm:bottom-8 left-0 right-0 px-6 md:px-10 lg:px-12 flex items-center justify-between pointer-events-none z-20">
+              {/* Left spacer for perfect desktop balance */}
+              <div className="hidden lg:block w-48" aria-hidden="true" />
+
+              {/* Centered Minimalist Scroll Indicator */}
+              <div className="mx-auto lg:mx-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2 pointer-events-auto">
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" });
+                  }}
+                  className="flex flex-col items-center gap-2 cursor-pointer group select-none transition-all active:scale-95"
+                  aria-label="Scroll to explore"
+                >
+                  <span className="text-[11px] sm:text-xs font-mono font-semibold tracking-[0.28em] text-[#0A0A0A]/80 group-hover:text-[#2547FF] transition-colors uppercase">
+                    SCROLL
+                  </span>
+                  <div className="w-[1.5px] h-8 bg-gradient-to-b from-[#2547FF] via-[#2547FF]/70 to-transparent rounded-full transition-all duration-300 group-hover:h-10" />
+                </button>
+              </div>
+
+              {/* Right Tagline */}
+              <div className="hidden lg:block text-right">
+                <span className="text-xs font-mono font-medium tracking-[0.2em] text-[#0B0B0F]/60 uppercase">
+                  IDEATE · COLLABORATE · BUILD
+                </span>
+              </div>
             </div>
           </div>
         }
@@ -745,99 +846,114 @@ export default function Hero({
             sparkRadius={15}
             sparkCount={8}
             duration={400}
-            className="flex flex-col items-start gap-[clamp(1.25rem,2.5svh,2.25rem)] w-full"
+            className="flex flex-col items-start justify-between w-full h-full gap-6 lg:gap-8"
           >
-            {/* Eyebrow: ● PSG TECH ENTREPRENEURSHIP CELL */}
-            <div className="hero-eyebrow-flow flex items-center gap-2.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)] animate-pulse" />
-              <span className="font-mono text-xs font-normal tracking-[0.2em] text-white/90 uppercase select-none">
-                PSG Tech Entrepreneurship Cell
-              </span>
+            {/* Top Tier: Dramatic Headline + Desktop Sub-lead */}
+            <div className="flex flex-col items-start gap-4 sm:gap-5 w-full">
+              {/* Bold 2-Line Headline - Rises from Bottom */}
+              <div className="hero-headline-flow">
+                <h2 className="text-white font-display font-normal text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] leading-[1.08] tracking-[-0.03em] text-balance">
+                  Where student ideas
+                  <br />
+                  become real ventures.
+                </h2>
+              </div>
+
+              {/* Desktop Sub-lead: Gives context and fills the top tier with purpose (Desktop Only) */}
+              <p className="hero-sublead-flow hidden lg:block text-white/85 font-sans text-base lg:text-lg max-w-3xl font-normal leading-relaxed">
+                The flagship innovation launchpad empowering student founders at PSG College of Technology from initial concept to scalable venture.
+              </p>
             </div>
 
-            {/* Bold 2-Line Headline from Reference Image - Rises from Bottom */}
-            <div className="hero-headline-flow">
-              <h2 className="text-white font-display font-normal text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] leading-[1.05] tracking-[-0.035em] text-balance">
-                Where student ideas
-                <br />
-                become real ventures.
-              </h2>
-            </div>
-
-            {/* 3 Pillars / Columns with Glass Circular Icon Badges & Perfectly Aligned Dividers */}
-            <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-7 sm:pt-9 gap-8 md:gap-0 transition-colors">
+            {/* Middle Tier: 3 Full-Height Bento Cards (Desktop) / Clean Sequential List (Mobile) */}
+            <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-7 sm:pt-9 gap-8 md:gap-0 lg:gap-6 lg:border-t-0 lg:pt-0 transition-colors">
               {/* 01 — Our Vision */}
-              <div className="hero-col-1 md:pr-10 md:border-r transition-colors">
-                <div className="hero-pillar-item relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 rounded-2xl">
-                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only, after text settles) */}
+              <div className="hero-col-1 md:pr-10 md:border-r lg:pr-0 lg:border-r-0 transition-colors">
+                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
-                  <div className="relative z-10">
-                    <div className="hero-c1-head flex items-center gap-3.5 mb-3.5">
-                      <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
-                        <Eye className="w-5 h-5 text-white" />
+                  <div className="relative z-10 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="hero-c1-head flex items-center justify-between mb-4">
+                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Eye className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
+                          01 / INVENT
+                        </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl tracking-tight">Our Vision</h3>
-                    </div>
-                    <div className="hero-c1-body">
-                      <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-base leading-[1.6] transition-colors duration-300">
-                        To inspire students to think boldly, build fearlessly, and shape the future.
-                      </p>
+                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Vision</h3>
+                      <div className="hero-c1-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                          To inspire students to think boldly, build fearlessly, and shape the future through technology and venture creation.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 02 — Our Mission */}
-              <div className="hero-col-2 md:px-10 md:border-r transition-colors">
-                <div className="hero-pillar-item relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 rounded-2xl">
-                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only, after text settles) */}
+              <div className="hero-col-2 md:px-10 md:border-r lg:px-0 lg:border-r-0 transition-colors">
+                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
-                  <div className="relative z-10">
-                    <div className="hero-c2-head flex items-center gap-3.5 mb-3.5">
-                      <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
-                        <Target className="w-5 h-5 text-white" />
+                  <div className="relative z-10 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="hero-c2-head flex items-center justify-between mb-4">
+                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Target className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
+                          02 / INCUBATE
+                        </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl tracking-tight">Our Mission</h3>
-                    </div>
-                    <div className="hero-c2-body">
-                      <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-base leading-[1.6] transition-colors duration-300">
-                        To turn ideas into action through innovation, collaboration, and opportunity.
-                      </p>
+                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Mission</h3>
+                      <div className="hero-c2-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                          To turn ideas into action through hands-on prototype incubation, structured mentorship, and seed grants.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 03 — About Us */}
-              <div className="hero-col-3 md:pl-10">
-                <div className="hero-pillar-item relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 rounded-2xl">
-                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only, after text settles) */}
+              <div className="hero-col-3 md:pl-10 lg:pl-0 transition-colors">
+                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                  {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
-                  <div className="relative z-10">
-                    <div className="hero-c3-head flex items-center gap-3.5 mb-3.5">
-                      <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
-                        <Users className="w-5 h-5 text-white" />
+                  <div className="relative z-10 flex flex-col justify-between h-full">
+                    <div>
+                      <div className="hero-c3-head flex items-center justify-between mb-4">
+                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Users className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
+                          03 / SCALE
+                        </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl tracking-tight">About Us</h3>
-                    </div>
-                    <div className="hero-c3-body">
-                      <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-base leading-[1.6] transition-colors duration-300">
-                        A student-driven community at PSG Tech fostering entrepreneurship, creativity, and real-world impact.
-                      </p>
+                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">About Us</h3>
+                      <div className="hero-c3-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                          A student-driven community at PSG Tech connecting aspiring innovators with industry leaders and venture networks.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Pill Button: Explore our projects → */}
-            <div className="hero-cta-flow pt-2">
+            {/* Bottom Tier: Left-aligned "Explore our projects" Pill Button */}
+            <div className="hero-cta-flow w-full flex items-center justify-start pt-1">
               <a
                 href="#projects"
                 onClick={(e) => {

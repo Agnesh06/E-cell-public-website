@@ -4,45 +4,54 @@ import { Link, useLocation } from "react-router-dom";
 export interface TeamMember {
   name: string;
   role: string;
-  image: string;
+  image?: string;
 }
 
 export const defaultTeamMembers: TeamMember[] = [
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/f4/f43137dada970ee6a29a0497d1f699d54b92e5381350eaa66dc827e3ffb11645.jpg",
-    name: "Patrick Stewart",
-    role: "President • E-Cell",
+    image: "",
+    name: "Sanjay J",
+    role: "Director",
   },
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/d5/d549c11c16ad2335895c39339d1a4307b648b24a6baae68662246cf9bd37ac13.jpg",
-    name: "Alena Rosser",
-    role: "Vice President",
+    image: "",
+    name: "Sai Karthi Balaji G",
+    role: "Deputy Director",
   },
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/e0/e058437411e954b747056a494f26349751828f12c2137a883e5aebbd1fcf5eef.jpg",
-    name: "Fletch Skinner",
-    role: "Head of Tech & Innovation",
+    image: "",
+    name: "Arrvindh P K",
+    role: "Program Manager",
   },
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/45/45ba21cbafae178989cd3652799f42123a80e0ac44065ac00cbb265ea948bc41.jpg",
-    name: "Marc Spector",
-    role: "Head of Operations",
+    image: "",
+    name: "Pravin Ramanaa S",
+    role: "Associate Program Manager",
   },
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/90/904d97602d25b1b5ef0f4058abad6d8185d8cebd0750771404a934a44dd537fb.jpg",
-    name: "Natalia Skinner",
-    role: "Head of Incubation",
+    image: "",
+    name: "Pravith N",
+    role: "Head (Technical)",
   },
   {
-    image:
-      "https://cdn.21st.dev/assets/mirror/3b/3b6a929c98b85177bcc2eb4606a71b7487011128756dbf0adda24e803ca70ed7.jpg",
-    name: "David Kim",
-    role: "Lead Architect",
+    image: "",
+    name: "Dharaneesh S L",
+    role: "Associate Head (Technical)",
+  },
+  {
+    image: "",
+    name: "Hari Keshav",
+    role: "Associate Head (Technical)",
+  },
+  {
+    image: "",
+    name: "Santhosh M",
+    role: "Head (Industry and Community Outreach)",
+  },
+  {
+    image: "",
+    name: "Rithan Pranaov R",
+    role: "Associate Head (Industry and Community Outreach)",
   },
 ];
 
@@ -208,7 +217,7 @@ export function TeamSection({
 
   // Ambient auto-drift loop:
   // - Laptop: 0.55px per frame (untouched)
-  // - Mobile: 0.35px per frame (gentle & readable)
+  // - Mobile: 0.336px per frame (increased by 20%)
   // - Completely frozen when a card is selected on mobile
   useEffect(() => {
     let rafId: number;
@@ -223,7 +232,7 @@ export function TeamSection({
         selectedMemberName === null // Frozen when a card is selected on mobile
       ) {
         const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-        const speed = isMobile ? 0.28 : 0.55; // Reduced by 20% on mobile for gentle pace; laptop untouched
+        const speed = isMobile ? 0.4 : 0.55; // Increased by 20% on mobile (0.28 -> 0.336); laptop untouched
 
         scrollPosRef.current += speed;
         container.scrollLeft = scrollPosRef.current;
@@ -415,7 +424,7 @@ export function TeamSection({
   return (
     <section
       id={id}
-      className={`relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-transparent py-8 sm:py-12 text-[#0A0A0A] snap-start scroll-mt-0 ${className}`}
+      className={`relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-transparent py-8 sm:py-12 text-[#0A0A0A] scroll-mt-0 ${className}`}
       aria-labelledby="team-heading"
     >
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
@@ -522,7 +531,7 @@ export function TeamSection({
             onMouseDown={handleMouseDown}
             onTouchStart={handleContainerTouchStart}
             onTouchEnd={handleContainerTouchEnd}
-            className={`w-full overflow-x-auto overflow-y-hidden py-3 select-none touch-pan-y flex items-center scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${isDragging ? "cursor-grabbing" : "cursor-grab"
+            className={`w-full overflow-x-auto overflow-y-hidden pt-7 pb-6 sm:py-5 select-none touch-pan-y flex items-center scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${isDragging ? "cursor-grabbing" : "cursor-grab"
               }`}
           >
             <div className="flex shrink-0 items-center">
@@ -536,25 +545,55 @@ export function TeamSection({
                     onTouchMove={handleCardTouchMove}
                     onTouchEnd={() => handleCardTouchEnd(member.name)}
                     className={`team-member-card group/card relative flex w-52 sm:w-60 shrink-0 flex-col select-none transition-all duration-300 mx-2.5 sm:mx-3.5 cursor-pointer ${isSelectedOnMobile
-                        ? "-translate-y-2.5 shadow-xl scale-[1.02]"
-                        : "md:hover:-translate-y-2"
+                      ? "-translate-y-2 shadow-xl scale-[1.02]"
+                      : "md:hover:-translate-y-2"
                       }`}
                   >
                     <div
                       className={`relative h-72 sm:h-80 md:h-84 w-full overflow-hidden rounded-2xl bg-neutral-200/60 shadow-sm border transition-all duration-300 ${isSelectedOnMobile
-                          ? "border-[#2547FF]/60 shadow-xl ring-2 ring-[#2547FF]/25"
-                          : "border-black/[0.06] md:group-hover/card:shadow-xl"
+                        ? "border-[#2547FF]/60 shadow-xl ring-2 ring-[#2547FF]/25"
+                        : "border-black/[0.06] md:group-hover/card:shadow-xl"
                         }`}
                     >
-                      {/* Portrait Image: Grayscale to Color Transition */}
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        loading="lazy"
-                        draggable={false}
-                        className={`h-full w-full object-cover transition-all duration-500 ease-out md:group-hover/card:grayscale-0 md:group-hover/card:scale-105 select-none pointer-events-none ${isSelectedOnMobile ? "grayscale-0 scale-105" : "grayscale"
-                          }`}
-                      />
+                      {/* Portrait Image or Elegant Placeholder */}
+                      {member.image ? (
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          loading="lazy"
+                          draggable={false}
+                          className={`h-full w-full object-cover transition-all duration-500 ease-out md:group-hover/card:grayscale-0 md:group-hover/card:scale-105 select-none pointer-events-none ${isSelectedOnMobile ? "grayscale-0 scale-105" : "grayscale"
+                            }`}
+                        />
+                      ) : (
+                        <div className="h-full w-full flex flex-col items-center justify-center pb-14 bg-gradient-to-b from-[#F0F2FF] via-[#F8F9FE] to-[#E9EDFD] relative select-none">
+                          {/* Geometric subtle animated accent rings */}
+                          <div
+                            aria-hidden="true"
+                            className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 overflow-hidden"
+                          >
+                            <div className="w-56 h-56 rounded-full border border-[#2547FF]/15 animate-[spin_80s_linear_infinite]" />
+                            <div className="w-40 h-40 rounded-full border border-dashed border-[#2547FF]/20 absolute" />
+                          </div>
+
+                          {/* Member Initials Badge */}
+                          <div className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white shadow-md shadow-[#2547FF]/10 border border-[#2547FF]/25 flex items-center justify-center text-[#2547FF] transition-all duration-300 md:group-hover/card:scale-105 md:group-hover/card:border-[#2547FF]/50 md:group-hover/card:shadow-lg">
+                            <span className="font-mono font-bold text-xl sm:text-2xl tracking-tight">
+                              {member.name
+                                .split(" ")
+                                .map((p) => p[0])
+                                .filter(Boolean)
+                                .slice(0, 2)
+                                .join("")}
+                            </span>
+                          </div>
+
+                          {/* Placeholder hint */}
+                          <span className="relative z-10 mt-3 text-[10px] sm:text-[11px] font-mono tracking-widest text-[#262626]/40 uppercase">
+                            Photo Placeholder
+                          </span>
+                        </div>
+                      )}
 
                       {/* Frosted Identity Badge at Bottom */}
                       <div
