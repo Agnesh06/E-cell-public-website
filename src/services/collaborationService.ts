@@ -38,6 +38,8 @@ export interface BackendCollaborationPayload {
     milestones?: string;
     business_deadline?: string;
   };
+  projectId?: string;
+  proposalFileUrl?: string | null;
   ip_confidentiality?: string;
   documents?: {
     name: string;
@@ -55,10 +57,13 @@ export interface BackendCollaborationPayload {
 }
 
 export interface BackendCollaborationResponseData {
-  id: string;
-  status: string;
-  submittedAt: string;
-  message: string;
+  id?: string;
+  submission_id?: string;
+  submissionId?: string;
+  status?: string;
+  submittedAt?: string;
+  submitted_at?: string;
+  message?: string;
 }
 
 export interface CollaborationSubmitResponse {
@@ -167,6 +172,8 @@ export function mapFormDataToBackendPayload(
       contact_allowed: Boolean(data.agreeContacted),
     },
     message: (data.briefDescription || "").trim() || undefined,
+    ...((data as any).projectId ? { projectId: (data as any).projectId } : {}),
+    ...((data as any).proposalFileUrl ? { proposalFileUrl: (data as any).proposalFileUrl } : {}),
   };
 }
 
@@ -213,17 +220,33 @@ export async function submitCollaborationRequest(
     payload
   );
 
-  const resData = response.data;
-  const referenceId = resData?.id || `EC-COLLAB-${Date.now()}`;
+  const resData = (response as any)?.data || response;
+  const referenceId =
+    resData?.id ||
+    resData?.submission_id ||
+    resData?.submissionId ||
+    (response as any)?.id ||
+    (response as any)?.submission_id ||
+    `EC-COLLAB-${Date.now()}`;
   const message =
     resData?.message ||
+    (response as any)?.message ||
     "Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided.";
+  const status =
+    resData?.status ||
+    (response as any)?.status ||
+    "PENDING";
+  const submittedAt =
+    resData?.submittedAt ||
+    resData?.submitted_at ||
+    (response as any)?.submittedAt ||
+    new Date().toISOString();
 
   return {
     success: true,
     referenceId,
     message,
-    status: resData?.status || "PENDING",
-    submittedAt: resData?.submittedAt,
+    status,
+    submittedAt,
   };
 }

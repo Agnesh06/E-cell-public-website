@@ -21,6 +21,7 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
     isSubmitting,
     isSubmitted,
     submissionReference,
+    submissionMessage,
     submitError,
     setActiveStep,
     setFieldValue,
@@ -159,6 +160,7 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
               companyName={formData.companyName}
               contactEmail={formData.officialEmail}
               referenceId={submissionReference || undefined}
+              message={submissionMessage || undefined}
               onReset={resetForm}
             />
           ) : (

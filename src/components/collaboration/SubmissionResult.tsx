@@ -7,6 +7,7 @@ export interface SubmissionResultProps {
   companyName?: string;
   contactEmail?: string;
   referenceId?: string;
+  message?: string;
   onReset: () => void;
 }
 
@@ -14,6 +15,7 @@ export function SubmissionResult({
   companyName,
   contactEmail,
   referenceId,
+  message,
   onReset,
 }: SubmissionResultProps) {
   const fallbackRefId = React.useMemo(() => {
@@ -42,7 +44,8 @@ export function SubmissionResult({
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided.
+            {message ||
+              "Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided."}
           </p>
         </div>
 

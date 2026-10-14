@@ -98,9 +98,33 @@ export async function postJson<T = unknown>(
   }
 
   if (!response.ok) {
+    let errorDetailMessage: string | null = null;
+    if (data?.error) {
+      if (typeof data.error === "string") {
+        errorDetailMessage = data.error;
+      } else if (typeof data.error?.message === "string") {
+        errorDetailMessage = data.error.message;
+      }
+    }
+    if (!errorDetailMessage && data?.message) {
+      errorDetailMessage = typeof data.message === "string" ? data.message : null;
+    }
+    if (!errorDetailMessage && Array.isArray(data?.errors)) {
+      errorDetailMessage = data.errors
+        .map((e: any) => e?.message || e?.msg || String(e))
+        .join(", ");
+    } else if (
+      !errorDetailMessage &&
+      typeof data?.errors === "object" &&
+      data?.errors !== null
+    ) {
+      errorDetailMessage = Object.entries(data.errors)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ");
+    }
+
     const errorMessage =
-      data?.error?.message ||
-      data?.message ||
+      errorDetailMessage ||
       (response.status === 409
         ? "A pending collaboration request already exists for this contact"
         : response.status === 422
@@ -109,6 +133,7 @@ export async function postJson<T = unknown>(
 
     const errorCode =
       data?.error?.code ||
+      data?.code ||
       (response.status === 409
         ? "CONFLICT"
         : response.status === 422

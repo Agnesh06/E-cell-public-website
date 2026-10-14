@@ -54,6 +54,7 @@ export function useCollaborationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submissionReference, setSubmissionReference] = useState<string | null>(null);
+  const [submissionMessage, setSubmissionMessage] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   const setFieldValue = useCallback((field: any, value: any) => {
@@ -130,6 +131,7 @@ export function useCollaborationForm() {
       setIsSubmitting(true);
       const res = await submitCollaborationRequest(fullCheck.data);
       setSubmissionReference(res.referenceId);
+      setSubmissionMessage(res.message);
       setIsSubmitted(true);
       setSubmitError(null);
       return true;
@@ -140,6 +142,7 @@ export function useCollaborationForm() {
       if (err instanceof ApiClientError) {
         if (err.statusCode === 409) {
           message =
+            err.message ||
             "A pending collaboration request already exists for this contact email. Our team will review your proposal shortly.";
         } else if (err.statusCode === 422) {
           message =
@@ -171,6 +174,7 @@ export function useCollaborationForm() {
     setActiveStep(0);
     setIsSubmitted(false);
     setSubmissionReference(null);
+    setSubmissionMessage(null);
     setSubmitError(null);
   }, []);
 
@@ -181,6 +185,7 @@ export function useCollaborationForm() {
     isSubmitting,
     isSubmitted,
     submissionReference,
+    submissionMessage,
     submitError,
     setActiveStep,
     setFieldValue,

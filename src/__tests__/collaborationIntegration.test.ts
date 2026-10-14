@@ -198,6 +198,96 @@ describe("API Error Responses & HTTP Codes", () => {
     }
   });
 
+  it("handles HTTP 201 success response with id, status, submittedAt, and message", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 201,
+      headers: {
+        get: (h: string) => (h === "content-type" ? "application/json" : null),
+      },
+      json: async () => ({
+        id: "670f1a2b3c4d5e6f7a8b9c0d",
+        status: "PENDING",
+        submittedAt: "2026-10-15T00:00:00.000Z",
+        message: "Collaboration request submitted successfully. Email notification sent.",
+      }),
+    });
+
+    const mockFormData = {
+      companyName: "PSG Tech Innovators",
+      companyWebsite: "psgtech.edu",
+      industrySector: ["Education", "Technology"],
+      companyLocation: "Coimbatore, India",
+      contactPersonName: "Dr. Tech Lead",
+      designationRole: "Faculty Incharge",
+      officialEmail: "contact@psgtech.edu",
+      collaborationType: ["Project-based R&D"],
+      projectTitle: "Student Startup Incubator",
+      briefDescription: "Incubating deep-tech student startups across hardware and software.",
+      problemStatement: "Bridging the gap between student engineering talent and industry deployment.",
+      expectations: "Mentorship and industry connectivity.",
+      confirmAuthorized: true,
+      agreeContacted: true,
+    } as any;
+
+    const result = await submitCollaborationRequest(mockFormData);
+    expect(result.success).toBe(true);
+    expect(result.referenceId).toBe("670f1a2b3c4d5e6f7a8b9c0d");
+    expect(result.status).toBe("PENDING");
+    expect(result.submittedAt).toBe("2026-10-15T00:00:00.000Z");
+    expect(result.message).toContain("submitted successfully");
+  });
+
+  it("handles HTTP 422 with string error message from Flask", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 422,
+      headers: {
+        get: (h: string) => (h === "content-type" ? "application/json" : null),
+      },
+      json: async () => ({
+        error: "company.location is required",
+      }),
+    });
+
+    try {
+      await postJson("/api/collaborate", {});
+      expect.fail("Should have thrown ApiClientError");
+    } catch (err) {
+      expect(err).toBeInstanceOf(ApiClientError);
+      const apiErr = err as ApiClientError;
+      expect(apiErr.statusCode).toBe(422);
+      expect(apiErr.message).toBe("company.location is required");
+    }
+  });
+
+  it("handles HTTP 422 with dictionary errors from Flask", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 422,
+      headers: {
+        get: (h: string) => (h === "content-type" ? "application/json" : null),
+      },
+      json: async () => ({
+        errors: {
+          "company.name": "Must be at least 2 characters",
+          "contact.email": "Invalid email address",
+        },
+      }),
+    });
+
+    try {
+      await postJson("/api/collaborate", {});
+      expect.fail("Should have thrown ApiClientError");
+    } catch (err) {
+      expect(err).toBeInstanceOf(ApiClientError);
+      const apiErr = err as ApiClientError;
+      expect(apiErr.statusCode).toBe(422);
+      expect(apiErr.message).toContain("company.name: Must be at least 2 characters");
+      expect(apiErr.message).toContain("contact.email: Invalid email address");
+    }
+  });
+
   it("handles network failure without retrying POST", async () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error("Failed to fetch"));
     global.fetch = fetchMock;
