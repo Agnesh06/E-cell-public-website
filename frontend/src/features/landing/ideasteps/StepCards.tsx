@@ -22,7 +22,7 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
 
     return (
       <div className={`step-cards w-full max-w-full xl:max-w-[560px] ${className}`} style={tiltStyle}>
-        <div className="glass-card relative p-[clamp(12px,2.2vh,20px)] overflow-hidden border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)]">
+        <div className="glass-card origin-center relative p-[clamp(12px,2.2vh,20px)] overflow-hidden border border-[var(--color-blue)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)]">
           {/* Large blue-ghost opening quote mark */}
           <span
             className="absolute -top-4 -left-2 text-[8rem] md:text-[10rem] font-serif leading-none text-[var(--color-blue-ghost)] select-none pointer-events-none opacity-80"
@@ -31,7 +31,7 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
             “
           </span>
 
-          <p className="relative z-10 text-[clamp(0.95rem,2.4vh,1.25rem)] font-light text-[var(--color-ink)] leading-relaxed italic">
+          <p className="relative z-10 text-[clamp(0.95rem,2.4vh,1.25rem)] font-medium text-[var(--color-ink)] leading-relaxed italic">
             "{card.text}"
           </p>
         </div>
@@ -48,27 +48,26 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
         style={tiltStyle}
       >
         {cards.map((card, i) => (
-          <div
-            key={i}
-            className={`glass-card p-[clamp(12px,2.2vh,20px)] border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)] ${
-              horizontalOffsets[i % horizontalOffsets.length]
-            }`}
-          >
-            <div className="flex items-baseline gap-3 mb-2">
-              {card.index && (
-                <span className="font-mono text-sm font-semibold text-[var(--color-blue)]">
-                  {card.index}
-                </span>
-              )}
-              {card.title && (
-                <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-medium text-[var(--color-ink)]">
-                  {card.title}
-                </h4>
-              )}
+          <div key={i} className={horizontalOffsets[i % horizontalOffsets.length]}>
+            <div
+              className="glass-card origin-center p-[clamp(12px,2.2vh,20px)] border border-[var(--color-blue)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)]"
+            >
+              <div className="flex items-baseline gap-3 mb-2">
+                {card.index && (
+                  <span className="font-mono text-sm font-semibold text-[var(--color-blue)]">
+                    {card.index}
+                  </span>
+                )}
+                {card.title && (
+                  <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-bold text-[var(--color-ink)]">
+                    {card.title}
+                  </h4>
+                )}
+              </div>
+              <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed font-bold">
+                {card.text}
+              </p>
             </div>
-            <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed">
-              {card.text}
-            </p>
           </div>
         ))}
       </div>
@@ -96,13 +95,13 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
               </div>
 
               {/* Compact glass card */}
-              <div className="glass-card w-full p-[clamp(12px,2.2vh,20px)] border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)]">
+              <div className="glass-card origin-center w-full p-[clamp(12px,2.2vh,20px)] border border-[var(--color-blue)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)]">
                 {card.title && (
-                  <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-medium text-[var(--color-ink)] mb-1">
+                  <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-bold text-[var(--color-ink)] mb-1">
                     {card.title}
                   </h4>
                 )}
-                <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed">
+                <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed font-bold">
                   {card.text}
                 </p>
               </div>
@@ -122,7 +121,7 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
         {cards.map((card, i) => (
           <div
             key={i}
-            className="glass-card p-[clamp(12px,2.2vh,20px)] border border-[var(--color-hairline)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)] flex flex-col justify-between"
+            className="glass-card origin-center p-[clamp(12px,2.2vh,20px)] border border-[var(--color-blue)] rounded-[var(--radius-card)] bg-[var(--color-surface)] shadow-[var(--shadow-glass)] flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -133,12 +132,12 @@ export const StepCards: React.FC<StepCardsProps> = React.memo(({
                 )}
               </div>
               {card.title && (
-                <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-medium text-[var(--color-ink)] mb-2">
+                <h4 className="text-[clamp(0.95rem,2.4vh,1.25rem)] font-medium text-[var(--color-ink)] mb-2 font-bold">
                   {card.title}
                 </h4>
               )}
             </div>
-            <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed">
+            <p className="text-[clamp(0.78rem,1.9vh,0.95rem)] text-[var(--color-ink-muted)] leading-relaxed font-bold">
               {card.text}
             </p>
           </div>

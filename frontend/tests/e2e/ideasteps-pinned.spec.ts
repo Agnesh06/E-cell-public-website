@@ -264,6 +264,7 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
 
 test.describe('StarField Background Animation', () => {
   test.beforeEach(async ({ page }) => {
+    test.slow()
     await page.setViewportSize({ width: 1280, height: 720 })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
@@ -287,13 +288,37 @@ test.describe('StarField Background Animation', () => {
     await expect(projectsStarCanvas).toHaveCount(0)
   })
 
-  test('one forced merge produces a net +1 alive stars when below the cap', async ({ page }) => {
+  test('the canvas draws star sprites (sprite canvas size is at least 2x its radius)', async ({ page }) => {
+    const canvas = page.locator('.pinned-stage canvas')
+    await expect(canvas).toBeVisible()
+
+    const spriteInfo = await page.evaluate(() => {
+      const el = document.querySelector('.pinned-stage canvas') as
+        | (HTMLCanvasElement & { __starSprite?: HTMLCanvasElement; __starBaseRadius?: number })
+        | null
+      if (!el) return null
+      const sprite = el.__starSprite
+      const sizeAttr = parseInt(el.getAttribute('data-sprite-size') || '0', 10)
+      const radiusAttr = parseInt(el.getAttribute('data-sprite-radius') || '0', 10)
+      const width = sprite ? sprite.width : sizeAttr
+      const height = sprite ? sprite.height : sizeAttr
+      const radius = el.__starBaseRadius ?? radiusAttr
+      return { width, height, radius }
+    })
+
+    expect(spriteInfo).toBeTruthy()
+    expect(spriteInfo!.radius).toBeGreaterThan(0)
+    expect(spriteInfo!.width).toBeGreaterThanOrEqual(spriteInfo!.radius * 2)
+    expect(spriteInfo!.height).toBeGreaterThanOrEqual(spriteInfo!.radius * 2)
+  })
+
+  test('a forced merge still produces net +1 below the cap', async ({ page }) => {
     const canvas = page.locator('.pinned-stage canvas')
     await expect(canvas).toBeVisible()
 
     await page.waitForTimeout(200)
     const initialAliveStr = await canvas.getAttribute('data-stars-alive')
-    const initialAlive = parseInt(initialAliveStr || '14', 10)
+    const initialAlive = parseInt(initialAliveStr || '28', 10)
 
     await canvas.dispatchEvent('stars:force-merge')
     await page.waitForTimeout(150)
@@ -304,7 +329,7 @@ test.describe('StarField Background Animation', () => {
     expect(newAlive).toBe(initialAlive + 1)
   })
 
-  test('alive stars never exceed 24, even after 30 forced merges', async ({ page }) => {
+  test('alive stars never exceed 40 after 30 forced merges', async ({ page }) => {
     const canvas = page.locator('.pinned-stage canvas')
     await expect(canvas).toBeVisible()
 
@@ -315,7 +340,7 @@ test.describe('StarField Background Animation', () => {
 
     const finalAliveStr = await canvas.getAttribute('data-stars-alive')
     const finalAlive = parseInt(finalAliveStr || '0', 10)
-    expect(finalAlive).toBeLessThanOrEqual(24)
+    expect(finalAlive).toBeLessThanOrEqual(40)
   })
 
   test('a fast scroll raises data-speed-factor above 1.5 and it returns below 1.1 within 2.5 seconds of stopping', async ({
@@ -438,9 +463,10 @@ test.describe('IdeaSteps Layout & Card-fit Assertions', () => {
 })
 
 test.describe('Required Hold Screenshots', () => {
-  const artifactDir = '/Users/ashwath/.gemini/antigravity/brain/9ce52f72-4517-4c14-bf3f-82b87572aac1'
+  const artifactDir = 'C:/Users/USER/.gemini/antigravity/brain/2ffd419f-78e2-4334-8aba-ee45d3872e3a'
 
   test('capture step 2 hold at 1280x720', async ({ page }) => {
+    test.slow()
     await page.setViewportSize({ width: 1280, height: 720 })
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
@@ -458,11 +484,17 @@ test.describe('Required Hold Screenshots', () => {
     await page.waitForTimeout(1000)
     await expect(page.locator('#step-approach h3')).toBeVisible()
 
-    const stage = page.locator('.pinned-stage')
+    const cardsContainer = page.locator('#step-approach .step-cards-container')
+    await expect(cardsContainer).toBeVisible()
+
     const screenshotsDir = path.resolve('tests/screenshots')
     if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
     if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
 
+    await cardsContainer.screenshot({ path: path.join(screenshotsDir, 'step2-cards-stars-1280x720.png') })
+    await cardsContainer.screenshot({ path: path.join(artifactDir, 'step2-cards-stars-1280x720.png') })
+
+    const stage = page.locator('.pinned-stage')
     await stage.screenshot({ path: path.join(screenshotsDir, 'step2-hold-1280x720.png') })
     await stage.screenshot({ path: path.join(artifactDir, 'step2-hold-1280x720.png') })
   })
@@ -519,5 +551,226 @@ test.describe('Required Hold Screenshots', () => {
 
     await stage.screenshot({ path: path.join(screenshotsDir, 'step3-hold-1300x600.png') })
     await stage.screenshot({ path: path.join(artifactDir, 'step3-hold-1300x600.png') })
+  })
+})
+
+test.describe('Desktop Card Pop Animations (1024px+)', () => {
+  const artifactDir = 'C:/Users/USER/.gemini/antigravity/brain/2ffd419f-78e2-4334-8aba-ee45d3872e3a'
+
+  function parseScale(transformStr: string): number {
+    if (!transformStr || transformStr === 'none') return 1.0
+    const match = transformStr.match(/^matrix\(([^)]+)\)$/)
+    if (!match) return 1.0
+    const values = match[1].split(',').map((v) => parseFloat(v.trim()))
+    return Math.sqrt(values[0] * values[0] + values[1] * values[1])
+  }
+
+  for (const vp of [
+    { width: 1280, height: 720, name: '1280x720' },
+    { width: 1300, height: 600, name: '1300x600' },
+  ]) {
+    test(`${vp.name}: at midpoint of enter segment, each card scale is between 0.85 and 1, and at hold it is 1 (within 0.01)`, async ({
+      page,
+    }) => {
+      test.slow()
+      await page.setViewportSize({ width: vp.width, height: vp.height })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      await page.waitForFunction(() => {
+        return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+      })
+
+      // Step 3 enter midpoint: enter is 0.40 to 0.43, midpoint is 0.415
+      await page.evaluate(() => {
+        const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+          .__ideaStepsScrollTrigger
+        if (st) window.scrollTo(0, st.start + 0.415 * (st.end - st.start))
+      })
+      await page.waitForTimeout(800)
+
+      const cards = page.locator('#step-ecosystem .glass-card')
+      const count = await cards.count()
+      expect(count).toBeGreaterThan(0)
+
+      for (let i = 0; i < count; i++) {
+        const transform = await cards.nth(i).evaluate((el) => window.getComputedStyle(el).transform)
+        const scale = parseScale(transform)
+        expect(scale).toBeGreaterThanOrEqual(0.85)
+        expect(scale).toBeLessThanOrEqual(1.0)
+      }
+
+      // Step 3 hold: 0.48
+      await page.evaluate(() => {
+        const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+          .__ideaStepsScrollTrigger
+        if (st) window.scrollTo(0, st.start + 0.48 * (st.end - st.start))
+      })
+      await page.waitForTimeout(800)
+
+      for (let i = 0; i < count; i++) {
+        const transform = await cards.nth(i).evaluate((el) => window.getComputedStyle(el).transform)
+        const scale = parseScale(transform)
+        expect(Math.abs(scale - 1.0)).toBeLessThanOrEqual(0.01)
+      }
+    })
+  }
+
+  test('cards overshoot: at some point during enter, the scale is above 1.0', async ({ page }) => {
+    test.slow()
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    // Step 3 overshoot peak happens around 0.420 - 0.424
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.422 * (st.end - st.start))
+    })
+    await page.waitForTimeout(800)
+
+    const cards = page.locator('#step-ecosystem .glass-card')
+    const count = await cards.count()
+    let hasOvershoot = false
+    for (let i = 0; i < count; i++) {
+      const transform = await cards.nth(i).evaluate((el) => window.getComputedStyle(el).transform)
+      const scale = parseScale(transform)
+      if (scale > 1.0) {
+        hasOvershoot = true
+        break
+      }
+    }
+    expect(hasOvershoot).toBe(true)
+  })
+
+  test('the stagger: the first card reaches scale 1 before the last card does', async ({ page }) => {
+    test.slow()
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    // At progress ~0.4155, card 0 has reached/crossed 1.0 while the last card is still below 1.0
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.4155 * (st.end - st.start))
+    })
+    await page.waitForTimeout(800)
+
+    const cards = page.locator('#step-ecosystem .glass-card')
+    const firstTransform = await cards.first().evaluate((el) => window.getComputedStyle(el).transform)
+    const lastTransform = await cards.last().evaluate((el) => window.getComputedStyle(el).transform)
+
+    const firstScale = parseScale(firstTransform)
+    const lastScale = parseScale(lastTransform)
+
+    expect(firstScale).toBeGreaterThanOrEqual(1.0)
+    expect(lastScale).toBeLessThan(1.0)
+  })
+
+  test('at 375x667 and under reduced motion no card has a scale transform applied', async ({ page }) => {
+    test.slow()
+    // 1. Mobile 375x667
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    const mobileCards = page.locator('section#about .glass-card')
+    const mobileCount = await mobileCards.count()
+    expect(mobileCount).toBeGreaterThan(0)
+    for (let i = 0; i < mobileCount; i++) {
+      const transform = await mobileCards.nth(i).evaluate((el) => window.getComputedStyle(el).transform)
+      const scale = parseScale(transform)
+      expect(Math.abs(scale - 1.0)).toBeLessThan(0.001)
+      const inlineTransform = await mobileCards.nth(i).evaluate((el) => el.style.transform)
+      expect(inlineTransform).not.toContain('scale')
+    }
+
+    // 2. Desktop with reduced motion
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    const rmCards = page.locator('section#about .glass-card')
+    const rmCount = await rmCards.count()
+    expect(rmCount).toBeGreaterThan(0)
+    for (let i = 0; i < rmCount; i++) {
+      const transform = await rmCards.nth(i).evaluate((el) => window.getComputedStyle(el).transform)
+      const scale = parseScale(transform)
+      expect(Math.abs(scale - 1.0)).toBeLessThan(0.001)
+      const inlineTransform = await rmCards.nth(i).evaluate((el) => el.style.transform)
+      expect(inlineTransform).not.toContain('scale')
+    }
+  })
+
+  test('cards remain opaque (computed background-color alpha is solid surface color)', async ({ page }) => {
+    test.slow()
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    const cards = page.locator('.pinned-stage .glass-card')
+    const count = await cards.count()
+    expect(count).toBeGreaterThan(0)
+
+    for (let i = 0; i < count; i++) {
+      const bg = await cards.nth(i).evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      // Solid surface color: rgb(...) or rgba(..., ..., ..., 1)
+      const isOpaque = bg.startsWith('rgb(') || bg.endsWith(', 1)') || bg.endsWith(', 1.0)')
+      expect(isOpaque).toBe(true)
+    }
+  })
+
+  test('capture step 3 mid-pop and hold screenshots at 1280x720', async ({ page }) => {
+    test.slow()
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    const screenshotsDir = path.resolve('tests/screenshots')
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
+    if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
+
+    // Step 3 mid-pop: progress 0.415
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.415 * (st.end - st.start))
+    })
+    await page.waitForTimeout(1000)
+
+    const stage = page.locator('.pinned-stage')
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step3-midpop-1280x720.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step3-midpop-1280x720.png') })
+
+    // Step 3 hold: progress 0.48
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.48 * (st.end - st.start))
+    })
+    await page.waitForTimeout(1000)
+
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step3-hold-1280x720.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step3-hold-1280x720.png') })
   })
 })

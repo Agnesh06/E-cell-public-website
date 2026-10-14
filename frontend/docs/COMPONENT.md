@@ -32,9 +32,9 @@ One `ScrollTrigger` pins the stage with `scrub: true` (a small smoothing value i
 
 | Segment of a step | Share | What happens |
 |---|---|---|
-| Enter | 0.15 | Eyebrow, headline lines, body, pills rise 24px and fade in with 60-90ms stagger; cards fade and rise with stagger |
+| Enter | 0.15 | Eyebrow, headline lines, body, pills rise 24px and fade in; cards pop from scale 0.85 to 1 with overshoot (back.out(1.2)), opacity 0 to 1, 90ms stagger |
 | Hold | 0.55 | Content static; stars drift and merge in background |
-| Exit | 0.15 | Text and cards fade out (and drift up 12px) |
+| Exit | 0.15 | Text drifts up 12px and fades out; cards scale down to 0.92 and fade out with reversed stagger |
 | Interlude | 0.15 | Empty stage; glow blob moves to its next position |
 
 The last step has no exit or interlude; after its hold the pin releases and the section scrolls away.
@@ -46,9 +46,9 @@ The indicator highlights the step whose enter-to-exit span contains the progress
 - One `<canvas>`, position absolute, inset 0, pointer-events none, aria-hidden true, z-index 0, clipped to stage. Step content and cards keep a higher z-index (cards are opaque).
 - Sized to stage with `ResizeObserver`, scaled by `devicePixelRatio` capped at 2. On resize, star positions rescale proportionally.
 - Resolves `--color-blue` at mount; pre-renders a single glow sprite on an offscreen canvas and draws stars via `drawImage` scaled by radius. No per-frame gradients.
-- Starts with 14 stars at random positions/directions, base speed 18-36 px/s, radius 2-4 px, opacity 0.55-0.8. Straight-line motion, bounces off stage edges with random angle change up to 10 degrees.
-- Merging: Two alive stars merge when distance < sum of radii and neither is in its 800 ms spawn grace period. Parents fade out over 500 ms; 3 children spawn at midpoint (radius max(1.8, 0.6 x larger parent radius), 120° apart, fading in over 500 ms, 800 ms grace period). Merge point features an expanding ring (radius 0 to 28 px over 450 ms).
-- Population cap: At most 24 alive stars. Merges exceeding cap fade out the oldest alive star not in the merge.
+- Starts with 28 stars at random positions/directions, base speed 18-36 px/s, radius 3-5 px, opacity 0.6-0.9. Straight-line motion, bounces off stage edges with random angle change up to 10 degrees.
+- Merging: Two alive stars merge when distance < sum of radii and neither is in its 800 ms spawn grace period. Parents fade out over 500 ms; 3 children spawn at midpoint (radius max(2.2, 0.6 x larger parent radius), 120° apart, fading in over 500 ms, 800 ms grace period). Merge point features an expanding ring (radius 0 to 28 px over 450 ms).
+- Population cap: At most 40 alive stars. Merges exceeding cap fade out the oldest alive star not in the merge.
 - Scroll reaction: Samples `window.scrollY` per frame (no listener), exponential filter with attack ~120 ms, release ~550-900 ms. `speedFactor = 1 + min(3, smoothedSpeed / 1500)` (1x to 4x).
 - Desktop-only, RAF loop pauses when hidden / tab inactive, completely disabled under `prefers-reduced-motion` (no canvas rendered).
 
@@ -144,7 +144,7 @@ Responsibilities:
 - `IdeaSteps` uses `gsap.matchMedia()` to switch between `<PinnedIdeaSteps />` (desktop >= 1024px and motion allowed) and `<StaticIdeaSteps />` (mobile/tablet < 1024px or reduced-motion). Exactly one mode is in the DOM at a time.
 - `PinnedIdeaSteps` mounts the 100svh stage, background layers, stacked `Step` slides (`absolute inset-0`), and the shared bottom-left `StepIndicator`.
 - `useIdeaStepsTimeline` is the sole owner of the master timeline and single pin ScrollTrigger (`scrub: 0.6`, pin length: 5x viewport height, `start: "top top"`, `invalidateOnRefresh`). Calculates activeIndex on change and drives glow blob movement.
-- `StarField` renders the canvas star-field background, handling 14 initial stars, edge bouncing, merging capped at 24 alive stars, and scroll speed reactivity.
+- `StarField` renders the canvas star-field background, handling 28 initial stars, edge bouncing, merging capped at 40 alive stars, and scroll speed reactivity.
 - `StaticIdeaSteps` maps over `ideas` data from `src/data/ideas.ts`, handles Lenis/native smooth-scrolling for indicator clicks, and renders background layers.
 - `Step` represents one full stage layout with responsive 12-column grid (text on cols 1-5, cards on cols 7-12) and bottom bar (indicator, sideLabel, microLabels).
 - Presentational components receive data and props; they hold no animation logic.

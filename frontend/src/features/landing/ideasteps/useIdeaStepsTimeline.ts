@@ -71,13 +71,15 @@ export function useIdeaStepsTimeline({
             el.removeAttribute('inert')
             gsap.set(el, { autoAlpha: 1 })
             const textElements = el.querySelectorAll('.step-text > *, .step-bottom-bar')
-            const cardElements = el.querySelectorAll('.step-cards .glass-card, .step-cards')
+            const cards = el.querySelectorAll('.glass-card')
             gsap.set(textElements, { y: 0, autoAlpha: 1 })
-            gsap.set(cardElements, { y: 0, autoAlpha: 1 })
+            gsap.set(cards, { scale: 1, opacity: 1, transformOrigin: 'center center' })
           } else {
             el.setAttribute('aria-hidden', 'true')
             el.setAttribute('inert', '')
             gsap.set(el, { autoAlpha: 0 })
+            const cards = el.querySelectorAll('.glass-card')
+            gsap.set(cards, { scale: 0.85, opacity: 0, transformOrigin: 'center center' })
           }
         }
       })
@@ -86,7 +88,7 @@ export function useIdeaStepsTimeline({
       const firstStepEl = stepRefs.current[0]
       if (firstStepEl && typeof window !== 'undefined' && window.scrollY < 10) {
         const textElements = firstStepEl.querySelectorAll('.step-text > *, .step-bottom-bar')
-        const cardElements = firstStepEl.querySelectorAll('.step-cards .glass-card, .step-cards')
+        const cards = firstStepEl.querySelectorAll('.glass-card')
         if (textElements.length > 0) {
           gsap.from(textElements, {
             y: 20,
@@ -96,14 +98,15 @@ export function useIdeaStepsTimeline({
             ease: 'power2.out',
           })
         }
-        if (cardElements.length > 0) {
-          gsap.from(cardElements, {
-            y: 20,
-            autoAlpha: 0,
+        if (cards.length > 0) {
+          gsap.from(cards, {
+            scale: 0.85,
+            opacity: 0,
             duration: 0.8,
-            stagger: 0.1,
+            stagger: 0.09,
             delay: 0.15,
-            ease: 'power2.out',
+            ease: 'back.out(1.2)',
+            transformOrigin: 'center center',
           })
         }
       }
@@ -165,7 +168,7 @@ export function useIdeaStepsTimeline({
         if (!stepEl) return
 
         const textElements = stepEl.querySelectorAll('.step-text > *, .step-bottom-bar')
-        const cardElements = stepEl.querySelectorAll('.step-cards .glass-card, .step-cards')
+        const cards = stepEl.querySelectorAll('.glass-card')
 
         // Step 1 is rendered and visible at load (t=0)
         if (index === 0) {
@@ -183,23 +186,43 @@ export function useIdeaStepsTimeline({
             )
           }
 
-          if (cardElements.length > 0) {
+          if (cards.length > 0) {
             tl.fromTo(
-              cardElements,
-              { y: 24, autoAlpha: 0 },
-              { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.2, ease: 'power2.out' },
-              timing.enter + 0.3,
+              cards,
+              { scale: 0.85, opacity: 0, transformOrigin: 'center center' },
+              {
+                scale: 1,
+                opacity: 1,
+                duration: 2.0,
+                stagger: 0.09,
+                ease: 'back.out(1.2)',
+                transformOrigin: 'center center',
+              },
+              timing.enter + 0.6,
             )
           }
         }
 
         // Exit segment (all except the last step)
         if (timing.exit !== null && timing.exitDur !== null) {
-          const exitElements = stepEl.querySelectorAll('.step-text > *, .step-cards, .step-bottom-bar')
-          if (exitElements.length > 0) {
+          if (textElements.length > 0) {
             tl.to(
-              exitElements,
+              textElements,
               { y: -12, autoAlpha: 0, duration: timing.exitDur, ease: 'power2.in' },
+              timing.exit,
+            )
+          }
+          if (cards.length > 0) {
+            tl.to(
+              cards,
+              {
+                scale: 0.92,
+                opacity: 0,
+                duration: 2.0,
+                ease: 'power2.in',
+                stagger: { each: 0.09, from: 'end' },
+                transformOrigin: 'center center',
+              },
               timing.exit,
             )
           }

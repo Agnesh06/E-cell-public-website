@@ -9,6 +9,8 @@ interface Star {
   r: number
   baseOpacity: number
   opacity: number
+  rotation: number
+  rotationSpeed: number
   spawnTime: number
   fadingOut: boolean
   fadeStartTime: number
@@ -21,22 +23,79 @@ interface MergeRing {
   duration: number
 }
 
-function createGlowSprite(blueColor: string): HTMLCanvasElement {
-  const size = 64
+const BASE_STAR_RADIUS = 32
+
+function parseRgb(color: string): [number, number, number] {
+  const trimmed = color.trim()
+  if (trimmed.startsWith('#')) {
+    const hex = trimmed.slice(1)
+    if (hex.length === 3) {
+      return [
+        parseInt(hex[0] + hex[0], 16),
+        parseInt(hex[1] + hex[1], 16),
+        parseInt(hex[2] + hex[2], 16),
+      ]
+    }
+    if (hex.length >= 6) {
+      return [
+        parseInt(hex.slice(0, 2), 16),
+        parseInt(hex.slice(2, 4), 16),
+        parseInt(hex.slice(4, 6), 16),
+      ]
+    }
+  }
+  const match = trimmed.match(/\d+/g)
+  if (match && match.length >= 3) {
+    return [parseInt(match[0], 10), parseInt(match[1], 10), parseInt(match[2], 10)]
+  }
+  return [37, 71, 255]
+}
+
+function createStarSprite(blueColor: string, outerRadius: number = BASE_STAR_RADIUS): HTMLCanvasElement {
+  // Faint halo radius about 2.2 x star radius
+  const haloRadius = outerRadius * 2.2
+  const size = Math.ceil(haloRadius * 2) + 8
   const c = document.createElement('canvas')
   c.width = size
   c.height = size
   const ctx = c.getContext('2d')
   if (!ctx) return c
 
-  const center = size / 2
-  const grad = ctx.createRadialGradient(center, center, 0, center, center, center)
-  grad.addColorStop(0, blueColor)
-  grad.addColorStop(0.35, blueColor)
-  grad.addColorStop(1, 'rgba(35, 64, 255, 0)')
+  const cx = size / 2
+  const cy = size / 2
 
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, size, size)
+  // 1. Faint halo behind each star: radial gradient from blue at 35% alpha to transparent
+  const [r, g, b] = parseRgb(blueColor)
+  const haloGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, haloRadius)
+  haloGrad.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.35)`)
+  haloGrad.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`)
+  ctx.fillStyle = haloGrad
+  ctx.beginPath()
+  ctx.arc(cx, cy, haloRadius, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 2. Five-point star: outer radius = star's radius; inner radius = 0.45 x outer
+  // Points are sharp, with a small solid core
+  const innerRadius = outerRadius * 0.45
+  ctx.beginPath()
+  for (let i = 0; i < 10; i++) {
+    const angle = -Math.PI / 2 + (i * Math.PI) / 5
+    const rad = i % 2 === 0 ? outerRadius : innerRadius
+    const x = cx + Math.cos(angle) * rad
+    const y = cy + Math.sin(angle) * rad
+    if (i === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  }
+  ctx.closePath()
+  ctx.fillStyle = blueColor
+  ctx.fill()
+
+  // Small solid core
+  ctx.beginPath()
+  ctx.arc(cx, cy, innerRadius * 0.75, 0, Math.PI * 2)
+  ctx.fillStyle = blueColor
+  ctx.fill()
+
   return c
 }
 
@@ -45,10 +104,13 @@ function createInitialStars(count: number, width: number, height: number, now: n
   const w = Math.max(100, width)
   const h = Math.max(100, height)
   for (let i = 0; i < count; i++) {
-    const r = 2 + Math.random() * 2 // 2 to 4 px
+    const r = 3 + Math.random() * 2 // 3 to 5 px
     const baseSpeed = 18 + Math.random() * 18 // 18 to 36 px/s
     const angle = Math.random() * Math.PI * 2
-    const baseOpacity = 0.55 + Math.random() * 0.25 // 0.55 to 0.8
+    const baseOpacity = 0.6 + Math.random() * 0.3 // 0.6 to 0.9
+    const rotation = Math.random() * Math.PI * 2
+    const rotSpeedDeg = 20 + Math.random() * 20 // 20 to 40 deg/s
+    const rotationSpeed = ((rotSpeedDeg * Math.PI) / 180) * (Math.random() < 0.5 ? -1 : 1)
     const x = r + Math.random() * (w - 2 * r)
     const y = r + Math.random() * (h - 2 * r)
     stars.push({
@@ -60,6 +122,8 @@ function createInitialStars(count: number, width: number, height: number, now: n
       r,
       baseOpacity,
       opacity: baseOpacity,
+      rotation,
+      rotationSpeed,
       spawnTime: now - 1000, // past grace period at start
       fadingOut: false,
       fadeStartTime: 0,
@@ -93,14 +157,17 @@ function mergeStars(
   })
 
   const largerR = Math.max(star1.r, star2.r)
-  const childR = Math.max(1.8, 0.6 * largerR)
+  const childR = Math.max(2.2, 0.6 * largerR)
   const randomAngle = Math.random() * Math.PI * 2
 
   const newChildren: Star[] = []
   for (let i = 0; i < 3; i++) {
     const dir = randomAngle + i * ((2 * Math.PI) / 3)
     const speed = 18 + Math.random() * 18
-    const baseOpacity = 0.55 + Math.random() * 0.25
+    const baseOpacity = 0.6 + Math.random() * 0.3
+    const rotation = Math.random() * Math.PI * 2
+    const rotSpeedDeg = 20 + Math.random() * 20
+    const rotationSpeed = ((rotSpeedDeg * Math.PI) / 180) * (Math.random() < 0.5 ? -1 : 1)
     const cx = Math.max(childR, Math.min(width - childR, mx + Math.cos(dir) * 14))
     const cy = Math.max(childR, Math.min(height - childR, my + Math.sin(dir) * 14))
     newChildren.push({
@@ -112,19 +179,21 @@ function mergeStars(
       r: childR,
       baseOpacity,
       opacity: 0,
+      rotation,
+      rotationSpeed,
       spawnTime: now,
       fadingOut: false,
       fadeStartTime: 0,
     })
   }
 
-  // Population cap: at most 24 alive stars (fading stars do not count)
+  // Population cap: at most 40 alive stars (fading stars do not count)
   const otherAliveStars = stars.filter((s) => !s.fadingOut && s !== star1 && s !== star2)
   const newAliveCount = otherAliveStars.length + 3
 
-  if (newAliveCount > 24) {
+  if (newAliveCount > 40) {
     otherAliveStars.sort((a, b) => a.spawnTime - b.spawnTime)
-    const excess = newAliveCount - 24
+    const excess = newAliveCount - 40
     for (let k = 0; k < excess && k < otherAliveStars.length; k++) {
       otherAliveStars[k].fadingOut = true
       otherAliveStars[k].fadeStartTime = now
@@ -187,7 +256,7 @@ export const StarField: React.FC = () => {
     const stageEl = canvas.parentElement || canvas
     const computedBlue =
       getComputedStyle(stageEl).getPropertyValue('--color-blue').trim() || '#2340FF'
-    const sprite = createGlowSprite(computedBlue)
+    const sprite = createStarSprite(computedBlue, BASE_STAR_RADIUS)
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -196,7 +265,7 @@ export const StarField: React.FC = () => {
     const initialH = stageEl.clientHeight || 720
     const stageSize = { width: initialW, height: initialH }
 
-    const stars: Star[] = createInitialStars(14, initialW, initialH, performance.now())
+    const stars: Star[] = createInitialStars(28, initialW, initialH, performance.now())
     const rings: MergeRing[] = []
 
     let lastTime = performance.now()
@@ -213,9 +282,13 @@ export const StarField: React.FC = () => {
     canvas.style.height = `${initialH}px`
 
     if (import.meta.env.DEV) {
-      canvas.setAttribute('data-stars-alive', '14')
-      canvas.setAttribute('data-stars-total', '14')
+      canvas.setAttribute('data-stars-alive', '28')
+      canvas.setAttribute('data-stars-total', '28')
       canvas.setAttribute('data-speed-factor', '1.00')
+      canvas.setAttribute('data-sprite-size', String(sprite.width))
+      canvas.setAttribute('data-sprite-radius', String(BASE_STAR_RADIUS))
+      ;(canvas as unknown as { __starSprite?: HTMLCanvasElement; __starBaseRadius?: number }).__starSprite = sprite
+      ;(canvas as unknown as { __starSprite?: HTMLCanvasElement; __starBaseRadius?: number }).__starBaseRadius = BASE_STAR_RADIUS
     }
 
     const resizeObserver = new ResizeObserver((entries) => {
@@ -327,6 +400,7 @@ export const StarField: React.FC = () => {
           }
         }
 
+        star.rotation += star.rotationSpeed * dt
         star.x += star.vx * speedFactor * dt
         star.y += star.vy * speedFactor * dt
 
@@ -405,15 +479,19 @@ export const StarField: React.FC = () => {
       // Stars
       for (const star of stars) {
         if (star.opacity <= 0.001) continue
-        const diameter = star.r * 6
+        const destSize = (sprite.width * star.r) / BASE_STAR_RADIUS
+        ctx.save()
+        ctx.translate(star.x, star.y)
+        ctx.rotate(star.rotation)
         ctx.globalAlpha = star.opacity
         ctx.drawImage(
           sprite,
-          star.x - diameter / 2,
-          star.y - diameter / 2,
-          diameter,
-          diameter,
+          -destSize / 2,
+          -destSize / 2,
+          destSize,
+          destSize,
         )
+        ctx.restore()
       }
 
       ctx.restore()
