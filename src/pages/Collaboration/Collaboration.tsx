@@ -20,6 +20,10 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
     activeStep,
     isSubmitting,
     isSubmitted,
+    submissionReference,
+    submissionMessage,
+    submitError,
+    submitErrorType,
     setActiveStep,
     setFieldValue,
     validateStep,
@@ -117,6 +121,8 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
           errors={errors}
           onChange={setFieldValue}
           onEditStep={(idx) => setActiveStep(idx)}
+          submitError={submitError}
+          submitErrorType={submitErrorType}
         />
       ),
     },
@@ -141,6 +147,8 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
         <div className="w-full">
           {isSubmitted ? (
             <SubmissionResult
+              referenceId={submissionReference}
+              message={submissionMessage}
               companyName={formData.companyName}
               contactEmail={formData.officialEmail}
               onReset={resetForm}

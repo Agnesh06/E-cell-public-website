@@ -90,6 +90,7 @@ export default function Stepper03({
   const spanPercent = 100 - offsetPercent * 2;
 
   const handleNext = async () => {
+    if (isSubmitting) return;
     if (onNext) {
       const allowed = await onNext(activeStep);
       if (!allowed) return;
@@ -104,13 +105,14 @@ export default function Stepper03({
   };
 
   const handleBack = () => {
+    if (isSubmitting) return;
     const prev = Math.max(0, activeStep - 1);
     setInternalActiveStep(prev);
     onStepChange?.(prev);
   };
 
   const handleStepClick = async (index: number) => {
-    if (index === activeStep) return;
+    if (isSubmitting || index === activeStep) return;
     if (index < activeStep) {
       setInternalActiveStep(index);
       onStepChange?.(index);

@@ -1,23 +1,23 @@
-import * as React from "react";
-import { CheckCircle2, ArrowRight, Home, RefreshCw } from "lucide-react";
+import { CheckCircle2, Home, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 export interface SubmissionResultProps {
+  referenceId?: string | null;
+  message?: string | null;
   companyName?: string;
   contactEmail?: string;
   onReset: () => void;
 }
 
 export function SubmissionResult({
+  referenceId,
+  message,
   companyName,
   contactEmail,
   onReset,
 }: SubmissionResultProps) {
-  const refId = React.useMemo(() => {
-    const random = Math.floor(1000 + Math.random() * 9000);
-    return `EC-COLLAB-2026-${random}`;
-  }, []);
+  const displayRefId = referenceId || "EC-COLLAB-2026";
 
   return (
     <div className="mx-auto w-full max-w-2xl text-center py-6 animate-fadeIn">
@@ -30,7 +30,7 @@ export function SubmissionResult({
         {/* Section Heading & Confirmation Text */}
         <div className="space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-mono font-medium">
-            <span>Reference: {refId}</span>
+            <span>Reference: {displayRefId}</span>
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-bold font-display text-foreground">
@@ -38,7 +38,8 @@ export function SubmissionResult({
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided.
+            {message ||
+              "Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided."}
           </p>
         </div>
 
