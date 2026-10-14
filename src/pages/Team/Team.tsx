@@ -58,7 +58,11 @@ export default function Team() {
       {/* Main Content Area */}
       <div className="relative z-10 flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-24 pb-16 sm:pt-28 sm:pb-20 flex flex-col items-center">
         {/* Main Heading */}
+<<<<<<< HEAD
         <h1 className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-[#0A0A0A] tracking-tight leading-[1.15] text-center">
+=======
+        <h1 className="font-display font-bold text-2xl sm:text-5xl md:text-6xl text-[#0A0A0A] tracking-tight leading-[1.15] text-center">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           Meet the <span className="text-[#2547FF]">Team</span>.
         </h1>
 

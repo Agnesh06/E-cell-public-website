@@ -1,9 +1,10 @@
-import * as React from "react";
-import { CheckCircle2, ArrowRight, Home, RefreshCw } from "lucide-react";
+import { CheckCircle2, Home, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 export interface SubmissionResultProps {
+  referenceId?: string | null;
+  message?: string | null;
   companyName?: string;
   contactEmail?: string;
   referenceId?: string;
@@ -11,15 +12,21 @@ export interface SubmissionResultProps {
 }
 
 export function SubmissionResult({
+  referenceId,
+  message,
   companyName,
   contactEmail,
   referenceId,
   onReset,
 }: SubmissionResultProps) {
+<<<<<<< HEAD
   const fallbackRefId = React.useMemo(() => {
     const random = Math.floor(1000 + Math.random() * 9000);
     return `EC-COLLAB-2026-${random}`;
   }, []);
+=======
+  const displayRefId = referenceId || "EC-COLLAB-2026";
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
 
   const displayRefId = referenceId || fallbackRefId;
 
@@ -42,7 +49,8 @@ export function SubmissionResult({
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided.
+            {message ||
+              "Thank you for your interest in collaborating with E-Cell. Our team will review your proposal and contact you through the details provided."}
           </p>
         </div>
 

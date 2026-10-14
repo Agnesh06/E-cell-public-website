@@ -227,18 +227,32 @@ export default function Hero({
         }
 
         .hero-headline-text {
+<<<<<<< HEAD
           margin: 0 0 24px 0;
           font-family: inherit;
           font-size: clamp(3rem, 7vw, 6.5rem);
           font-weight: 500;
           line-height: 0.95;
+=======
+          margin: 0 0 16px 0;
+          font-family: inherit;
+          font-size: clamp(2.15rem, 8.5vw, 6.5rem);
+          font-weight: 500;
+          line-height: 1.02;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           letter-spacing: -0.03em;
           color: #0B0B0F;
           text-wrap: balance;
         }
         @media (min-width: 768px) {
           .hero-headline-text {
+<<<<<<< HEAD
             margin-bottom: 32px;
+=======
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            margin-bottom: 32px;
+            line-height: 0.95;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           }
         }
 
@@ -247,12 +261,21 @@ export default function Hero({
         }
 
         .hero-supporting-text {
+<<<<<<< HEAD
           margin: 0 0 32px 0;
           font-family: inherit;
           font-size: 16px;
           font-weight: 600;
           line-height: 1.625;
           color: rgba(11, 11, 15, 0.62);
+=======
+          margin: 0 0 24px 0;
+          font-family: inherit;
+          font-size: 15px;
+          font-weight: 500;
+          line-height: 1.5;
+          color: rgba(11, 11, 15, 0.65);
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           max-width: 52ch;
           text-wrap: pretty;
           will-change: opacity;
@@ -263,6 +286,11 @@ export default function Hero({
           .hero-supporting-text {
             font-size: 18px;
             margin-bottom: 40px;
+<<<<<<< HEAD
+=======
+            font-weight: 600;
+            line-height: 1.625;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           }
         }
 
@@ -280,11 +308,19 @@ export default function Hero({
           align-items: center;
           justify-content: center;
           gap: 10px;
+<<<<<<< HEAD
           padding: 14px 28px;
           border-radius: 9999px;
           background: #2547FF;
           color: #FFFFFF;
           font-size: 14px;
+=======
+          padding: 12px 24px;
+          border-radius: 9999px;
+          background: #2547FF;
+          color: #FFFFFF;
+          font-size: 13px;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           font-weight: 500;
           line-height: 1;
           letter-spacing: -0.01em;
@@ -303,9 +339,15 @@ export default function Hero({
           transform: translateY(0);
           box-shadow: 0 2px 8px rgba(37, 71, 255, 0.3);
         }
+<<<<<<< HEAD
         @media (max-width: 767px) {
           .hero-cta-btn {
             padding: 12px 24px;
+=======
+        @media (min-width: 768px) {
+          .hero-cta-btn {
+            padding: 14px 28px;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
             font-size: 14px;
           }
         }
@@ -319,7 +361,7 @@ export default function Hero({
 
         /* Smooth Bottom-to-Top Sequential 1:1 Scroll-Driven Container */
         [data-slipstream-hero] [data-gp-content]{
-          padding: clamp(2.5rem, 7svh, 5.5rem) clamp(1.25rem, 5cqw, 5.5rem);
+          padding: clamp(1rem, 3svh, 5.5rem) clamp(1rem, 4cqw, 5.5rem);
           min-height: var(--gp-height, 100svh);
           height: var(--gp-height, 100svh);
           box-sizing: border-box;
@@ -328,7 +370,13 @@ export default function Hero({
           justify-content: center;
           font-family: inherit;
           background: transparent !important;
+<<<<<<< HEAD
           overflow: hidden;
+=======
+          overflow-x: hidden;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           z-index: 20 !important;
           opacity: 1 !important;
           pointer-events: none !important;
@@ -345,9 +393,9 @@ export default function Hero({
           margin: 0 auto;
           flex-direction: column;
           align-items: flex-start;
-          gap: clamp(1.25rem, 2.5svh, 2.25rem);
+          gap: clamp(0.75rem, 2svh, 2.25rem);
           will-change: transform;
-          transform: translateY(calc(var(--hero-exit-y, 0px) - clamp(0px, 2.5svh, 24px)));
+          transform: translateY(calc(var(--hero-exit-y, 0px) - clamp(0px, 2svh, 24px)));
           pointer-events: auto;
         }
 
@@ -356,6 +404,10 @@ export default function Hero({
           [data-slipstream-hero] [data-gp-content] {
             align-items: center !important;
             padding: clamp(2.5rem, 5svh, 4.5rem) clamp(2rem, 5cqw, 6rem) !important;
+<<<<<<< HEAD
+=======
+            overflow: hidden !important;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           }
 
           .hero-copy-wrapper {
@@ -719,6 +771,7 @@ export default function Hero({
             style={{
               position: "absolute",
               inset: 0,
+              overflow: "hidden",
               transform: "scale(var(--gp-field-scale,1))",
               background: "radial-gradient(circle at 85% 15%, #2547FF 0%, #1636DB 45%, #0B1E8A 100%)",
             }}
@@ -739,9 +792,15 @@ export default function Hero({
           </div>
         }
         front={
+<<<<<<< HEAD
           <div className="absolute inset-0 pointer-events-none select-text flex flex-col justify-between min-h-[100svh] h-full pt-8 pb-4 md:pb-6">
             {/* Top Bar: Brand Logo on Left */}
             <div className="w-full px-6 md:px-10 lg:px-12 pointer-events-auto">
+=======
+          <div className="absolute inset-0 pointer-events-none select-text flex flex-col justify-between min-h-[100svh] h-full pt-4 sm:pt-8 pb-3 sm:pb-6">
+            {/* Top Bar: Brand Logo on Left */}
+            <div className="w-full px-4 sm:px-8 md:px-10 lg:px-12 pointer-events-auto">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
               <a
                 href="#home"
                 className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer"
@@ -766,7 +825,11 @@ export default function Hero({
             </div>
 
             {/* Main Content Area: my-auto vertically centers between top bar and bottom bar */}
+<<<<<<< HEAD
             <div className="w-full max-w-[1280px] mx-auto px-6 md:px-10 my-auto">
+=======
+            <div className="w-full max-w-[1280px] mx-auto px-4 sm:px-8 md:px-10 my-auto">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
               <div
                 ref={headlineRef}
                 className="hero-headline-block w-full lg:max-w-[62%] pointer-events-auto"
@@ -807,7 +870,11 @@ export default function Hero({
             </div>
 
             {/* Bottom Bar: Clean, minimalist centered scroll stroke */}
+<<<<<<< HEAD
             <div className="hero-bottom-bar absolute bottom-6 sm:bottom-8 left-0 right-0 px-6 md:px-10 lg:px-12 flex items-center justify-between pointer-events-none z-20">
+=======
+            <div className="hero-bottom-bar absolute bottom-4 sm:bottom-8 left-0 right-0 px-4 sm:px-8 md:px-10 lg:px-12 flex items-center justify-between pointer-events-none z-20">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
               {/* Left spacer for perfect desktop balance */}
               <div className="hidden lg:block w-48" aria-hidden="true" />
 
@@ -818,6 +885,7 @@ export default function Hero({
                   onClick={() => {
                     window.scrollBy({ top: window.innerHeight * 0.85, behavior: "smooth" });
                   }}
+<<<<<<< HEAD
                   className="flex flex-col items-center gap-2 cursor-pointer group select-none transition-all active:scale-95"
                   aria-label="Scroll to explore"
                 >
@@ -825,6 +893,15 @@ export default function Hero({
                     SCROLL
                   </span>
                   <div className="w-[1.5px] h-8 bg-gradient-to-b from-[#2547FF] via-[#2547FF]/70 to-transparent rounded-full transition-all duration-300 group-hover:h-10" />
+=======
+                  className="flex flex-col items-center gap-1.5 sm:gap-2 cursor-pointer group select-none transition-all active:scale-95"
+                  aria-label="Scroll to explore"
+                >
+                  <span className="text-[10px] sm:text-xs font-mono font-semibold tracking-[0.24em] sm:tracking-[0.28em] text-[#0A0A0A]/80 group-hover:text-[#2547FF] transition-colors uppercase">
+                    SCROLL
+                  </span>
+                  <div className="w-[1.5px] h-6 sm:h-8 bg-gradient-to-b from-[#2547FF] via-[#2547FF]/70 to-transparent rounded-full transition-all duration-300 group-hover:h-8 sm:group-hover:h-10" />
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                 </button>
               </div>
 
@@ -846,6 +923,7 @@ export default function Hero({
             sparkRadius={15}
             sparkCount={8}
             duration={400}
+<<<<<<< HEAD
             className="flex flex-col items-start justify-between w-full h-full gap-6 lg:gap-8"
           >
             {/* Top Tier: Dramatic Headline + Desktop Sub-lead */}
@@ -853,6 +931,15 @@ export default function Hero({
               {/* Bold 2-Line Headline - Rises from Bottom */}
               <div className="hero-headline-flow">
                 <h2 className="text-white font-display font-normal text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] leading-[1.08] tracking-[-0.03em] text-balance">
+=======
+            className="flex flex-col items-start justify-between w-full h-full gap-4 sm:gap-6 lg:gap-8"
+          >
+            {/* Top Tier: Dramatic Headline + Desktop Sub-lead */}
+            <div className="flex flex-col items-start gap-2.5 sm:gap-5 w-full">
+              {/* Bold 2-Line Headline - Rises from Bottom */}
+              <div className="hero-headline-flow">
+                <h2 className="text-white font-display font-normal text-[26px] sm:text-[38px] md:text-[54px] lg:text-[72px] leading-[1.12] tracking-[-0.03em] text-balance">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                   Where student ideas
                   <br />
                   become real ventures.
@@ -866,27 +953,46 @@ export default function Hero({
             </div>
 
             {/* Middle Tier: 3 Full-Height Bento Cards (Desktop) / Clean Sequential List (Mobile) */}
+<<<<<<< HEAD
             <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-7 sm:pt-9 gap-8 md:gap-0 lg:gap-6 lg:border-t-0 lg:pt-0 transition-colors">
               {/* 01 — Our Vision */}
               <div className="hero-col-1 md:pr-10 md:border-r lg:pr-0 lg:border-r-0 transition-colors">
                 <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+=======
+            <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-3 sm:pt-6 md:pt-7 lg:pt-0 gap-3 sm:gap-4 md:gap-0 lg:gap-6 lg:border-t-0 transition-colors">
+              {/* 01 — Our Vision */}
+              <div className="hero-col-1 md:pr-10 md:border-r lg:pr-0 lg:border-r-0 transition-colors">
+                <div className="hero-pillar-item hero-bento-card relative p-2.5 sm:p-4 rounded-xl sm:rounded-2xl">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
+<<<<<<< HEAD
                       <div className="hero-c1-head flex items-center justify-between mb-4">
                         <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Eye className="w-5 h-5 text-white" />
+=======
+                      <div className="hero-c1-head flex items-center justify-between mb-2 sm:mb-4">
+                        <div className="hero-badge w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                         </div>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           01 / INVENT
                         </span>
                       </div>
+<<<<<<< HEAD
                       <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Vision</h3>
                       <div className="hero-c1-body">
                         <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+=======
+                      <h3 className="text-white font-sans font-medium text-base sm:text-xl lg:text-2xl tracking-tight mb-1 sm:mb-2.5">Our Vision</h3>
+                      <div className="hero-c1-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-xs sm:text-sm lg:text-base leading-relaxed sm:leading-[1.65]">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                           To inspire students to think boldly, build fearlessly, and shape the future through technology and venture creation.
                         </p>
                       </div>
@@ -897,24 +1003,40 @@ export default function Hero({
 
               {/* 02 — Our Mission */}
               <div className="hero-col-2 md:px-10 md:border-r lg:px-0 lg:border-r-0 transition-colors">
+<<<<<<< HEAD
                 <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+=======
+                <div className="hero-pillar-item hero-bento-card relative p-2.5 sm:p-4 rounded-xl sm:rounded-2xl">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
+<<<<<<< HEAD
                       <div className="hero-c2-head flex items-center justify-between mb-4">
                         <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Target className="w-5 h-5 text-white" />
+=======
+                      <div className="hero-c2-head flex items-center justify-between mb-2 sm:mb-4">
+                        <div className="hero-badge w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Target className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                         </div>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           02 / INCUBATE
                         </span>
                       </div>
+<<<<<<< HEAD
                       <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Mission</h3>
                       <div className="hero-c2-body">
                         <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+=======
+                      <h3 className="text-white font-sans font-medium text-base sm:text-xl lg:text-2xl tracking-tight mb-1 sm:mb-2.5">Our Mission</h3>
+                      <div className="hero-c2-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-xs sm:text-sm lg:text-base leading-relaxed sm:leading-[1.65]">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                           To turn ideas into action through hands-on prototype incubation, structured mentorship, and seed grants.
                         </p>
                       </div>
@@ -925,24 +1047,40 @@ export default function Hero({
 
               {/* 03 — About Us */}
               <div className="hero-col-3 md:pl-10 lg:pl-0 transition-colors">
+<<<<<<< HEAD
                 <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+=======
+                <div className="hero-pillar-item hero-bento-card relative p-2.5 sm:p-4 rounded-xl sm:rounded-2xl">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
+<<<<<<< HEAD
                       <div className="hero-c3-head flex items-center justify-between mb-4">
                         <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Users className="w-5 h-5 text-white" />
+=======
+                      <div className="hero-c3-head flex items-center justify-between mb-2 sm:mb-4">
+                        <div className="hero-badge w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                          <Users className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                         </div>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           03 / SCALE
                         </span>
                       </div>
+<<<<<<< HEAD
                       <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">About Us</h3>
                       <div className="hero-c3-body">
                         <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+=======
+                      <h3 className="text-white font-sans font-medium text-base sm:text-xl lg:text-2xl tracking-tight mb-1 sm:mb-2.5">About Us</h3>
+                      <div className="hero-c3-body">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-xs sm:text-sm lg:text-base leading-relaxed sm:leading-[1.65]">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                           A student-driven community at PSG Tech connecting aspiring innovators with industry leaders and venture networks.
                         </p>
                       </div>
@@ -960,10 +1098,10 @@ export default function Hero({
                   e.preventDefault();
                   document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="group inline-flex items-center gap-3 bg-white text-[#1B3AE5] hover:bg-[#F2F4FF] hover:text-[#122CB0] px-7 py-3.5 rounded-full font-sans font-medium text-sm tracking-tight shadow-xl shadow-black/15 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+                className="group inline-flex items-center gap-2.5 sm:gap-3 bg-white text-[#1B3AE5] hover:bg-[#F2F4FF] hover:text-[#122CB0] px-5 py-2.5 sm:px-7 sm:py-3.5 rounded-full font-sans font-medium text-xs sm:text-sm tracking-tight shadow-xl shadow-black/15 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 cursor-pointer"
               >
                 <span>Explore our projects</span>
-                <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-200 group-hover:translate-x-1" />
               </a>
             </div>
           </ClickSpark>

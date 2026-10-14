@@ -39,7 +39,11 @@ export function TeamDirectory() {
       {/* Light Theme Card Container matching site color palette */}
       <div className="w-full rounded-2xl md:rounded-3xl bg-white/95 backdrop-blur-md border border-black/[0.08] shadow-[0_24px_60px_-15px_rgba(0,0,0,0.06)] overflow-hidden">
         {/* Card Header & Search */}
+<<<<<<< HEAD
         <div className="p-6 md:p-8 pb-4 md:pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.06]">
+=======
+        <div className="p-4 sm:p-6 md:p-8 pb-3 sm:pb-4 md:pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-black/[0.06]">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           <div>
             <h2 className="text-xl md:text-2xl font-semibold text-[#0B0B0F] tracking-tight">
               Team directory
@@ -125,7 +129,11 @@ export function TeamDirectory() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.2 }}
+<<<<<<< HEAD
                   className="flex items-center justify-between py-4 px-5 md:px-8 hover:bg-[#F4F5FB]/80 transition-colors group cursor-default"
+=======
+                  className="flex items-center justify-between py-3.5 sm:py-4 px-4 sm:px-6 md:px-8 hover:bg-[#F4F5FB]/80 transition-colors group cursor-default"
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
                 >
                   {/* Left: Avatar initials & Member info */}
                   <div className="flex items-center gap-3.5 md:gap-4 min-w-0">

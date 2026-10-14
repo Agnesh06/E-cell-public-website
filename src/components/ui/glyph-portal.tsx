@@ -88,7 +88,11 @@ function interior(context: CanvasRenderingContext2D, char: string, font: string)
 
 function scrollParent(element: HTMLElement): HTMLElement | null {
   for (let p = element.parentElement; p; p = p.parentElement) {
-    if (/(auto|scroll|hidden)/.test(getComputedStyle(p).overflowY) && p !== document.body && p !== document.documentElement) return p;
+    if (p === document.body || p === document.documentElement) return null;
+    const style = getComputedStyle(p);
+    if (/(auto|scroll)/.test(style.overflowY) && p.scrollHeight > p.clientHeight) {
+      return p;
+    }
   }
   return null;
 }

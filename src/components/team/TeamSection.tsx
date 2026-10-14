@@ -424,7 +424,11 @@ export function TeamSection({
   return (
     <section
       id={id}
+<<<<<<< HEAD
       className={`relative w-full min-h-[100dvh] flex flex-col justify-center overflow-hidden bg-transparent py-8 sm:py-12 text-[#0A0A0A] scroll-mt-0 ${className}`}
+=======
+      className={`relative w-full min-h-0 lg:min-h-screen flex flex-col justify-center overflow-hidden bg-transparent py-10 sm:py-14 md:py-16 text-[#0A0A0A] scroll-mt-0 ${className}`}
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
       aria-labelledby="team-heading"
     >
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
@@ -435,7 +439,7 @@ export function TeamSection({
           </p>
           <h2
             id="team-heading"
-            className="font-display font-bold text-3xl sm:text-4xl md:text-[42px] lg:text-[44px] text-[#0A0A0A] tracking-[-0.025em] leading-[1.3] sm:leading-[1.35] text-balance mx-auto"
+            className="font-display font-bold text-2xl sm:text-4xl md:text-[42px] lg:text-[44px] text-[#0A0A0A] tracking-[-0.025em] leading-[1.25] sm:leading-[1.35] text-balance mx-auto"
           >
             {catchphrase === "The minds building the future at PSG Tech E-Cell" ? (
               <>
@@ -619,7 +623,7 @@ export function TeamSection({
         </div>
 
         {/* Action Buttons: "Meet the Team" and "Partner With E-Cell" */}
-        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 w-full max-w-sm sm:max-w-none mx-auto">
           {showMeetTeamButton && (
             <Link
               to="/teams"

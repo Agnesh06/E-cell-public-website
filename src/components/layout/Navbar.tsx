@@ -65,7 +65,7 @@ export const defaultNavItems: iNavItem[] = [
 
 export const CustomFooter: React.FC = () => {
   return (
-    <div className="flex w-full text-sm justify-between text-black px-10 md:px-24 py-6">
+    <div className="flex w-full text-sm justify-between text-black px-6 sm:px-10 md:px-20 py-5 sm:py-6">
       <a
         href="https://www.linkedin.com/company/cse-association-psg-tech/"
         target="_blank"
@@ -246,7 +246,7 @@ export const Curve: React.FC = () => {
 
   return (
     <svg
-      className="absolute top-0 -left-[99px] w-[100px] stroke-none h-full pointer-events-none"
+      className="hidden sm:block absolute top-0 -left-[99px] w-[100px] stroke-none h-full pointer-events-none"
       style={{ fill: "#ffffff" }}
     >
       <motion.path
@@ -268,15 +268,15 @@ export const CurvedNavbar: React.FC<
       initial="initial"
       animate="enter"
       exit="exit"
-      className="h-[100dvh] w-screen max-w-screen-sm fixed right-0 top-0 z-40 bg-white"
+      className="h-[100dvh] w-full sm:w-[480px] max-w-full fixed right-0 top-0 z-40 bg-white shadow-2xl overflow-hidden"
     >
       <div
-        className="h-full pt-11 flex flex-col justify-between"
+        className="h-full pt-10 sm:pt-11 flex flex-col justify-between"
         style={{ fontFamily: '"Neuton", Georgia, serif' }}
       >
-        <div className="flex flex-col text-5xl gap-3 mt-0 px-10 md:px-24">
+        <div className="flex flex-col text-5xl gap-3 mt-0 px-6 sm:px-10 md:px-20 overflow-y-auto">
           <div
-            className="text-black border-b border-black/30 uppercase text-sm mb-0"
+            className="text-black border-b border-black/30 uppercase text-xs sm:text-sm mb-0 pb-1"
             style={{
               fontFamily: '"Neuton", Georgia, serif',
               fontWeight: 400,
@@ -329,7 +329,7 @@ export const Header: React.FC<iHeaderProps> = ({
       <div className="relative">
         <div
           onClick={handleClick}
-          className="fixed -right-1 top-0 md:-right-1 m-5 z-50 w-12 h-12 rounded-none flex items-center justify-center cursor-pointer bg-white shadow-xs"
+          className="fixed top-3 right-3 sm:top-5 sm:right-5 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-none flex items-center justify-center cursor-pointer bg-white shadow-xs border border-black/5"
         >
           <div className="relative w-8 h-6 flex flex-col justify-between items-center pointer-events-none">
             <span

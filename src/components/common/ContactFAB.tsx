@@ -91,7 +91,11 @@ export default function ContactFAB() {
 
   return (
     <div
+<<<<<<< HEAD
       className={`group fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 transition-all duration-300 ease-out flex items-center gap-3 ${
+=======
+      className={`group fixed bottom-4 right-4 sm:bottom-6 sm:right-6 md:bottom-8 md:right-8 z-40 transition-all duration-300 ease-out flex items-center gap-3 ${
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         showFab
           ? "opacity-100 scale-100 pointer-events-auto translate-y-0"
           : "opacity-0 scale-75 pointer-events-none translate-y-5"
@@ -124,7 +128,11 @@ export default function ContactFAB() {
           type="button"
           onClick={handleClick}
           aria-label="Scroll to Get in Touch section"
+<<<<<<< HEAD
           className="relative w-14 h-14 rounded-full bg-[#2547FF] hover:bg-[#1a38db] active:scale-95 transition-all duration-200 flex items-center justify-center text-white shadow-[0_8px_24px_rgba(37,71,255,0.42)] hover:shadow-[0_12px_32px_rgba(37,71,255,0.55)] cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2547FF]/40 hover:scale-105"
+=======
+          className="relative w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14 rounded-full bg-[#2547FF] hover:bg-[#1a38db] active:scale-95 transition-all duration-200 flex items-center justify-center text-white shadow-[0_6px_20px_rgba(37,71,255,0.38)] hover:shadow-[0_12px_32px_rgba(37,71,255,0.55)] cursor-pointer focus:outline-none focus-visible:ring-4 focus-visible:ring-[#2547FF]/40 hover:scale-105"
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         >
           {/* Subtle Ambient Pulse Ring */}
           <span
@@ -133,7 +141,11 @@ export default function ContactFAB() {
           />
 
           {/* Message Icon with slight bounce on hover */}
+<<<<<<< HEAD
           <MessageSquare className="relative z-10 w-6 h-6 transition-transform duration-200 group-hover:scale-110" />
+=======
+          <MessageSquare className="relative z-10 w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-200 group-hover:scale-110" />
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         </button>
       </div>
     </div>

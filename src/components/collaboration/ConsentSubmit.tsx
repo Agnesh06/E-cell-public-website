@@ -1,13 +1,17 @@
 import * as React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CollaborationFormData } from "@/types/collaboration";
-import { Building2, UserCheck, Handshake, FileText, CheckCircle2 } from "lucide-react";
+import { Building2, UserCheck, Handshake, FileText, CheckCircle2, AlertCircle, AlertTriangle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { SubmitErrorType } from "@/hooks/useCollaborationForm";
 
 export interface ConsentSubmitProps {
   formData: Partial<CollaborationFormData>;
   errors: Record<string, string | undefined>;
   onChange: <K extends keyof CollaborationFormData>(field: K, value: CollaborationFormData[K]) => void;
   onEditStep: (stepIndex: number) => void;
+  submitError?: string | null;
+  submitErrorType?: SubmitErrorType;
 }
 
 export function ConsentSubmit({
@@ -15,6 +19,8 @@ export function ConsentSubmit({
   errors,
   onChange,
   onEditStep,
+  submitError,
+  submitErrorType,
 }: ConsentSubmitProps) {
   return (
     <div className="space-y-6 animate-fadeIn">
@@ -168,6 +174,37 @@ export function ConsentSubmit({
           )}
         </div>
       </div>
+
+      {/* Submission Feedback Alert (Errors / Duplicate / Validation) */}
+      {submitError && (
+        <div
+          role="alert"
+          className={cn(
+            "p-4 rounded-xl border flex items-start gap-3 animate-fadeIn text-xs sm:text-sm",
+            submitErrorType === "duplicate"
+              ? "bg-amber-500/10 border-amber-500/30 text-amber-900"
+              : "bg-destructive/10 border-destructive/30 text-destructive"
+          )}
+        >
+          {submitErrorType === "duplicate" ? (
+            <AlertTriangle className="size-5 shrink-0 mt-0.5 text-amber-600" />
+          ) : (
+            <AlertCircle className="size-5 shrink-0 mt-0.5 text-destructive" />
+          )}
+          <div className="space-y-1">
+            <p className="font-semibold text-xs uppercase tracking-wider">
+              {submitErrorType === "duplicate"
+                ? "Duplicate Request"
+                : submitErrorType === "validation"
+                ? "Validation Error"
+                : submitErrorType === "network"
+                ? "Connection Error"
+                : "Submission Failed"}
+            </p>
+            <p className="leading-relaxed">{submitError}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

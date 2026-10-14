@@ -90,6 +90,7 @@ export default function Stepper03({
   const spanPercent = 100 - offsetPercent * 2;
 
   const handleNext = async () => {
+    if (isSubmitting) return;
     if (onNext) {
       const allowed = await onNext(activeStep);
       if (!allowed) return;
@@ -104,13 +105,14 @@ export default function Stepper03({
   };
 
   const handleBack = () => {
+    if (isSubmitting) return;
     const prev = Math.max(0, activeStep - 1);
     setInternalActiveStep(prev);
     onStepChange?.(prev);
   };
 
   const handleStepClick = async (index: number) => {
-    if (index === activeStep) return;
+    if (isSubmitting || index === activeStep) return;
     if (index < activeStep) {
       setInternalActiveStep(index);
       onStepChange?.(index);
@@ -125,18 +127,18 @@ export default function Stepper03({
 
   return (
     <div className={cn("mx-auto w-full max-w-4xl", className)}>
-      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-7 md:p-9 flex flex-col gap-7 shadow-sm">
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-7 md:p-9 flex flex-col gap-5 sm:gap-7 shadow-sm">
         {/* Progress track & step circles */}
         <div className="relative">
           <div
-            className="absolute top-5 h-0.5 bg-border"
+            className="absolute top-[18px] sm:top-5 h-0.5 bg-border"
             style={{
               left: `${offsetPercent}%`,
               right: `${offsetPercent}%`,
             }}
           />
           <motion.div
-            className="absolute top-5 h-0.5 bg-primary origin-left"
+            className="absolute top-[18px] sm:top-5 h-0.5 bg-primary origin-left"
             style={{
               left: `${offsetPercent}%`,
               right: `${offsetPercent}%`,
@@ -147,7 +149,7 @@ export default function Stepper03({
           />
           <motion.span
             className="absolute size-2 rounded-full bg-primary"
-            style={{ top: 21, x: "-50%", y: "-50%" }}
+            style={{ top: 18, x: "-50%", y: "-50%" }}
             initial={{ left: `${offsetPercent}%` }}
             animate={{ left: `${offsetPercent + progress * spanPercent}%` }}
             transition={{ type: "spring", stiffness: 160, damping: 24 }}
@@ -159,14 +161,14 @@ export default function Stepper03({
               return (
                 <div
                   key={step.title}
-                  className="flex flex-1 flex-col items-center gap-2"
+                  className="flex flex-1 flex-col items-center gap-1.5 sm:gap-2"
                 >
                   <button
                     type="button"
                     onClick={() => handleStepClick(index)}
                     aria-current={isActive ? "step" : undefined}
                     aria-label={`${step.title} step`}
-                    className="group relative z-10 flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="group relative z-10 flex size-8 sm:size-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <span
                       className={cn(
@@ -215,7 +217,7 @@ export default function Stepper03({
                             }}
                             className="flex items-center justify-center text-primary-foreground"
                           >
-                            <Check className="size-5" strokeWidth={3} />
+                            <Check className="size-3.5 sm:size-5" strokeWidth={3} />
                           </motion.span>
                         ) : (
                           <motion.span
@@ -232,7 +234,7 @@ export default function Stepper03({
                           >
                             <step.icon
                               className={cn(
-                                "size-5",
+                                "size-3.5 sm:size-5",
                                 isActive
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
@@ -245,10 +247,11 @@ export default function Stepper03({
                   </button>
                   <span
                     className={cn(
-                      "text-[11px] sm:text-xs font-medium transition-colors duration-300 text-center line-clamp-1 sm:line-clamp-none max-w-[65px] sm:max-w-[110px]",
+                      "text-[10px] sm:text-xs font-medium transition-colors duration-300 text-center line-clamp-1 sm:line-clamp-none max-w-[58px] sm:max-w-[110px]",
                       isActive || isCompleted
                         ? "text-foreground font-semibold"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
+                      !isActive && "hidden sm:inline-block"
                     )}
                   >
                     {step.title}
@@ -260,7 +263,7 @@ export default function Stepper03({
         </div>
 
         {/* Step content area */}
-        <div className="min-h-36 py-2">
+        <div className="min-h-36 py-1 sm:py-2">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStep}
@@ -270,12 +273,12 @@ export default function Stepper03({
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="space-y-4"
             >
-              <div className="text-center space-y-1 mb-5">
-                <h3 className="text-xl sm:text-2xl font-bold font-display text-foreground">
+              <div className="text-center space-y-1 mb-4 sm:mb-5">
+                <h3 className="text-lg sm:text-2xl font-bold font-display text-foreground">
                   {steps[activeStep]?.title}
                 </h3>
                 {steps[activeStep]?.subtitle && (
-                  <p className="text-sm text-muted-foreground max-w-lg mx-auto">
+                  <p className="text-xs sm:text-sm text-muted-foreground max-w-lg mx-auto">
                     {steps[activeStep].subtitle}
                   </p>
                 )}
@@ -299,25 +302,25 @@ export default function Stepper03({
         <Separator />
 
         {/* Navigation buttons */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4 pt-1">
           <Button
             type="button"
             variant="outline"
             onClick={handleBack}
             disabled={activeStep === 0 || isSubmitting}
-            className="cursor-pointer gap-1"
+            className="cursor-pointer gap-1 order-1 h-9 sm:h-10 px-3 sm:px-4 text-xs sm:text-sm"
           >
             <ChevronLeft className="size-4" />
             Back
           </Button>
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground order-2 sm:order-2">
             Step <span className="text-foreground font-semibold">{activeStep + 1}</span> of {totalSteps}
           </p>
           <Button
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="cursor-pointer gap-1.5 min-w-[110px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+            className="cursor-pointer gap-1.5 min-w-[100px] sm:min-w-[120px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm order-3 h-9 sm:h-10 px-4 sm:px-5 text-xs sm:text-sm w-full sm:w-auto"
           >
             {isSubmitting ? (
               <>
@@ -326,7 +329,8 @@ export default function Stepper03({
               </>
             ) : activeStep === totalSteps - 1 ? (
               <>
-                <span>{submitButtonText}</span>
+                <span className="sm:hidden">Submit Request</span>
+                <span className="hidden sm:inline">{submitButtonText}</span>
                 <Check className="size-4" />
               </>
             ) : (

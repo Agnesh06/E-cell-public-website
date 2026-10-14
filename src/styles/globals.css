@@ -45,15 +45,32 @@
   html {
     scroll-behavior: smooth;
     scroll-snap-type: none;
+<<<<<<< HEAD
+=======
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
   }
 
   /* Completely disable scroll-snapping on mobile and tablet for continuous fluid momentum scrolling */
   @media (max-width: 1023px) {
     html,
+<<<<<<< HEAD
     body {
       scroll-snap-type: none !important;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: auto;
+=======
+    body,
+    #root {
+      scroll-snap-type: none !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: auto;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden !important;
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
     }
 
     * {
@@ -65,6 +82,8 @@
   body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    max-width: 100vw;
     background-color: #FAFAFC;
     color: #0A0A0A;
     font-family: var(--font-sans);
@@ -74,7 +93,13 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    overflow-x: clip;
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
   }
 }
 

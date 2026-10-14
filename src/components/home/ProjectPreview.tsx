@@ -46,7 +46,11 @@ export default function ProjectPreview() {
   return (
     <section
       id="projects"
+<<<<<<< HEAD
       className="relative w-full min-h-[100dvh] lg:h-screen lg:min-h-screen bg-transparent text-[#0A0A0A] overflow-hidden flex flex-col justify-between scroll-mt-0"
+=======
+      className="relative w-full min-h-0 lg:min-h-screen lg:h-screen bg-transparent text-[#0A0A0A] overflow-hidden flex flex-col justify-between scroll-mt-0"
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
       aria-label="Projects Showcase"
     >
       {/* =========================================================================
@@ -122,7 +126,11 @@ export default function ProjectPreview() {
       {/* =========================================================================
           MOBILE & TABLET VIEW (< lg): Prism Peek-Card Showcase from Guide
           ========================================================================= */}
+<<<<<<< HEAD
       <div className="lg:hidden w-full h-full min-h-[100dvh] flex flex-col justify-center relative z-20 overflow-hidden">
+=======
+      <div className="lg:hidden w-full flex flex-col justify-center relative z-20 overflow-hidden py-10 sm:py-16">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         <PrismProjectShowcase />
       </div>
     </section>

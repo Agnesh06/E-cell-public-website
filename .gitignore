@@ -8,6 +8,9 @@
 # ------------------------------------------------------------------------------
 # Requirements & architecture specifications folder
 docs/
+powershell.cmd
+powershell.bat
+
 
 # ------------------------------------------------------------------------------
 # Dependencies & Package Managers

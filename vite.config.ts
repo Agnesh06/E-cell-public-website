@@ -18,6 +18,15 @@ export default defineConfig({
     strictPort: false,
     cors: true,
     allowedHosts: true,
+<<<<<<< HEAD
+=======
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+      },
+    },
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
   },
   css: {
     postcss: {

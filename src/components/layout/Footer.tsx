@@ -272,19 +272,19 @@ export default function Footer() {
               ) : (
                 <form
                   onSubmit={handleSubscribe}
-                  className="flex items-center border border-black/15 bg-white shadow-xs h-12 max-w-sm w-full rounded-full overflow-hidden mt-4 focus-within:border-[#2547FF] focus-within:ring-2 focus-within:ring-[#2547FF]/15 transition-all p-1"
+                  className="flex items-center border border-black/15 bg-white shadow-xs h-11 sm:h-12 max-w-sm w-full rounded-full overflow-hidden mt-4 focus-within:border-[#2547FF] focus-within:ring-2 focus-within:ring-[#2547FF]/15 transition-all p-1"
                 >
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address…"
-                    className="w-full h-full pl-4 pr-2 outline-none text-[13px] sm:text-[14px] bg-transparent text-[#0A0A0A] placeholder-[#262626]/40 font-sans rounded-full"
+                    className="w-full h-full pl-3.5 sm:pl-4 pr-2 outline-none text-xs sm:text-[14px] bg-transparent text-[#0A0A0A] placeholder-[#262626]/40 font-sans rounded-full min-w-0"
                     required
                   />
                   <button
                     type="submit"
-                    className="bg-gradient-to-r from-[#2547FF] to-[#1532D6] hover:from-[#1B3AE5] hover:to-[#0D24AB] active:scale-95 transition-all px-4 sm:px-5 h-9 shrink-0 rounded-full text-[13px] font-semibold text-white cursor-pointer shadow-xs font-sans"
+                    className="bg-gradient-to-r from-[#2547FF] to-[#1532D6] hover:from-[#1B3AE5] hover:to-[#0D24AB] active:scale-95 transition-all px-3.5 sm:px-5 h-8 sm:h-9 shrink-0 rounded-full text-xs sm:text-[13px] font-semibold text-white cursor-pointer shadow-xs font-sans"
                   >
                     Subscribe
                   </button>
@@ -294,15 +294,15 @@ export default function Footer() {
           </div>
 
           {/* Separator Line */}
-          <div className="w-full h-px mt-14 mb-6 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
+          <div className="w-full h-px mt-10 sm:mt-14 mb-6 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
           {/* Bottom Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-[13px] text-[#262626]/65 leading-[1.6]">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-sans text-xs sm:text-[13px] text-[#262626]/65 leading-[1.6]">
             <p className="text-center md:text-left font-normal">
               © 2026 PSG Tech Entrepreneurship Cell • Built with passion by E-Cell Tech Team.
             </p>
 
-            <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
               <span className="hover:text-[#2547FF] transition-colors cursor-pointer">
                 Privacy Policy
               </span>
@@ -314,7 +314,7 @@ export default function Footer() {
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex items-center gap-1.5 hover:text-[#2547FF] transition-colors cursor-pointer uppercase tracking-[0.08em] text-[12px] font-medium"
+                className="flex items-center gap-1.5 hover:text-[#2547FF] transition-colors cursor-pointer uppercase tracking-[0.08em] text-[11px] sm:text-[12px] font-medium"
                 aria-label="Scroll to top"
               >
                 <span>Back to Top</span>

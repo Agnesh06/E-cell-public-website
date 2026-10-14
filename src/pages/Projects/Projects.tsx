@@ -171,7 +171,11 @@ export default function Projects() {
         <span className="text-[11px] sm:text-xs font-mono font-semibold uppercase tracking-[0.2em] sm:tracking-[0.24em] text-[#2547FF] mb-2 block">
           INNOVATION CATALOG
         </span>
+<<<<<<< HEAD
         <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#0A0A0A] mb-3 sm:mb-4">
+=======
+        <h1 className="text-2xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#0A0A0A] mb-3 sm:mb-4">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
           Our <span className="text-[#2547FF]">Projects</span>
         </h1>
         <p className="text-sm lg:text-base text-[#0A0A0A]/65 max-w-xl mx-auto leading-relaxed font-sans px-2">
@@ -337,7 +341,11 @@ export default function Projects() {
       </section>
 
       {/* MOBILE & TABLET VIEW ONLY (< lg) - Powered by Gallery02 architecture */}
+<<<<<<< HEAD
       <section className="lg:hidden relative z-20 max-w-5xl mx-auto px-6 sm:px-10 pt-4 pb-24">
+=======
+      <section className="lg:hidden relative z-20 max-w-5xl mx-auto px-4 sm:px-8 pt-4 pb-24">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         <MobileProjectsGallery projects={allProjects} />
       </section>
 

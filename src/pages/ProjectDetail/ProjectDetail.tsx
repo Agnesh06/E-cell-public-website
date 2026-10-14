@@ -57,9 +57,13 @@ export default function ProjectDetail() {
       </div>
 
       {/* Main Content Area */}
+<<<<<<< HEAD
       <main className="relative z-10 max-w-[1080px] mx-auto px-6 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32">
+=======
+      <main className="relative z-10 max-w-[1080px] mx-auto px-4 sm:px-6 md:px-8 pt-20 sm:pt-28 sm:pb-20 md:pt-32 pb-16">
+>>>>>>> 1b801bd94473a8e512166fe75ce7bef6184a8b01
         {/* Domain & Meta */}
-        <div className="flex flex-wrap items-center gap-3 mb-5">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5">
           {project.domain && (
             <span className="px-3 py-1 rounded-full text-xs font-mono font-normal tracking-wider uppercase bg-[#EDEFFC] text-[#2547FF]">
               {project.domain}
@@ -73,7 +77,7 @@ export default function ProjectDetail() {
         </div>
 
         {/* Title & Tagline */}
-        <h1 className="font-display font-normal text-3xl sm:text-4xl md:text-5xl lg:text-[64px] text-[#0A0A0A] tracking-[-0.035em] leading-[1.05]">
+        <h1 className="font-display font-normal text-2xl sm:text-4xl md:text-5xl lg:text-[64px] text-[#0A0A0A] tracking-[-0.035em] leading-[1.1]">
           {project.title}
         </h1>
         {project.tagline && (
