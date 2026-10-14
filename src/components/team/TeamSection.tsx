@@ -435,7 +435,7 @@ export function TeamSection({
           </p>
           <h2
             id="team-heading"
-            className="font-display font-bold text-3xl sm:text-4xl md:text-[42px] lg:text-[44px] text-[#0A0A0A] tracking-[-0.025em] leading-[1.3] sm:leading-[1.35] text-balance mx-auto"
+            className="font-display font-bold text-2xl sm:text-4xl md:text-[42px] lg:text-[44px] text-[#0A0A0A] tracking-[-0.025em] leading-[1.25] sm:leading-[1.35] text-balance mx-auto"
           >
             {catchphrase === "The minds building the future at PSG Tech E-Cell" ? (
               <>
@@ -619,7 +619,7 @@ export function TeamSection({
         </div>
 
         {/* Action Buttons: "Meet the Team" and "Partner With E-Cell" */}
-        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4 w-full max-w-sm sm:max-w-none mx-auto">
           {showMeetTeamButton && (
             <Link
               to="/teams"

@@ -123,12 +123,12 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
   ];
 
   return (
-    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden scroll-mt-0">
+    <section id={id} className="min-h-0 lg:min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-8 sm:py-14 px-3 sm:px-6 relative overflow-hidden scroll-mt-0">
 
       <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center w-full">
         {/* Streamlined Clean Header */}
-        <div className="text-center max-w-2xl mb-6">
-          <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-[-0.025em] text-[#0A0A0A] leading-[1.1]">
+        <div className="text-center max-w-2xl mb-5 sm:mb-6">
+          <h1 className="font-display font-bold text-2xl sm:text-4xl md:text-5xl tracking-[-0.025em] text-[#0A0A0A] leading-[1.15]">
             Let’s Build <span className="text-[#2547FF]">Together</span>
           </h1>
 

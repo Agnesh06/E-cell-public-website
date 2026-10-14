@@ -17,7 +17,7 @@ export default function Home() {
         {/* Sticky Background: Pinned across Projects, Team, and Collaboration */}
         <div
           aria-hidden="true"
-          className="sticky top-0 h-screen w-full pointer-events-none z-0 -mb-[100vh] overflow-hidden select-none"
+          className="sticky top-0 h-[100dvh] w-full pointer-events-none z-0 -mb-[100dvh] overflow-hidden select-none"
         >
           <Topography
             lowColor="#2547FF"

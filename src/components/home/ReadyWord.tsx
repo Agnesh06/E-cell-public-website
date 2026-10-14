@@ -387,8 +387,9 @@ const ReadyWord = forwardRef<ReadyWordRef, ReadyWordProps>(function ReadyWord(
             className="hero-ready-zoom-canvas pointer-events-none fixed inset-0 z-30 select-none"
             style={{
               display: "none",
-              width: "100vw",
-              height: "100vh",
+              width: "100%",
+              maxWidth: "100vw",
+              height: "100%",
             }}
             aria-hidden="true"
           />,

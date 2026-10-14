@@ -32,21 +32,21 @@ export function ContactCard({
       )}
       {...props}
     >
-      {/* 4 Decorative Precision Corner Plus Markers */}
+      {/* 4 Decorative Precision Corner Plus Markers (hidden on mobile to prevent horizontal viewport overflow) */}
       <PlusIcon
-        className="absolute -top-3 -left-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
+        className="hidden sm:block absolute -top-3 -left-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
         aria-hidden="true"
       />
       <PlusIcon
-        className="absolute -top-3 -right-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
+        className="hidden sm:block absolute -top-3 -right-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
         aria-hidden="true"
       />
       <PlusIcon
-        className="absolute -bottom-3 -left-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
+        className="hidden sm:block absolute -bottom-3 -left-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
         aria-hidden="true"
       />
       <PlusIcon
-        className="absolute -right-3 -bottom-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
+        className="hidden sm:block absolute -right-3 -bottom-3 h-6 w-6 text-[#2547FF] stroke-[2] pointer-events-none z-20"
         aria-hidden="true"
       />
 
