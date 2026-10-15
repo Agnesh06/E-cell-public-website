@@ -16,21 +16,24 @@ export interface UseIdeaStepsTimelineReturn {
   progressRef: React.RefObject<number>
 }
 
-// Start/center of hold segment for each step in master progress (0 to 1)
-const HOLD_PROGRESS_MAP = [0.05, 0.28, 0.48, 0.68, 0.90]
+// Start of hold segment for each step in master progress (0 to 1)
+const HOLD_PROGRESS_MAP = [0.05, 0.25, 0.45, 0.65, 0.85]
 
 /**
  * Calculates the active step index (0-4) from master timeline progress (0-1).
- * Per COMPONENT.md 3.1 & prompt specs:
- * - Enter-to-exit span highlights the current step.
- * - During an interlude, the NEXT step is already highlighted.
+ * Steps crossfade with overlap at midpoints:
+ * - Step 1: 0.000 - 0.225
+ * - Step 2: 0.225 - 0.425
+ * - Step 3: 0.425 - 0.625
+ * - Step 4: 0.625 - 0.825
+ * - Step 5: 0.825 - 1.000
  */
 export function calculateActiveIndex(progress: number): number {
-  if (progress < 0.17) return 0 // Step 1 enter, hold & exit
-  if (progress < 0.37) return 1 // Interlude 1 & Step 2
-  if (progress < 0.57) return 2 // Interlude 2 & Step 3
-  if (progress < 0.77) return 3 // Interlude 3 & Step 4
-  return 4 // Interlude 4 & Step 5
+  if (progress < 0.225) return 0
+  if (progress < 0.425) return 1
+  if (progress < 0.625) return 2
+  if (progress < 0.825) return 3
+  return 4
 }
 
 export function useIdeaStepsTimeline({
@@ -118,49 +121,49 @@ export function useIdeaStepsTimeline({
         onTimelineUpdateRef.current?.(p)
       })
 
-      // GlowBlob animation between corner positions during interludes
+      // GlowBlob animation between corner positions during crossfade windows
       if (glowRef.current) {
         gsap.set(glowRef.current, { xPercent: 0, yPercent: 0, opacity: 0.7 })
 
-        // Interlude 1 (t=17 to 20): moves toward top-right
+        // Crossfade 1 (t=20 to 25): moves toward top-right
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: -80, opacity: 0.85, ease: 'power2.inOut', duration: 3 },
-          17,
+          { xPercent: 110, yPercent: -80, opacity: 0.85, ease: 'power2.inOut', duration: 5 },
+          20,
         )
-        // Interlude 2 (t=37 to 40): moves toward bottom-left
+        // Crossfade 2 (t=40 to 45): moves toward bottom-left
         tl.to(
           glowRef.current,
-          { xPercent: 10, yPercent: 10, opacity: 0.7, ease: 'power2.inOut', duration: 3 },
-          37,
+          { xPercent: 10, yPercent: 10, opacity: 0.7, ease: 'power2.inOut', duration: 5 },
+          40,
         )
-        // Interlude 3 (t=57 to 60): moves toward bottom-right
+        // Crossfade 3 (t=60 to 65): moves toward bottom-right
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: 10, opacity: 0.85, ease: 'power2.inOut', duration: 3 },
-          57,
+          { xPercent: 110, yPercent: 10, opacity: 0.85, ease: 'power2.inOut', duration: 5 },
+          60,
         )
-        // Interlude 4 (t=77 to 80): subtle drift
+        // Crossfade 4 (t=80 to 85): subtle drift
         tl.to(
           glowRef.current,
-          { xPercent: 110, yPercent: -30, opacity: 0.8, ease: 'power2.inOut', duration: 3 },
-          77,
+          { xPercent: 110, yPercent: -30, opacity: 0.8, ease: 'power2.inOut', duration: 5 },
+          80,
         )
       }
 
-      // Build each step's enter, hold, exit, interlude
-      // Step timings in master units (0..100) per COMPONENT.md (shares 0.15 enter, 0.55 hold, 0.15 exit, 0.15 interlude):
-      // Step 1 (0): Holds from 0..14 (0.10 in hold), Exit 14..17, Interlude 17..20
-      // Step 2 (1): Enter 20..23, Hold 23..34 (0.30 in hold), Exit 34..37, Interlude 37..40
-      // Step 3 (2): Enter 40..43, Hold 43..54 (0.50 in hold), Exit 54..57, Interlude 57..60
-      // Step 4 (3): Enter 60..63, Hold 63..74 (0.70 in hold), Exit 74..77, Interlude 77..80
-      // Step 5 (4): Enter 80..83, Hold 83..100 (0.90 in hold, pin releases at 100)
+      // Build each step's enter, hold, exit with crossfade overlap (interludes = 0)
+      // Master units (0..100): Enter 0.20 (5 units), Hold 0.60 (15 units), Exit 0.20 (5 units)
+      // Step 1: Hold 0..20, Exit 20..25 (crossfades with Step 2 enter)
+      // Step 2: Enter 20..25, Hold 25..40, Exit 40..45 (crossfades with Step 3 enter)
+      // Step 3: Enter 40..45, Hold 45..60, Exit 60..65 (crossfades with Step 4 enter)
+      // Step 4: Enter 60..65, Hold 65..80, Exit 80..85 (crossfades with Step 5 enter)
+      // Step 5: Enter 80..85, Hold 85..100 (releases pin at 100, no exit)
       const stepTimings = [
-        { enter: 0, enterDur: 0, exit: 14, exitDur: 3 },
-        { enter: 20, enterDur: 3, exit: 34, exitDur: 3 },
-        { enter: 40, enterDur: 3, exit: 54, exitDur: 3 },
-        { enter: 60, enterDur: 3, exit: 74, exitDur: 3 },
-        { enter: 80, enterDur: 3, exit: null, exitDur: null },
+        { enter: 0, enterDur: 0, exit: 20, exitDur: 5 },
+        { enter: 20, enterDur: 5, exit: 40, exitDur: 5 },
+        { enter: 40, enterDur: 5, exit: 60, exitDur: 5 },
+        { enter: 60, enterDur: 5, exit: 80, exitDur: 5 },
+        { enter: 80, enterDur: 5, exit: null, exitDur: null },
       ]
 
       stepTimings.forEach((timing, index) => {
@@ -174,14 +177,19 @@ export function useIdeaStepsTimeline({
         if (index === 0) {
           tl.set(stepEl, { autoAlpha: 1 }, 0)
         } else {
-          // Later steps animate in as the user scrolls
-          tl.set(stepEl, { autoAlpha: 1 }, timing.enter)
+          // Later steps crossfade in
+          tl.fromTo(
+            stepEl,
+            { autoAlpha: 0 },
+            { autoAlpha: 1, duration: timing.enterDur, ease: 'linear' },
+            timing.enter,
+          )
 
           if (textElements.length > 0) {
             tl.fromTo(
               textElements,
               { y: 24, autoAlpha: 0 },
-              { y: 0, autoAlpha: 1, duration: 2.2, stagger: 0.18, ease: 'power2.out' },
+              { y: 0, autoAlpha: 1, duration: 4.0, stagger: 0.12, ease: 'power1.inOut' },
               timing.enter,
             )
           }
@@ -198,7 +206,7 @@ export function useIdeaStepsTimeline({
                 ease: 'back.out(1.2)',
                 transformOrigin: 'center center',
               },
-              timing.enter + 0.6,
+              timing.enter + 0.62,
             )
           }
         }
@@ -208,7 +216,7 @@ export function useIdeaStepsTimeline({
           if (textElements.length > 0) {
             tl.to(
               textElements,
-              { y: -12, autoAlpha: 0, duration: timing.exitDur, ease: 'power2.in' },
+              { y: -12, autoAlpha: 0, duration: 4.0, stagger: { each: 0.12, from: 'end' }, ease: 'power1.inOut' },
               timing.exit,
             )
           }
@@ -218,8 +226,8 @@ export function useIdeaStepsTimeline({
               {
                 scale: 0.92,
                 opacity: 0,
-                duration: 2.0,
-                ease: 'power2.in',
+                duration: 3.0,
+                ease: 'power1.in',
                 stagger: { each: 0.09, from: 'end' },
                 transformOrigin: 'center center',
               },
@@ -228,7 +236,7 @@ export function useIdeaStepsTimeline({
           }
           tl.to(
             stepEl,
-            { autoAlpha: 0, duration: timing.exitDur, ease: 'power2.in' },
+            { autoAlpha: 0, duration: timing.exitDur, ease: 'linear' },
             timing.exit,
           )
         }
@@ -248,7 +256,7 @@ export function useIdeaStepsTimeline({
       const st = ScrollTrigger.create({
         trigger: stageEl,
         start: 'top top',
-        end: () => `+=${window.innerHeight * 5}`,
+        end: () => `+=${Math.round(totalSteps * (0.9 * window.innerHeight))}`,
         pin: true,
         scrub: true,
         invalidateOnRefresh: true,

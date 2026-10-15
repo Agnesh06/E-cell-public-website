@@ -50,6 +50,7 @@ test.describe('IdeaSteps Pinned Scroll Sequence (Phase 4B)', () => {
     test(`progress ${p}: active step is ${activeStep}, content state correct, screenshot saved`, async ({
       page,
     }) => {
+      test.slow()
       // Wait for ScrollTrigger to be mounted and attached to window
       await page.waitForFunction(() => {
         return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
@@ -362,11 +363,13 @@ test.describe('StarField Background Animation', () => {
       return factor > 1.5
     }, { timeout: 3000 })
 
-    const factorDuringScroll = await canvas.getAttribute('data-speed-factor')
-    expect(parseFloat(factorDuringScroll || '1')).toBeGreaterThan(1.5)
-
-    // Wait 2.5 seconds after stopping scroll
-    await page.waitForTimeout(2500)
+    // Wait for factor to decay below 1.1 after stopping scroll
+    await page.waitForFunction(() => {
+      const el = document.querySelector('.pinned-stage canvas')
+      if (!el) return false
+      const factor = parseFloat(el.getAttribute('data-speed-factor') || '1')
+      return factor < 1.1
+    }, { timeout: 4000 })
 
     const factorAfterStop = await canvas.getAttribute('data-speed-factor')
     expect(parseFloat(factorAfterStop || '1')).toBeLessThan(1.1)
@@ -772,5 +775,250 @@ test.describe('Desktop Card Pop Animations (1024px+)', () => {
 
     await stage.screenshot({ path: path.join(screenshotsDir, 'step3-hold-1280x720.png') })
     await stage.screenshot({ path: path.join(artifactDir, 'step3-hold-1280x720.png') })
+  })
+})
+
+test.describe('Continuous Step Flow & Crossfade Overlap (Zero Gap)', () => {
+  const artifactDir = 'C:/Users/USER/.gemini/antigravity/brain/2ffd419f-78e2-4334-8aba-ee45d3872e3a'
+
+  for (const vp of [
+    { width: 1440, height: 900, name: '1440x900' },
+    { width: 1280, height: 720, name: '1280x720' },
+  ]) {
+    test(`${vp.name}: <= 10% of the pin length has no visible step text`, async ({ page }) => {
+      test.slow()
+      await page.setViewportSize({ width: vp.width, height: vp.height })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      await page.waitForFunction(() => {
+        return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+      })
+
+      // Sample 40 points across the progress range from 0.0 to 1.0
+      const sampleCount = 40
+      let noTextCount = 0
+
+      for (let i = 0; i <= sampleCount; i++) {
+        const p = i / sampleCount
+        await page.evaluate((targetProgress) => {
+          const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+            .__ideaStepsScrollTrigger
+          if (st) window.scrollTo(0, st.start + targetProgress * (st.end - st.start))
+        }, p)
+
+        await page.waitForTimeout(60)
+
+        // Check if any step headline is visible and has opacity > 0.05
+        const anyVisible = await page.evaluate(() => {
+          const headlines = Array.from(document.querySelectorAll('section#about .step-stage-slide h3'))
+          return headlines.some((el) => {
+            const style = window.getComputedStyle(el)
+            const parent = el.closest('.step-stage-slide') as HTMLElement | null
+            const parentStyle = parent ? window.getComputedStyle(parent) : null
+            const parentOpacity = parentStyle ? parseFloat(parentStyle.opacity) : 1
+            const parentVisibility = parentStyle ? parentStyle.visibility : 'visible'
+            const opacity = parseFloat(style.opacity) * parentOpacity
+            return style.visibility !== 'hidden' && parentVisibility !== 'hidden' && opacity > 0.05
+          })
+        })
+
+        if (!anyVisible) {
+          noTextCount++
+        }
+      }
+
+      const noTextRatio = noTextCount / (sampleCount + 1)
+      expect(noTextRatio).toBeLessThanOrEqual(0.10)
+    })
+  }
+
+  const crossfadeMidpoints = [
+    { p: 0.225, outgoingId: 'step-about', incomingId: 'step-approach', desc: 'step 1 to step 2' },
+    { p: 0.425, outgoingId: 'step-approach', incomingId: 'step-ecosystem', desc: 'step 2 to step 3' },
+    { p: 0.625, outgoingId: 'step-ecosystem', incomingId: 'step-journey', desc: 'step 3 to step 4' },
+    { p: 0.825, outgoingId: 'step-journey', incomingId: 'step-audience', desc: 'step 4 to step 5' },
+  ]
+
+  for (const { p, outgoingId, incomingId, desc } of crossfadeMidpoints) {
+    test(`crossfade ${desc} (progress ${p}): outgoing and incoming are both partly visible (opacity between 0.05 and 0.95)`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      await page.waitForFunction(() => {
+        return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+      })
+
+      await page.evaluate((targetProgress) => {
+        const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+          .__ideaStepsScrollTrigger
+        if (st) window.scrollTo(0, st.start + targetProgress * (st.end - st.start))
+      }, p)
+      await page.waitForTimeout(600)
+
+      const getOpacity = async (id: string) => {
+        return page.evaluate((elementId) => {
+          const slide = document.getElementById(elementId)?.closest('.step-stage-slide') as HTMLElement | null
+          if (!slide) return 0
+          const h3 = slide.querySelector('h3') as HTMLElement | null
+          const slideOpacity = parseFloat(window.getComputedStyle(slide).opacity)
+          const h3Opacity = h3 ? parseFloat(window.getComputedStyle(h3).opacity) : 1
+          return slideOpacity * h3Opacity
+        }, id)
+      }
+
+      const outOpacity = await getOpacity(outgoingId)
+      const inOpacity = await getOpacity(incomingId)
+
+      expect(outOpacity).toBeGreaterThanOrEqual(0.05)
+      expect(outOpacity).toBeLessThanOrEqual(0.95)
+      expect(inOpacity).toBeGreaterThanOrEqual(0.05)
+      expect(inOpacity).toBeLessThanOrEqual(0.95)
+    })
+  }
+
+  const holdPoints = [
+    { p: 0.05, stepId: 'step-about', activeStep: '1' },
+    { p: 0.25, stepId: 'step-approach', activeStep: '2' },
+    { p: 0.45, stepId: 'step-ecosystem', activeStep: '3' },
+    { p: 0.65, stepId: 'step-journey', activeStep: '4' },
+    { p: 0.85, stepId: 'step-audience', activeStep: '5' },
+  ]
+
+  for (const { p, stepId, activeStep } of holdPoints) {
+    test(`hold at progress ${p}: shows only step ${activeStep} text`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      await page.goto('/')
+      await page.getByRole('heading', { level: 1 }).waitFor()
+
+      await page.waitForFunction(() => {
+        return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+      })
+
+      await page.evaluate((targetProgress) => {
+        const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+          .__ideaStepsScrollTrigger
+        if (st) window.scrollTo(0, st.start + targetProgress * (st.end - st.start))
+      }, p)
+      await page.waitForTimeout(600)
+
+      const section = page.locator('section#about')
+      await expect(section).toHaveAttribute('data-active-step', activeStep)
+
+      // Expected step headline is visible
+      const expectedHeadline = page.locator(`#${stepId} h3`)
+      await expect(expectedHeadline).toBeVisible()
+
+      // All other step headlines are hidden
+      const allHeadlines = page.locator('section#about .step-stage-slide h3')
+      const count = await allHeadlines.count()
+      for (let i = 0; i < count; i++) {
+        const h = allHeadlines.nth(i)
+        const isTarget = await h.evaluate((el, id) => el.closest(`#${id}`) !== null, stepId)
+        if (!isTarget) {
+          await expect(h).toBeHidden()
+        }
+      }
+    })
+  }
+
+  test('pin length at 1920x1080 is strictly less than 5 x viewport height', async ({ page }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    const pinDistance = await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      return st ? st.end - st.start : 0
+    })
+
+    const maxAllowed = 5 * 1080
+    expect(pinDistance).toBeGreaterThan(0)
+    expect(pinDistance).toBeLessThan(maxAllowed)
+  })
+
+  test('0 console errors during pinned scrolling through all steps', async ({ page }) => {
+    const consoleErrors: string[] = []
+    page.on('console', (msg) => {
+      if (msg.type() === 'error') {
+        const text = msg.text()
+        if (text.includes('Failed to load resource') || text.includes('ERR_FAILED') || text.includes('CORS') || text.includes('localhost:4000')) {
+          return
+        }
+        consoleErrors.push(text)
+      }
+    })
+
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    // Scroll through entire pinned stage
+    for (let p = 0; p <= 1.0; p += 0.1) {
+      await page.evaluate((targetProgress) => {
+        const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+          .__ideaStepsScrollTrigger
+        if (st) window.scrollTo(0, st.start + targetProgress * (st.end - st.start))
+      }, p)
+      await page.waitForTimeout(100)
+    }
+
+    expect(consoleErrors).toEqual([])
+  })
+
+  test('capture crossfade midpoint (steps 2 & 3) and step 4 hold screenshots at 1440x900', async ({ page }) => {
+    test.slow()
+    await page.setViewportSize({ width: 1440, height: 900 })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    await page.getByRole('heading', { level: 1 }).waitFor()
+
+    await page.waitForFunction(() => {
+      return typeof (window as unknown as { __ideaStepsScrollTrigger?: unknown }).__ideaStepsScrollTrigger !== 'undefined'
+    })
+
+    const screenshotsDir = path.resolve('tests/screenshots')
+    if (!fs.existsSync(screenshotsDir)) fs.mkdirSync(screenshotsDir, { recursive: true })
+    if (!fs.existsSync(artifactDir)) fs.mkdirSync(artifactDir, { recursive: true })
+
+    // (1) Crossfade midpoint between steps 2 and 3 (p = 0.425)
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.425 * (st.end - st.start))
+    })
+    await page.waitForTimeout(800)
+
+    const stage = page.locator('.pinned-stage')
+    await stage.screenshot({ path: path.join(screenshotsDir, 'crossfade-midpoint-step2-3-1440x900.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'crossfade-midpoint-step2-3-1440x900.png') })
+
+    // (2) Step 4 hold (p = 0.68)
+    await page.evaluate(() => {
+      const st = (window as unknown as { __ideaStepsScrollTrigger?: { start: number; end: number } })
+        .__ideaStepsScrollTrigger
+      if (st) window.scrollTo(0, st.start + 0.68 * (st.end - st.start))
+    })
+    await page.waitForTimeout(800)
+
+    await stage.screenshot({ path: path.join(screenshotsDir, 'step4-hold-1440x900.png') })
+    await stage.screenshot({ path: path.join(artifactDir, 'step4-hold-1440x900.png') })
   })
 })

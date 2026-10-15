@@ -28,18 +28,18 @@ A pinned, scroll-driven section on the landing page that presents E-Cell's story
 
 ### 3.1 Desktop (>= 1024px, motion allowed)
 
-One `ScrollTrigger` pins the stage with `scrub: true` (a small smoothing value is fine). Pin length starts at about `5 x viewport height` **[TBD]**. Each step owns one fifth of the timeline:
+One `ScrollTrigger` pins the stage with `scrub: true` (a small smoothing value is fine). Pin length = `5 steps x (0.9 x viewport height)`, recalculating on resize. Each step owns a segment of the timeline with crossfade overlap and no empty-stage interludes:
 
 | Segment of a step | Share | What happens |
 |---|---|---|
-| Enter | 0.15 | Eyebrow, headline lines, body, pills rise 24px and fade in; cards pop from scale 0.85 to 1 with overshoot (back.out(1.2)), opacity 0 to 1, 90ms stagger |
-| Hold | 0.55 | Content static; stars drift and merge in background |
-| Exit | 0.15 | Text drifts up 12px and fades out; cards scale down to 0.92 and fade out with reversed stagger |
-| Interlude | 0.15 | Empty stage; glow blob moves to its next position |
+| Enter | 0.20 | Eyebrow, headline lines, body, pills rise 24px and fade in; cards pop from scale 0.85 to 1 with overshoot (back.out(1.2)), opacity 0 to 1, 90ms stagger |
+| Hold | 0.60 | Content static; stars drift and merge in background |
+| Exit | 0.20 | Text drifts up 12px and fades out; cards scale down to 0.92 and fade out with reversed stagger |
+| Interlude | 0.00 | None (interludes removed). Steps crossfade with overlapping enter and exit sharing the transition window (~0.10 crossfade) |
 
-The last step has no exit or interlude; after its hold the pin releases and the section scrolls away.
+The last step (Step 5) has no exit; after its hold the pin releases and the section scrolls away.
 
-The indicator highlights the step whose enter-to-exit span contains the progress. During interludes the *next* step is already highlighted. Set React state only when the active index changes, never every frame.
+Steps crossfade with an overlap window of about 0.10 step length (outgoing step's exit and incoming step's enter share the window). The indicator highlights the active step, transitioning at crossfade midpoints (0.225, 0.425, 0.625, 0.825). Set React state only when the active index changes, never every frame.
 
 ### 3.2 Star field
 
@@ -143,7 +143,7 @@ src/components/common/
 Responsibilities:
 - `IdeaSteps` uses `gsap.matchMedia()` to switch between `<PinnedIdeaSteps />` (desktop >= 1024px and motion allowed) and `<StaticIdeaSteps />` (mobile/tablet < 1024px or reduced-motion). Exactly one mode is in the DOM at a time.
 - `PinnedIdeaSteps` mounts the 100svh stage, background layers, stacked `Step` slides (`absolute inset-0`), and the shared bottom-left `StepIndicator`.
-- `useIdeaStepsTimeline` is the sole owner of the master timeline and single pin ScrollTrigger (`scrub: 0.6`, pin length: 5x viewport height, `start: "top top"`, `invalidateOnRefresh`). Calculates activeIndex on change and drives glow blob movement.
+- `useIdeaStepsTimeline` is the sole owner of the master timeline and single pin ScrollTrigger (`scrub: true`, pin length: `5 * 0.9 * viewport height`, `start: "top top"`, `invalidateOnRefresh`). Calculates activeIndex on change and drives glow blob movement.
 - `StarField` renders the canvas star-field background, handling 28 initial stars, edge bouncing, merging capped at 40 alive stars, and scroll speed reactivity.
 - `StaticIdeaSteps` maps over `ideas` data from `src/data/ideas.ts`, handles Lenis/native smooth-scrolling for indicator clicks, and renders background layers.
 - `Step` represents one full stage layout with responsive 12-column grid (text on cols 1-5, cards on cols 7-12) and bottom bar (indicator, sideLabel, microLabels).

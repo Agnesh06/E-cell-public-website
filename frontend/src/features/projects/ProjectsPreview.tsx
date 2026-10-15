@@ -234,7 +234,7 @@ export default function ProjectsPreview() {
         </ul>
 
         <div className="mt-10">
-          <Button to="/projects" variant="secondary">
+          <Button to="/projects" variant="secondary" className="bg-[var(--color-blue)] text-white hover:bg-[var(--color-blue)]/90">
             View All Projects
           </Button>
         </div>

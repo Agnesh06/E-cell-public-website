@@ -11,6 +11,10 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+
     // Check prefers-reduced-motion
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (mediaQuery.matches) {
@@ -24,6 +28,11 @@ export function SmoothScrollProvider({ children }: SmoothScrollProviderProps) {
       gestureOrientation: 'vertical',
       smoothWheel: true,
     })
+
+    if (!window.location.hash) {
+      window.scrollTo(0, 0)
+      lenis.scrollTo(0, { immediate: true, force: true })
+    }
 
     lenisRef.current = lenis
     setGlobalLenis(lenis)

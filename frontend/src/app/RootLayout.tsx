@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Footer from '@/components/layout/Footer'
 import Header from '@/components/layout/Header'
@@ -10,50 +10,78 @@ function RootLayout() {
   const location = useLocation()
   const lenis = useLenis()
 
-  // Ensure manual scroll restoration, scroll to top on mount, and refresh ScrollTrigger after fonts & window load
+  // 1. Immediately before paint on mount and on every route change without a hash
+  useLayoutEffect(() => {
+    if (!location.hash) {
+      window.scrollTo(0, 0)
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true, force: true })
+      }
+    }
+  }, [location.pathname, location.hash, lenis])
+
+  // 2. Ensure manual scroll restoration, measure pinned sections at scroll 0, and settle hash targets
   useEffect(() => {
     if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
       window.history.scrollRestoration = 'manual'
     }
-    if (!window.location.hash) {
-      window.scrollTo(0, 0)
+
+    let isMounted = true
+
+    const settleAndRefresh = async () => {
+      if (document.fonts) {
+        await document.fonts.ready
+      }
+      if (!isMounted) return
+
+      if (!location.hash) {
+        window.scrollTo(0, 0)
+        lenis?.scrollTo(0, { immediate: true, force: true })
+        ScrollTrigger.refresh()
+      } else {
+        // First ensure ScrollTrigger measures triggers correctly
+        ScrollTrigger.refresh()
+
+        const targetId = location.hash.replace(/^#/, '')
+        // Never scroll to footer element via hash
+        if (targetId && targetId !== 'footer' && !targetId.includes('footer')) {
+          requestAnimationFrame(() => {
+            if (!isMounted) return
+            requestAnimationFrame(() => {
+              if (!isMounted) return
+              const targetElement = document.getElementById(targetId)
+              if (targetElement) {
+                if (lenis) {
+                  lenis.scrollTo(targetElement)
+                } else {
+                  targetElement.scrollIntoView({ behavior: 'smooth' })
+                }
+              }
+            })
+          })
+        }
+      }
     }
 
-    const refreshScrollTrigger = () => {
+    settleAndRefresh()
+
+    const handleLoad = () => {
+      if (!location.hash) {
+        window.scrollTo(0, 0)
+        lenis?.scrollTo(0, { immediate: true, force: true })
+      }
       ScrollTrigger.refresh()
     }
 
-    if (document.fonts) {
-      document.fonts.ready.then(refreshScrollTrigger)
+    if (document.readyState === 'complete') {
+      handleLoad()
+    } else {
+      window.addEventListener('load', handleLoad)
     }
-    window.addEventListener('load', refreshScrollTrigger)
 
     return () => {
-      window.removeEventListener('load', refreshScrollTrigger)
-    }
-  }, [])
-
-  // Scroll to top on route change, and support hash links
-  useEffect(() => {
-    const hash = location.hash
-    if (hash) {
-      const targetId = hash.replace(/^#/, '')
-      requestAnimationFrame(() => {
-        const targetElement = document.getElementById(targetId)
-        if (targetElement) {
-          if (lenis) {
-            lenis.scrollTo(targetElement)
-          } else {
-            targetElement.scrollIntoView()
-          }
-        }
-      })
-    } else {
-      if (lenis) {
-        lenis.scrollTo(0, { immediate: true })
-      } else {
-        window.scrollTo(0, 0)
-      }
+      isMounted = false
+      window.removeEventListener('load', handleLoad)
     }
   }, [location.pathname, location.hash, lenis])
 

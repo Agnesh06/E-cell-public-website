@@ -1,12 +1,22 @@
+import { useMemo } from 'react'
 import { Button } from '@/components/common/Button'
 import { useSheetData } from '@/lib/useSheetData'
 import type { TeamMember } from '@/types'
 import { TeamSection } from '@/features/team/TeamSection'
+import { initialsImage } from '@/lib/placeholder'
 
 const ROLES = ['director', 'co-director'] as const
 
 export default function LeadershipSection() {
   const { data: teamData, status } = useSheetData('team')
+
+  const marqueeMembers = useMemo(() => {
+    return teamData.members.map((m) => ({
+      name: m.name,
+      role: m.role || m.department || 'Member',
+      image: (m.photo && m.photo.trim()) || initialsImage(m.name),
+    }))
+  }, [teamData.members])
 
   if (status === 'loading') {
     return (
@@ -20,7 +30,7 @@ export default function LeadershipSection() {
   }
 
   const leaders = ROLES.map((r) => teamData.members.find((m) => m.leadership === r)).filter(Boolean) as TeamMember[]
-  if (!leaders.length) return null
+  if (!leaders.length && !teamData.members.length) return null
 
   return (
     <section id="team" aria-labelledby="team-heading" className="relative py-7 sm:py-10 md:py-[clamp(5rem,10vw,9rem)]">
@@ -33,6 +43,7 @@ export default function LeadershipSection() {
           <TeamSection
             catchphrase="The minds building the future at PSG Tech E-Cell"
             subtitle="EXECUTIVE & CORE TEAM"
+            members={marqueeMembers.length > 0 ? marqueeMembers : undefined}
           />
         </div>
 
