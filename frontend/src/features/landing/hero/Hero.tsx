@@ -123,6 +123,7 @@ export function Hero() {
 
   return (
     <section
+      id="home"
       ref={heroRef}
       className="landing-hero relative min-h-[100svh] w-full flex flex-col justify-between overflow-hidden bg-[var(--color-bg)] pt-28 pb-4 md:pt-36 md:pb-6"
       aria-labelledby="landing-hero-title"

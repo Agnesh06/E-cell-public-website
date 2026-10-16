@@ -1,9 +1,10 @@
 import { env } from '@/lib/env'
 import type { NavItem } from '@/types'
-import logo1 from '@/assets/logos/logo-1.svg'
-import logo2 from '@/assets/logos/logo-2.svg'
-import logo3 from '@/assets/logos/logo-3.svg'
-import logo4 from '@/assets/logos/logo-4.svg'
+import logo1 from '@/assets/logos/logo-1.png'
+import logo2 from '@/assets/logos/logo-2.png'
+import logo3 from '@/assets/logos/logo-3.png'
+import logo4 from '@/assets/logos/logo-4.png'
+import logo5 from '@/assets/logos/logo-5.png'
 
 export interface SiteLogo {
   src: string
@@ -34,6 +35,7 @@ export const site = {
     { src: logo2, alt: 'Logo 2 (placeholder)' },
     { src: logo3, alt: 'Logo 3 (placeholder)' },
     { src: logo4, alt: 'Logo 4 (placeholder)' },
+    { src: logo5, alt: 'Logo 5 (placeholder)' },
   ] as SiteLogo[],
   socials: [
     /* TODO: replace placeholder '#' with real social URLs */

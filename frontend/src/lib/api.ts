@@ -116,9 +116,26 @@ type RawApiProject = {
  */
 export async function fetchProjectsFromApi(baseUrl: string): Promise<Project[]> {
   const cleanBase = baseUrl.replace(/\/+$/, '')
-  const res = await fetchWithTimeout(`${cleanBase}/api/projects`)
+  const endpoint = `${cleanBase}/api/projects`
+  let res: Response
+  try {
+    res = await fetchWithTimeout(endpoint)
+  } catch (networkError) {
+    const reason = networkError instanceof Error ? networkError.message : String(networkError)
+    throw new Error(`Failed to reach ${endpoint}: ${reason}`, { cause: networkError })
+  }
+
   if (!res.ok) {
-    throw new Error(`Failed to fetch projects: ${res.status} ${res.statusText}`)
+    let errorDetail = `${res.status} ${res.statusText}`.trim()
+    try {
+      const errJson = await res.json()
+      if (errJson?.error) {
+        errorDetail = `${res.status} (${errJson.error})`
+      }
+    } catch {
+      // non-JSON response body
+    }
+    throw new Error(`Failed to fetch projects from ${endpoint}: ${errorDetail}`)
   }
 
   const json = await res.json()
@@ -232,9 +249,26 @@ type RawApiMember = {
  */
 export async function fetchTeamFromApi(baseUrl: string): Promise<TeamDataResult> {
   const cleanBase = baseUrl.replace(/\/+$/, '')
-  const res = await fetchWithTimeout(`${cleanBase}/api/members`)
+  const endpoint = `${cleanBase}/api/members`
+  let res: Response
+  try {
+    res = await fetchWithTimeout(endpoint)
+  } catch (networkError) {
+    const reason = networkError instanceof Error ? networkError.message : String(networkError)
+    throw new Error(`Failed to reach ${endpoint}: ${reason}`, { cause: networkError })
+  }
+
   if (!res.ok) {
-    throw new Error(`Failed to fetch team: ${res.status} ${res.statusText}`)
+    let errorDetail = `${res.status} ${res.statusText}`.trim()
+    try {
+      const errJson = await res.json()
+      if (errJson?.error) {
+        errorDetail = `${res.status} (${errJson.error})`
+      }
+    } catch {
+      // non-JSON response body
+    }
+    throw new Error(`Failed to fetch team from ${endpoint}: ${errorDetail}`)
   }
 
   const json = await res.json()

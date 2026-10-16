@@ -73,6 +73,21 @@ function getTeamUrl(): string | null {
   return null
 }
 
+export type DataSourceStatus = 'live' | 'fallback'
+
+function setDevDataSource(kind: 'projects' | 'team', status: DataSourceStatus) {
+  if (typeof window !== 'undefined' && import.meta.env.DEV) {
+    const win = window as unknown as {
+      __DATA_SOURCE__?: { projects?: DataSourceStatus; team?: DataSourceStatus }
+    }
+    win.__DATA_SOURCE__ = {
+      ...(win.__DATA_SOURCE__ || {}),
+      [kind]: status,
+    }
+    document.documentElement.setAttribute(`data-source-${kind}`, status)
+  }
+}
+
 function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback' }> {
   if (cachedProjects) return Promise.resolve(cachedProjects)
   if (projectsPromise) return projectsPromise
@@ -81,6 +96,7 @@ function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback'
     // 1. Explicit mock mode overrides network
     if (env.VITE_USE_MOCK_API) {
       cachedProjects = { data: staticProjects, status: 'fallback' }
+      setDevDataSource('projects', 'fallback')
       return cachedProjects
     }
 
@@ -95,6 +111,7 @@ function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback'
         const parsed = rows && rows.length > 0 ? parseProjectsSheet(rows) : null
         if (parsed && parsed.length > 0) {
           cachedProjects = { data: parsed, status: 'ready' }
+          setDevDataSource('projects', 'live')
           return cachedProjects
         }
       } catch {
@@ -104,15 +121,21 @@ function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback'
 
     // 3. Express backend endpoint when configured
     if (env.VITE_API_BASE_URL) {
+      const endpoint = `${env.VITE_API_BASE_URL.replace(/\/+$/, '')}/api/projects`
       try {
         const projects = await fetchProjectsFromApi(env.VITE_API_BASE_URL)
         if (projects && projects.length > 0) {
           cachedProjects = { data: projects, status: 'ready' }
+          setDevDataSource('projects', 'live')
           return cachedProjects
         }
       } catch (err) {
-        console.warn('[useSheetData] Failed to load projects from backend API:', err)
+        const reason = err instanceof Error ? err.message : String(err)
+        console.warn(
+          `[useSheetData] API request failed for endpoint "${endpoint}": ${reason}. Using static fallback data under "frontend/src/data/projects.ts".`,
+        )
         cachedProjects = { data: staticProjects, status: 'fallback' }
+        setDevDataSource('projects', 'fallback')
         return cachedProjects
       }
     }
@@ -125,6 +148,7 @@ function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback'
         const parsed = rows && rows.length > 0 ? parseProjectsSheet(rows) : null
         if (parsed && parsed.length > 0) {
           cachedProjects = { data: parsed, status: 'ready' }
+          setDevDataSource('projects', 'live')
           return cachedProjects
         }
       } catch {
@@ -133,7 +157,13 @@ function loadProjects(): Promise<{ data: Project[]; status: 'ready' | 'fallback'
     }
 
     // 5. Final fallback to static projects
+    if (!env.VITE_API_BASE_URL && !csvUrlCandidate && import.meta.env.DEV) {
+      console.warn(
+        '[useSheetData] Neither VITE_API_BASE_URL nor Google Sheets CSV URL is configured. Using static fallback data under "frontend/src/data/projects.ts".',
+      )
+    }
     cachedProjects = { data: staticProjects, status: 'fallback' }
+    setDevDataSource('projects', 'fallback')
     return cachedProjects
   })()
 
@@ -148,6 +178,7 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
     // 1. Explicit mock mode overrides network
     if (env.VITE_USE_MOCK_API) {
       cachedTeam = { data: staticTeamResult, status: 'fallback' }
+      setDevDataSource('team', 'fallback')
       return cachedTeam
     }
 
@@ -168,6 +199,7 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
           if (parsed.members.length > 0 || totalProfiles > 0) {
             const result = createTeamResult(parsed.members, parsed.profiles)
             cachedTeam = { data: result, status: 'ready' }
+            setDevDataSource('team', 'live')
             return cachedTeam
           }
         }
@@ -178,6 +210,7 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
 
     // 3. Express backend endpoint when configured
     if (env.VITE_API_BASE_URL) {
+      const endpoint = `${env.VITE_API_BASE_URL.replace(/\/+$/, '')}/api/members`
       try {
         const teamResult = await fetchTeamFromApi(env.VITE_API_BASE_URL)
         const totalProfiles =
@@ -186,11 +219,16 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
           teamResult.profiles.industryAndCommunityOutreach.length
         if (teamResult.members.length > 0 || totalProfiles > 0) {
           cachedTeam = { data: teamResult, status: 'ready' }
+          setDevDataSource('team', 'live')
           return cachedTeam
         }
       } catch (err) {
-        console.warn('[useSheetData] Failed to load team from backend API:', err)
+        const reason = err instanceof Error ? err.message : String(err)
+        console.warn(
+          `[useSheetData] API request failed for endpoint "${endpoint}": ${reason}. Using static fallback data under "frontend/src/data/team.ts".`,
+        )
         cachedTeam = { data: staticTeamResult, status: 'fallback' }
+        setDevDataSource('team', 'fallback')
         return cachedTeam
       }
     }
@@ -209,6 +247,7 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
           if (parsed.members.length > 0 || totalProfiles > 0) {
             const result = createTeamResult(parsed.members, parsed.profiles)
             cachedTeam = { data: result, status: 'ready' }
+            setDevDataSource('team', 'live')
             return cachedTeam
           }
         }
@@ -218,7 +257,13 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
     }
 
     // 5. Final fallback to static team
+    if (!env.VITE_API_BASE_URL && !csvUrlCandidate && import.meta.env.DEV) {
+      console.warn(
+        '[useSheetData] Neither VITE_API_BASE_URL nor Google Sheets CSV URL is configured. Using static fallback data under "frontend/src/data/team.ts".',
+      )
+    }
     cachedTeam = { data: staticTeamResult, status: 'fallback' }
+    setDevDataSource('team', 'fallback')
     return cachedTeam
   })()
 
