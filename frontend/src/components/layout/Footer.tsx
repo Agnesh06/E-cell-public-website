@@ -42,7 +42,7 @@ export default function Footer() {
       <footer
         id="site-footer"
         className="relative z-20 bg-[#FAFAFC] text-[#0A0A0A] py-14 px-4 sm:px-6 lg:px-8 border-t border-black/[0.08] overflow-hidden select-text"
-        style={{ fontFamily: '"Plus Jakarta Sans", "Poppins", sans-serif' }}
+        style={{ fontFamily: 'var(--font-display)' }}
       >
         <div className="w-full max-w-7xl mx-auto">
           <div className="flex flex-wrap justify-between gap-y-12 lg:gap-x-8">
@@ -57,13 +57,15 @@ export default function Footer() {
                 <img
                   src="/images/ecell-logo.png"
                   alt="PSG Tech E-Cell Logo"
+                  width={64}
+                  height={64}
                   className="h-14 sm:h-16 w-auto object-contain rounded-xl shadow-xs border border-black/[0.08] bg-white p-1"
                 />
                 <div className="flex flex-col text-left">
                   <span className="font-display font-black text-xl tracking-tight text-[#0A0A0A] flex items-center gap-1.5">
                     E-CELL<span className="text-[#2547FF]">.</span>
                   </span>
-                  <span className="font-mono text-[10px] tracking-[0.25em] text-[#262626]/60 uppercase">
+                  <span className="font-mono text-[10px] tracking-[0.25em] text-[#262626]/75 uppercase">
                     PSG College of Tech
                   </span>
                 </div>
@@ -78,9 +80,9 @@ export default function Footer() {
 
             {/* Column 2: Important Links */}
             <div className="w-full md:w-[45%] lg:w-[15%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h2 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
                 Important Links
-              </h3>
+              </h2>
               <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
                 <a
                   href="#home"
@@ -113,10 +115,10 @@ export default function Footer() {
                   Core Team &apos;26
                 </a>
                 <a
-                  href="#collaboration"
+                  href="/contact"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleNavClick("collaboration");
+                    handleNavClick("contact");
                   }}
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
@@ -135,20 +137,19 @@ export default function Footer() {
 
             {/* Column 3: Social Links */}
             <div className="w-full md:w-[45%] lg:w-[15%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h2 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
                 Connect
-              </h3>
+              </h2>
               <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
                 <a
-                  href="https://linkedin.com/company/ecell-psgtech"
-                  target="_blank"
+                  href="#"
                   rel="noopener noreferrer"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
                   LinkedIn
                 </a>
                 <a
-                  href="https://instagram.com/ecell_psgtech"
+                  href="https://www.instagram.com/ecell.cseapsgtech/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
@@ -156,16 +157,14 @@ export default function Footer() {
                   Instagram
                 </a>
                 <a
-                  href="https://github.com/Agnesh06"
-                  target="_blank"
+                  href="#"
                   rel="noopener noreferrer"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
                   DevLabs / GitHub
                 </a>
                 <a
-                  href="https://twitter.com/ecell_psgtech"
-                  target="_blank"
+                  href="#"
                   rel="noopener noreferrer"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
@@ -182,9 +181,9 @@ export default function Footer() {
 
             {/* Column 4: Newsletter Subscription */}
             <div className="w-full md:w-[45%] lg:w-[27%] flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
+              <h2 className="text-sm text-[#0A0A0A] font-semibold tracking-wider uppercase">
                 Subscribe for updates
-              </h3>
+              </h2>
               <p className="text-xs text-[#262626]/65 mt-2 max-w-xs leading-relaxed">
                 Stay ahead with announcements on flagship hackathons, startup grants, and incubation calls.
               </p>
@@ -222,7 +221,7 @@ export default function Footer() {
           <div className="w-full h-px mt-14 mb-6 bg-gradient-to-r from-transparent via-black/10 to-transparent" />
 
           {/* Bottom Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-[#262626]/60">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 font-mono text-xs text-[#262626]/75">
             <p className="text-center md:text-left">
               © 2026 PSG Tech Entrepreneurship Cell • Built with passion by E-Cell Tech Team.
             </p>

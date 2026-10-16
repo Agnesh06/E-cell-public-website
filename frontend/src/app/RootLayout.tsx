@@ -93,11 +93,13 @@ function RootLayout() {
       >
         Skip to content
       </a>
-      <Header />
-      <main id="main">
-        <Outlet />
-      </main>
-      <Footer />
+      <div className="flex min-h-screen min-h-[100dvh] flex-col w-full">
+        <Header />
+        <main id="main" className="flex-1 w-full flex flex-col min-h-[calc(100vh-84px)]">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
       <ContactPopup />
     </ContactProvider>
   )

@@ -27,6 +27,8 @@ export function TeamProfileCard({
             <img
               src={avatar}
               alt={`Portrait of ${profile.name}`}
+              width={36}
+              height={36}
               loading="lazy"
               className="h-full w-full object-cover"
             />
@@ -65,6 +67,8 @@ export function TeamProfileCard({
           <img
             src={avatar}
             alt={`Portrait of ${profile.name}`}
+            width={72}
+            height={72}
             loading="lazy"
             className="h-full w-full object-cover"
           />

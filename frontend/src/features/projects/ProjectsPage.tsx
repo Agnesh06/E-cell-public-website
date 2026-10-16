@@ -9,6 +9,7 @@ import ScrollStack, { ScrollStackItem } from '@/components/reactbits/ScrollStack
 import { LineSidebar } from './LineSidebar'
 import { useSheetData } from '@/lib/useSheetData'
 import { placeholderImage } from '@/lib/placeholder'
+import { ProjectsSkeleton } from '@/components/skeletons/ProjectsSkeleton'
 
 export default function ProjectsPage() {
   const stackRef = useRef<HTMLDivElement>(null)
@@ -170,12 +171,7 @@ export default function ProjectsPage() {
   )
 
   if (status === 'loading') {
-    return (
-      <div
-        className="projects-page min-h-screen bg-[var(--color-bg)] pt-32 pb-24"
-        aria-busy="true"
-      />
-    )
+    return <ProjectsSkeleton />
   }
 
   return (
@@ -283,6 +279,8 @@ export default function ProjectsPage() {
                       <img
                         src={project.image || placeholderImage(project.order)}
                         alt={project.title}
+                        width={280}
+                        height={380}
                         className="w-full h-full object-cover"
                         loading="lazy"
                       />

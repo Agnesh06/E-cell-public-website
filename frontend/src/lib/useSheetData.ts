@@ -225,6 +225,14 @@ function loadTeam(): Promise<{ data: TeamDataResult; status: 'ready' | 'fallback
   return teamPromise
 }
 
+export function prefetchProjects() {
+  return loadProjects()
+}
+
+export function prefetchTeam() {
+  return loadTeam()
+}
+
 export function useSheetData(kind: 'projects'): { data: Project[]; status: SheetDataStatus }
 export function useSheetData(kind: 'team'): { data: TeamDataResult; status: SheetDataStatus }
 export function useSheetData(kind: 'projects' | 'team'): {

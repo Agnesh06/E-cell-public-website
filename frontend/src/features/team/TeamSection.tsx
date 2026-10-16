@@ -108,6 +108,8 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
         <img
           src={member.image}
           alt={member.name}
+          width={320}
+          height={448}
           loading="lazy"
           className={cn(
             "h-full w-full object-cover grayscale transition-all duration-500 ease-out",

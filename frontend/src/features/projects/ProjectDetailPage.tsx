@@ -15,6 +15,7 @@ import { Button } from '@/components/common/Button'
 import { Eyebrow } from '@/components/common/Eyebrow'
 import { GridBackdrop } from '@/components/common/GridBackdrop'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { ProjectDetailSkeleton } from '@/components/skeletons/ProjectDetailSkeleton'
 
 export default function ProjectDetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -26,12 +27,7 @@ export default function ProjectDetailPage() {
   usePageTitle(project ? project.title : 'Project Details')
 
   if (status === 'loading') {
-    return (
-      <div
-        className="project-detail-page min-h-screen bg-[var(--color-bg)] pt-32 pb-20"
-        aria-busy="true"
-      />
-    )
+    return <ProjectDetailSkeleton />
   }
 
   if (!project) {
@@ -185,6 +181,8 @@ export default function ProjectDetailPage() {
             <img
               src={displayedImage}
               alt={`${project.title} Preview`}
+              width={1200}
+              height={675}
               onError={() => setImageError(true)}
               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.01]"
             />

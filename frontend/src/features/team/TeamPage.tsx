@@ -6,6 +6,7 @@ import { FinderSidebar, type DirectoryLevel } from './components/FinderSidebar'
 import type { BreadcrumbSegment } from './components/FinderBreadcrumbs'
 import { useSheetData } from '@/lib/useSheetData'
 import type { TeamProfile } from '@/types/teamDirectory'
+import { TeamSkeleton } from '@/components/skeletons/TeamSkeleton'
 
 export default function TeamPage() {
   const [activeLevel, setActiveLevel] = useState<DirectoryLevel>('root')
@@ -151,12 +152,7 @@ export default function TeamPage() {
     outreachProfiles.length
 
   if (status === 'loading') {
-    return (
-      <div
-        className="min-h-screen bg-[var(--color-bg)] pt-24 pb-20 sm:pt-28"
-        aria-busy="true"
-      />
-    )
+    return <TeamSkeleton />
   }
 
   return (
