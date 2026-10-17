@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import { PrismCarousel, DEFAULT_PRISM_ITEMS } from '@/components/reactbits/PrismCarousel'
+import { PrismCarousel } from '@/components/reactbits/PrismCarousel'
 import { Button } from '@/components/common/Button'
+import { placeholderImage } from '@/lib/placeholder'
 import { useSheetData } from '@/lib/useSheetData'
 
 function useCardBounds(containerRef: React.RefObject<HTMLDivElement | null>) {
@@ -73,19 +74,14 @@ export default function ProjectsPreview() {
     [projects],
   )
 
-  // Build the carousel's slides from featured projects, cycling Prism built-in images
-  // TODO: Swap in real project images (e.g. project.image) here once available
   const items = useMemo(
     () =>
-      featured.map((p, i) => {
-        const defaultImage = DEFAULT_PRISM_ITEMS[i % DEFAULT_PRISM_ITEMS.length]
-        return {
-          src: defaultImage.src,
-          alt: defaultImage.alt,
-          title: p.title,
-          subtitle: p.summary,
-        }
-      }),
+      featured.map((p, i) => ({
+        src: p.image || placeholderImage(p.order ?? i + 1),
+        alt: p.title,
+        title: p.title,
+        subtitle: p.summary,
+      })),
     [featured],
   )
 

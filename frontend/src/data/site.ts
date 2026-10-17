@@ -38,9 +38,12 @@ export const site = {
     { src: logo5, alt: 'Logo 5 (placeholder)' },
   ] as SiteLogo[],
   socials: [
-    /* TODO: replace placeholder '#' with real social URLs */
-    { label: 'LinkedIn', href: '#' },
+    {
+      label: 'LinkedIn',
+      href: 'https://www.linkedin.com/company/cse-association-psg-tech/',
+    },
     { label: 'Instagram', href: '#' },
-    { label: 'GitHub', href: '#' },
+    { label: 'GitHub', href: 'https://github.com/CSEA-PSGTech' },
+    { label: 'CSEA', href: 'https://csea.psgtech.ac.in' },
   ] satisfies SiteSocial[],
 }

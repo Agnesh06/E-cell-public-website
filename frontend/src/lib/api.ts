@@ -154,18 +154,27 @@ export async function fetchProjectsFromApi(baseUrl: string): Promise<Project[]> 
         ? 'non-technical'
         : 'technical'
 
+    const rawOrder = item.order
+    const parsedOrder = typeof rawOrder === 'number' ? rawOrder : parseInt(String(rawOrder), 10)
+    const order = !Number.isNaN(parsedOrder) ? parsedOrder : index + 1
+
     const rawImage = (item.image || item.coverImage || item.photo || '').toString().trim()
-    const image = rawImage && /^https?:\/\//i.test(rawImage) ? rawImage : placeholderImage(index + 1)
+    const driveMatch =
+      rawImage.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || rawImage.match(/[?&]id=([a-zA-Z0-9_-]+)/)
+    const normalizedImage =
+      rawImage.includes('drive.google.com') && driveMatch?.[1]
+        ? `https://drive.google.com/thumbnail?id=${driveMatch[1]}&sz=w1000`
+        : rawImage
+    const image =
+      normalizedImage && /^https?:\/\//i.test(normalizedImage)
+        ? normalizedImage
+        : placeholderImage(order)
 
     const stack = Array.isArray(item.stack)
       ? item.stack.map(String).map((s: string) => s.trim()).filter(Boolean)
       : typeof item.techstack === 'string'
       ? item.techstack.split(',').map((s: string) => s.trim()).filter(Boolean)
       : []
-
-    const rawOrder = item.order
-    const parsedOrder = typeof rawOrder === 'number' ? rawOrder : parseInt(String(rawOrder), 10)
-    const order = !Number.isNaN(parsedOrder) ? parsedOrder : index + 1
 
     const change = item.change || item.whatchange || ''
     const feasibility = item.feasibility || item.feasib || 'Feasibility assessment underway.'

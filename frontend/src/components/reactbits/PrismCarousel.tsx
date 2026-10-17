@@ -10,6 +10,7 @@ import {
   type CSSProperties,
 } from 'react';
 import * as THREE from 'three';
+import { placeholderImage } from '@/lib/placeholder';
 import { cn } from '@/lib/utils';
 
 export interface PrismCarouselItem {
@@ -513,9 +514,10 @@ export const PrismCarousel = forwardRef<PrismCarouselRef, PrismCarouselProps>(fu
         prevSrcKey = srcKey;
         textures.forEach((entry) => {
           entry.image.onload = null;
+          entry.image.onerror = null;
           entry.texture.dispose();
         });
-        textures = currentItems.map((item) => {
+        textures = currentItems.map((item, idx) => {
           const img = new Image();
           img.crossOrigin = 'anonymous';
           img.decoding = 'async';
@@ -538,6 +540,11 @@ export const PrismCarousel = forwardRef<PrismCarouselRef, PrismCarouselProps>(fu
             entry.ready = true;
             tex.needsUpdate = true;
             requestRender();
+          };
+          img.onerror = () => {
+            if (isDestroyed) return;
+            img.onerror = null;
+            img.src = placeholderImage(idx + 1);
           };
           img.src = item.src;
           return entry;
@@ -1084,6 +1091,7 @@ export const PrismCarousel = forwardRef<PrismCarouselRef, PrismCarouselProps>(fu
           canvas.removeEventListener('webglcontextrestored', onContextRestored);
           textures.forEach((t) => {
             t.image.onload = null;
+            t.image.onerror = null;
             t.texture.dispose();
           });
           meshes.forEach((m) => m.mesh.material.dispose());

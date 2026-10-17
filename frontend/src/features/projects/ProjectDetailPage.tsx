@@ -22,7 +22,8 @@ export default function ProjectDetailPage() {
   const { data: projectsData, status } = useSheetData('projects')
   const [imageError, setImageError] = useState(false)
 
-  const project = slug ? projectsData.find((p) => p.slug === slug) : undefined
+  const project =
+    status === 'loading' ? undefined : slug ? projectsData.find((p) => p.slug === slug) : undefined
 
   usePageTitle(project ? project.title : 'Project Details')
 

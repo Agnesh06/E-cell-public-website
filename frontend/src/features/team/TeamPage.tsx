@@ -232,6 +232,14 @@ export default function TeamPage() {
                     </span>
                   </div>
                   <FolderGrid folders={rootFolders} viewMode={viewMode} />
+                  {totalAllProfiles === 0 && (
+                    <p
+                      data-testid="team-empty-state"
+                      className="mt-8 text-center text-sm text-[var(--color-ink-muted)]"
+                    >
+                      No team members available.
+                    </p>
+                  )}
                 </div>
               )}
 

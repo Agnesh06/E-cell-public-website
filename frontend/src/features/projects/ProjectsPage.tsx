@@ -201,96 +201,110 @@ export default function ProjectsPage() {
 
       {/* 3. Row: Sidebar + Stack */}
       <div className="container-site mt-8 md:mt-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(180px,240px)_minmax(0,1fr)] lg:gap-12 items-start">
-          <aside className="hidden lg:block sticky top-[140px] self-start z-20">
-            <LineSidebar
-              items={projectTitles}
-              activeIndex={activeIndex}
-              onItemClick={handleSidebarClick}
-              accentColor="#2340FF"
-              textColor="#5A5A63"
-              markerColor="#C9CEE0"
-              showIndex
-              showMarker
-              markerLength={36}
-              maxShift={14}
-              itemGap={14}
-              fontSize={1}
-              proximityRadius={90}
-            />
-          </aside>
+        {sortedProjects.length === 0 ? (
+          <div
+            data-testid="projects-empty-state"
+            className="mx-auto max-w-xl rounded-3xl border border-[var(--color-hairline)] bg-white p-12 text-center shadow-sm"
+          >
+            <h2 className="text-xl font-medium text-[var(--color-ink)] mb-2">
+              No projects available
+            </h2>
+            <p className="text-sm text-[var(--color-ink-muted)]">
+              There are currently no published projects to display.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(180px,240px)_minmax(0,1fr)] lg:gap-12 items-start">
+            <aside className="hidden lg:block sticky top-[140px] self-start z-20">
+              <LineSidebar
+                items={projectTitles}
+                activeIndex={activeIndex}
+                onItemClick={handleSidebarClick}
+                accentColor="#2340FF"
+                textColor="#5A5A63"
+                markerColor="#C9CEE0"
+                showIndex
+                showMarker
+                markerLength={36}
+                maxShift={14}
+                itemGap={14}
+                fontSize={1}
+                proximityRadius={90}
+              />
+            </aside>
 
-          <div ref={stackRef} className="w-full min-w-0">
-            <ScrollStack
-              useWindowScroll
-              smoothScroll={false}
-              snap={false}
-              stackPosition={isDesktop ? 140 : 104}
-              itemDistance={80}
-              itemStackDistance={20}
-              itemScale={isReducedMotion ? 0 : 0.04}
-              baseScale={isReducedMotion ? 1 : 0.85}
-              dimAmount={isReducedMotion ? 0 : 0.06}
-              blurAmount={0}
-              tiltAmount={0}
-              rotationAmount={0}
-              holdDistance={160}
-            >
-              {sortedProjects.map((project) => (
-                <ScrollStackItem
-                  key={project.slug}
-                  itemClassName="!bg-white !rounded-[24px] border border-[var(--color-hairline)] !h-[min(60vh,420px)] lg:!h-[min(56vh,380px)] !p-[clamp(20px,3vw,40px)] !text-[var(--color-ink)] shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)]"
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '24px',
-                    boxShadow: '0 24px 60px -28px rgba(35, 64, 255, 0.35)',
-                  }}
-                >
-                  <div className="flex flex-row items-stretch justify-between h-full w-full gap-4 sm:gap-6 md:gap-8">
-                    <div className="flex flex-col justify-between flex-1 min-w-0">
-                      <div>
-                        <span className="font-mono text-sm md:text-base font-medium text-[var(--color-blue)] tracking-wider">
-                          {String(project.order).padStart(2, '0')}
-                        </span>
-                        <h2 className="mt-2 md:mt-3 text-[clamp(1.5rem,3vw,2.4rem)] font-normal text-[var(--color-ink)] leading-tight tracking-tight">
+            <div ref={stackRef} className="w-full min-w-0">
+              <ScrollStack
+                useWindowScroll
+                smoothScroll={false}
+                snap={false}
+                stackPosition={isDesktop ? 140 : 104}
+                itemDistance={80}
+                itemStackDistance={20}
+                itemScale={isReducedMotion ? 0 : 0.04}
+                baseScale={isReducedMotion ? 1 : 0.85}
+                dimAmount={isReducedMotion ? 0 : 0.06}
+                blurAmount={0}
+                tiltAmount={0}
+                rotationAmount={0}
+                holdDistance={160}
+              >
+                {sortedProjects.map((project) => (
+                  <ScrollStackItem
+                    key={project.slug}
+                    itemClassName="!bg-white !rounded-[24px] border border-[var(--color-hairline)] !h-[min(60vh,420px)] lg:!h-[min(56vh,380px)] !p-[clamp(20px,3vw,40px)] !text-[var(--color-ink)] shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)]"
+                    style={{
+                      backgroundColor: '#FFFFFF',
+                      borderRadius: '24px',
+                      boxShadow: '0 24px 60px -28px rgba(35, 64, 255, 0.35)',
+                    }}
+                  >
+                    <div className="flex flex-row items-stretch justify-between h-full w-full gap-4 sm:gap-6 md:gap-8">
+                      <div className="flex flex-col justify-between flex-1 min-w-0">
+                        <div>
+                          <span className="font-mono text-sm md:text-base font-medium text-[var(--color-blue)] tracking-wider">
+                            {String(project.order).padStart(2, '0')}
+                          </span>
+                          <h2 className="mt-2 md:mt-3 text-[clamp(1.5rem,3vw,2.4rem)] font-normal text-[var(--color-ink)] leading-tight tracking-tight">
+                            <Link
+                              to={`/projects/${project.slug}`}
+                              className="after:absolute after:inset-0 after:z-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-blue)] rounded-lg transition-colors hover:text-[var(--color-blue)]"
+                            >
+                              {project.title}
+                            </Link>
+                          </h2>
+                          <p className="mt-2 md:mt-3 text-sm md:text-base text-[var(--color-ink-muted)] line-clamp-2 md:line-clamp-1 leading-relaxed">
+                            {project.summary}
+                          </p>
+                        </div>
+
+                        <div className="pt-4 mt-auto">
                           <Link
                             to={`/projects/${project.slug}`}
-                            className="after:absolute after:inset-0 after:z-10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--color-blue)] rounded-lg transition-colors hover:text-[var(--color-blue)]"
+                            className="relative z-20 inline-flex items-center gap-1.5 text-sm md:text-base font-medium text-[var(--color-blue)] transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-blue)] rounded"
                           >
-                            {project.title}
+                            View Project &rarr;
                           </Link>
-                        </h2>
-                        <p className="mt-2 md:mt-3 text-sm md:text-base text-[var(--color-ink-muted)] line-clamp-2 md:line-clamp-1 leading-relaxed">
-                          {project.summary}
-                        </p>
+                        </div>
                       </div>
 
-                      <div className="pt-4 mt-auto">
-                        <Link
-                          to={`/projects/${project.slug}`}
-                          className="relative z-20 inline-flex items-center gap-1.5 text-sm md:text-base font-medium text-[var(--color-blue)] transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-blue)] rounded"
-                        >
-                          View Project &rarr;
-                        </Link>
+                      <div className="hidden sm:block shrink-0 w-[180px] sm:w-[220px] md:w-[260px] lg:w-[280px] h-full rounded-2xl overflow-hidden border border-[var(--color-hairline)] bg-slate-100">
+                        <img
+                          src={project.image || placeholderImage(project.order)}
+                          alt={project.title}
+                          width={280}
+                          height={380}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
                       </div>
                     </div>
-
-                    <div className="hidden sm:block shrink-0 w-[180px] sm:w-[220px] md:w-[260px] lg:w-[280px] h-full rounded-2xl overflow-hidden border border-[var(--color-hairline)] bg-slate-100">
-                      <img
-                        src={project.image || placeholderImage(project.order)}
-                        alt={project.title}
-                        width={280}
-                        height={380}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                  </div>
-                </ScrollStackItem>
-              ))}
-            </ScrollStack>
+                  </ScrollStackItem>
+                ))}
+              </ScrollStack>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* 4. Closing block */}

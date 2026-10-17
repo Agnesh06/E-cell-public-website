@@ -95,6 +95,8 @@ export function valuesToProjects(values) {
       driveConverted || (rawImage && /^https?:\/\//i.test(rawImage) ? rawImage : "");
 
     const project = {
+      // Include original sheet fields for backward compatibility
+      ...row,
       id: slug,
       slug,
       title,
@@ -125,8 +127,6 @@ export function valuesToProjects(values) {
         summary: summary || title,
         items: stack.map((name) => ({ name })),
       },
-      // Include original sheet fields for backward compatibility
-      ...row,
     };
 
     // On duplicate slug, later row overwrites earlier row

@@ -23,7 +23,7 @@ export default function LeadershipSection() {
       <section
         id="team"
         aria-labelledby="team-heading"
-        className="relative py-7 sm:py-10 md:py-[clamp(5rem,10vw,9rem)] min-h-0 sm:min-h-[500px] md:min-h-[600px]"
+        className="relative py-7 sm:py-10 md:py-[clamp(5rem,10vw,9rem)] min-h-[380px] sm:min-h-[500px] md:min-h-[600px]"
         aria-busy="true"
       />
     )
@@ -43,7 +43,7 @@ export default function LeadershipSection() {
           <TeamSection
             catchphrase="The minds building the future at PSG Tech E-Cell"
             subtitle="EXECUTIVE & CORE TEAM"
-            members={marqueeMembers.length > 0 ? marqueeMembers : undefined}
+            members={marqueeMembers}
           />
         </div>
 

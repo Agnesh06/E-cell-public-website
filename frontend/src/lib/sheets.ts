@@ -97,12 +97,41 @@ export function parseCsv(text: string): Record<string, string>[] {
   return result
 }
 
-// Module-level promise cache so each sheet URL is fetched once per session
+const SHEET_TIMEOUT_MS = 10_000
+const SHEET_RETRY_DELAY_MS = 1_000
+
+// Module-level in-flight promise cache so concurrent callers share the same request
 const sheetPromiseCache = new Map<string, Promise<Record<string, string>[] | null>>()
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function fetchSheetOnce(
+  url: string,
+): Promise<{ ok: true; rows: Record<string, string>[] } | { ok: false; retryable: boolean }> {
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), SHEET_TIMEOUT_MS)
+
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    clearTimeout(timeoutId)
+    if (!res.ok) {
+      const retryable = res.status >= 500 && res.status < 600
+      return { ok: false, retryable }
+    }
+    const text = await res.text()
+    return { ok: true, rows: parseCsv(text) }
+  } catch {
+    clearTimeout(timeoutId)
+    return { ok: false, retryable: true }
+  }
+}
+
 /**
- * Fetches CSV data from Google Sheets or direct CSV URL with a 4-second timeout.
- * Returns parsed rows or null on any failure.
+ * Fetches CSV data from Google Sheets or direct CSV URL with a 10-second timeout.
+ * Retries once after 1 second if the request fails with a network error or a 5xx status.
+ * Returns parsed rows or null on failure.
  */
 export function fetchSheet(idOrUrl: string, tab: string = 'Form responses 1'): Promise<Record<string, string>[] | null> {
   if (!idOrUrl) return Promise.resolve(null)
@@ -115,18 +144,19 @@ export function fetchSheet(idOrUrl: string, tab: string = 'Form responses 1'): P
   if (existing) return existing
 
   const fetchPromise = (async () => {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 4000)
-
     try {
-      const res = await fetch(url, { signal: controller.signal })
-      clearTimeout(timeoutId)
-      if (!res.ok) return null
-      const text = await res.text()
-      return parseCsv(text)
-    } catch {
-      clearTimeout(timeoutId)
+      const first = await fetchSheetOnce(url)
+      if (first.ok) return first.rows
+
+      if (first.retryable) {
+        await delay(SHEET_RETRY_DELAY_MS)
+        const second = await fetchSheetOnce(url)
+        if (second.ok) return second.rows
+      }
+
       return null
+    } finally {
+      sheetPromiseCache.delete(url)
     }
   })()
 

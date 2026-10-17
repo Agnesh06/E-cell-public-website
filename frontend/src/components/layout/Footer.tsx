@@ -142,8 +142,10 @@ export default function Footer() {
               </h2>
               <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/company/cse-association-psg-tech/"
+                  target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="CSEA on LinkedIn"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
                   LinkedIn
@@ -157,18 +159,22 @@ export default function Footer() {
                   Instagram
                 </a>
                 <a
-                  href="#"
+                  href="https://github.com/CSEA-PSGTech"
+                  target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="CSEA on GitHub"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
                   DevLabs / GitHub
                 </a>
                 <a
-                  href="#"
+                  href="https://csea.psgtech.ac.in"
+                  target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="CSEA website"
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
-                  Twitter / X
+                  CSEA
                 </a>
                 <a
                   href="mailto:ecell@psgtech.ac.in"
