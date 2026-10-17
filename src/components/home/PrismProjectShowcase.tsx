@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight, ArrowDown } from "lucide-react";
 import { getProjects } from "@/data/projects";
 import { Project } from "@/types/project";
 
@@ -192,13 +192,13 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
       </div>
 
       {/* 5. Bottom Action Buttons: Sleek side-by-side pill pair */}
-      <div className="w-full flex flex-row items-center justify-center gap-2.5 sm:gap-3 px-3 max-w-sm mx-auto">
+      <div className="w-full flex flex-row items-center justify-center gap-3 px-3 max-w-sm mx-auto">
         <Link
           to="/projects"
-          className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-sans font-semibold tracking-wider text-white uppercase transition-all cursor-pointer py-2.5 px-4 rounded-full bg-[#2547FF] hover:bg-[#1B3AE5] shadow-xs hover:shadow-md hover:shadow-[#2547FF]/25 active:scale-95 text-center"
+          className="flex-1 h-11 inline-flex items-center justify-center gap-2 text-xs font-sans font-semibold tracking-wider text-white uppercase transition-all cursor-pointer px-4 rounded-full bg-[#2547FF] hover:bg-[#1B3AE5] border border-[#2547FF] shadow-xs hover:shadow-md hover:shadow-[#2547FF]/25 active:scale-95 text-center group"
         >
           <span>View All</span>
-          <span className="transition-transform group-hover:translate-x-0.5">→</span>
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </Link>
 
         <button
@@ -206,10 +206,10 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
           onClick={() => {
             document.getElementById("team")?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs font-sans font-medium tracking-wider text-[#262626]/80 hover:text-[#2547FF] uppercase transition-all cursor-pointer py-2.5 px-4 rounded-full border border-black/10 bg-white/90 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center"
+          className="flex-1 h-11 inline-flex items-center justify-center gap-2 text-xs font-sans font-semibold tracking-wider text-[#0A0A0A] hover:text-[#2547FF] uppercase transition-all cursor-pointer px-4 rounded-full border border-black/10 bg-white/95 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center group backdrop-blur-md"
         >
           <span>Meet Team</span>
-          <span className="text-[#2547FF] transition-transform group-hover:translate-y-0.5">↓</span>
+          <ArrowDown className="w-3.5 h-3.5 text-[#2547FF] transition-transform group-hover:translate-y-0.5" />
         </button>
       </div>
     </div>

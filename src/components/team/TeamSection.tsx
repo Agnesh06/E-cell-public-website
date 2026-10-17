@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useLandingTeamMembers } from "@/hooks/useLandingTeamMembers";
 
 export interface TeamMember {
   name: string;
@@ -9,47 +10,47 @@ export interface TeamMember {
 
 export const defaultTeamMembers: TeamMember[] = [
   {
-    image: "",
+    image: "https://res.cloudinary.com/snc8rhlo/image/upload/v1789280975/IMG-20260820-WA0019.jpg",
     name: "Sanjay J",
     role: "Director",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23n243_Sai_Karthi_-_23N243_-_SAI_KARTHI_BALAJI_G_hsmiyb.jpg",
     name: "Sai Karthi Balaji G",
     role: "Deputy Director",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281958/24Z209_Arrvindh_PK_-_24Z209_-_ARRVINDH_PERIYAR_KHAVIYAA_gozubk.jpg",
     name: "Arrvindh P K",
     role: "Program Manager",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281953/Pravin_Ramanaa_24Z255_-_24Z255_-_PRAVIN_RAMANAA_S_mmodta.png",
     name: "Pravin Ramanaa S",
     role: "Associate Program Manager",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23N237_pravith_-_23N237_-_PRAVITH_N_fzwqqo.jpg",
     name: "Pravith N",
     role: "Head (Technical)",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281956/24Z218_Dharaneeshsl_-_24Z218_-_DHARANEESH_S_L_aqixwd.jpg",
     name: "Dharaneesh S L",
     role: "Associate Head (Technical)",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281960/24N211_HarikesavaVB_-_24N211_-_HARIKESAVA_V_B_tmxubi.jpg",
     name: "Hari Keshav",
     role: "Associate Head (Technical)",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281982/22N248_Santhosh_-_22N248_-_SANTHOSH_M_xksxy4.jpg",
     name: "Santhosh M",
     role: "Head (Industry and Community Outreach)",
   },
   {
-    image: "",
+    image: "https://res.cloudinary.com/drxmhgudx/image/upload/v1789281954/24z261_Rithan_pranaov_R_-_24Z261_-_RITHAN_PRANAOV_R_fuum2b.jpg",
     name: "Rithan Pranaov R",
     role: "Associate Head (Industry and Community Outreach)",
   },
@@ -68,10 +69,12 @@ export function TeamSection({
   id = "team",
   catchphrase = "The minds building the future at PSG Tech E-Cell",
   subtitle = "CORE TEAM '26",
-  members = defaultTeamMembers,
+  members: propMembers,
   className = "",
   showMeetTeamButton = true,
 }: TeamSectionProps) {
+  const { members: dynamicMembers } = useLandingTeamMembers();
+  const members = propMembers || dynamicMembers;
   const location = useLocation();
 
   const containerRef = useRef<HTMLDivElement | null>(null);

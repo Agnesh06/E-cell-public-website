@@ -31,6 +31,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'SJ',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/snc8rhlo/image/upload/v1789280975/IMG-20260820-WA0019.jpg',
   },
   {
     id: 'm2',
@@ -40,6 +41,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'SK',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23n243_Sai_Karthi_-_23N243_-_SAI_KARTHI_BALAJI_G_hsmiyb.jpg',
   },
   {
     id: 'm3',
@@ -49,6 +51,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'AP',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281958/24Z209_Arrvindh_PK_-_24Z209_-_ARRVINDH_PERIYAR_KHAVIYAA_gozubk.jpg',
   },
   {
     id: 'm4',
@@ -58,6 +61,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'PR',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281953/Pravin_Ramanaa_24Z255_-_24Z255_-_PRAVIN_RAMANAA_S_mmodta.png',
   },
 
   // --- VERTICAL 2: TECHNICAL ---
@@ -69,6 +73,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'PN',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23N237_pravith_-_23N237_-_PRAVITH_N_fzwqqo.jpg',
   },
   {
     id: 't2',
@@ -78,6 +83,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'DS',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281956/24Z218_Dharaneeshsl_-_24Z218_-_DHARANEESH_S_L_aqixwd.jpg',
   },
   {
     id: 't3',
@@ -87,6 +93,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'HK',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281960/24N211_HarikesavaVB_-_24N211_-_HARIKESAVA_V_B_tmxubi.jpg',
   },
 
   // --- VERTICAL 3: INDUSTRY & COMMUNITY OUTREACH ---
@@ -98,6 +105,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'SM',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281982/22N248_Santhosh_-_22N248_-_SANTHOSH_M_xksxy4.jpg',
   },
   {
     id: 'o2',
@@ -107,6 +115,7 @@ export const teamMembers: TeamMember[] = [
     initials: 'RP',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
+    image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281954/24z261_Rithan_pranaov_R_-_24Z261_-_RITHAN_PRANAOV_R_fuum2b.jpg',
   },
 
   // --- PLACEHOLDER MEMBERS (10 to 30) ---

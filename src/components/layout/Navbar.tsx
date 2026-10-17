@@ -65,7 +65,7 @@ export const defaultNavItems: iNavItem[] = [
 
 export const CustomFooter: React.FC = () => {
   return (
-    <div className="flex w-full text-sm justify-between text-black px-10 md:px-24 py-6">
+    <div className="flex w-full text-sm justify-between text-black px-8 sm:px-12 md:px-20 py-4 sm:py-5">
       <a
         href="https://www.linkedin.com/company/cse-association-psg-tech/"
         target="_blank"
@@ -73,7 +73,7 @@ export const CustomFooter: React.FC = () => {
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
         aria-label="LinkedIn"
       >
-        <Linkedin size={24} />
+        <Linkedin size={22} />
       </a>
       <a
         href="https://github.com/CSEA-PSGTech"
@@ -82,7 +82,7 @@ export const CustomFooter: React.FC = () => {
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
         aria-label="GitHub"
       >
-        <Github size={24} />
+        <Github size={22} />
       </a>
       <a
         href="https://instagram.com/cseapsgtech?psln=MTVjcW5lanBlcGducQ%3D%3D"
@@ -91,14 +91,14 @@ export const CustomFooter: React.FC = () => {
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
         aria-label="Instagram"
       >
-        <Instagram size={24} />
+        <Instagram size={22} />
       </a>
       <a
         href="mailto:csea.cse@psgtech.ac.in"
         className="text-black/80 hover:text-black hover:scale-110 transition-transform"
         aria-label="Official Email"
       >
-        <Mail size={24} />
+        <Mail size={22} />
       </a>
     </div>
   );
@@ -170,10 +170,10 @@ export const NavLink: React.FC<iNavLinkProps> = ({
       onClick={handleClick}
       initial="initial"
       whileHover="whileHover"
-      className="group relative flex items-center justify-between border-b border-black/30 py-4 transition-colors duration-500 md:py-8 uppercase cursor-pointer"
+      className="group relative flex items-center justify-between border-b border-black/20 py-2 sm:py-2.5 md:py-3 transition-colors duration-300 uppercase cursor-pointer"
       {...linkProps}
     >
-      <Link ref={ref} onMouseMove={handleMouseMove} to={href}>
+      <Link ref={ref} onMouseMove={handleMouseMove} to={href} className="w-full">
         <div className="relative flex items-start">
           <div className="flex flex-row gap-2">
             <motion.span
@@ -186,12 +186,12 @@ export const NavLink: React.FC<iNavLinkProps> = ({
                 staggerChildren: 0.075,
                 delayChildren: 0.25,
               }}
-              className="relative z-10 block text-[clamp(28px,5.5vw,36px)] font-normal text-black transition-colors duration-500 font-['Neuton',Georgia,serif] leading-[1.25] tracking-[0.01em]"
+              className="relative z-10 block text-[clamp(22px,4vw,30px)] font-normal text-black transition-colors duration-300 font-['Neuton',Georgia,serif] leading-[1.2] tracking-[0.01em]"
               style={{
                 fontFamily: '"Neuton", Georgia, serif',
-                fontSize: 'clamp(28px, 5.5vw, 36px)',
+                fontSize: 'clamp(22px, 4vw, 30px)',
                 fontWeight: 400,
-                lineHeight: 1.25,
+                lineHeight: 1.2,
                 letterSpacing: '0.01em',
               }}
             >
@@ -271,16 +271,16 @@ export const CurvedNavbar: React.FC<
       className="h-[100dvh] w-screen max-w-screen-sm fixed right-0 top-0 z-40 bg-white"
     >
       <div
-        className="h-full pt-11 flex flex-col justify-between"
+        className="h-full pt-8 sm:pt-10 flex flex-col justify-between"
         style={{ fontFamily: '"Neuton", Georgia, serif' }}
       >
-        <div className="flex flex-col text-5xl gap-3 mt-0 px-10 md:px-24">
+        <div className="flex flex-col text-5xl gap-2 mt-0 px-8 sm:px-12 md:px-20">
           <div
-            className="text-black border-b border-black/30 uppercase text-sm mb-0"
+            className="text-black border-b border-black/20 uppercase text-xs sm:text-sm tracking-wider pb-1.5 mb-0.5"
             style={{
               fontFamily: '"Neuton", Georgia, serif',
               fontWeight: 400,
-              letterSpacing: '0.01em',
+              letterSpacing: '0.08em',
             }}
           >
             <p>Navigation</p>
