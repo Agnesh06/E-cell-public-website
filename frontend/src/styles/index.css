@@ -242,17 +242,51 @@ body {
 
 .site-header {
   --header-gutter: 24px;
-  --header-row-height: 84px;
+  --header-row-height: 92px;
   --header-toggle-width: 44px;
-  --header-logo-height: 48px;
-  --header-logo-gap: 8px;
-  --header-button-width: 78px;
-  --header-button-gap: 12px;
+  --header-logo-height: 24px;
+  --header-logo-gap: 5px;
+  --header-button-width: 36px;
+  --header-button-gap: 8px;
 }
 
 @media (max-width: 359px) {
   .site-header {
+    --header-gutter: 16px;
+    --header-logo-height: 18px;
+    --header-logo-gap: 3px;
+    --header-button-width: 32px;
+    --header-button-gap: 6px;
+  }
+}
+
+@media (min-width: 360px) and (max-width: 389px) {
+  .site-header {
+    --header-gutter: 18px;
+    --header-logo-height: 22px;
     --header-logo-gap: 4px;
+    --header-button-width: 36px;
+    --header-button-gap: 8px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 413px) {
+  .site-header {
+    --header-gutter: 24px;
+    --header-logo-height: 26px;
+    --header-logo-gap: 5px;
+    --header-button-width: 38px;
+    --header-button-gap: 8px;
+  }
+}
+
+@media (min-width: 414px) and (max-width: 479px) {
+  .site-header {
+    --header-gutter: 24px;
+    --header-logo-height: 28px;
+    --header-logo-gap: 6px;
+    --header-button-width: 40px;
+    --header-button-gap: 8px;
   }
 }
 
@@ -263,7 +297,7 @@ body {
   align-items: center;
   width: 100%;
   height: var(--header-row-height);
-  padding: 12px var(--header-gutter);
+  padding: 16px var(--header-gutter) 24px;
 }
 
 .site-header__logo-scroll {
@@ -275,9 +309,7 @@ body {
       (2 * (var(--header-toggle-width) + var(--header-button-gap) + var(--header-button-width)))
   );
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow: visible;
 }
 
 .site-header__logo-scroll::-webkit-scrollbar {
@@ -347,6 +379,8 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 0;
+  width: var(--header-logo-height);
+  height: var(--header-logo-height);
 }
 
 .logo-group__link {
@@ -410,21 +444,35 @@ body {
 @media (min-width: 480px) {
   .site-header {
     --header-toggle-width: 80px;
-    --header-button-width: 108px;
+    --header-button-width: 40px;
+    --header-button-gap: 10px;
+    --header-logo-height: 30px;
+    --header-logo-gap: 6px;
   }
 }
 
 @media (min-width: 640px) {
   .site-header {
     --header-gutter: 40px;
-    --header-logo-height: 54px;
-    --header-logo-gap: 12px;
+    --header-row-height: 96px;
+    --header-button-width: 44px;
+    --header-button-gap: 12px;
+    --header-logo-height: 42px;
+    --header-logo-gap: 8px;
+  }
+}
+
+@media (min-width: 768px) {
+  .site-header {
+    --header-logo-height: 50px;
+    --header-logo-gap: 10px;
   }
 }
 
 @media (min-width: 1024px) {
   .site-header {
-    --header-logo-height: 60px;
+    --header-row-height: 100px;
+    --header-logo-height: 58px;
     --header-logo-gap: 14px;
   }
 }

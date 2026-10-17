@@ -1,10 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { ArrowUp, CheckCircle2 } from "lucide-react";
+import { useLenis } from "@/app/smoothScroll";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const navigate = useNavigate();
+  const lenis = useLenis();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,13 +19,23 @@ export default function Footer() {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (lenis) {
+      lenis.scrollTo(0);
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const handleNavClick = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+      if (lenis) {
+        lenis.scrollTo(el);
+      } else {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate(`/#${id}`);
     }
   };
 
@@ -85,7 +98,7 @@ export default function Footer() {
               </h2>
               <div className="flex flex-col gap-2.5 mt-5 font-mono text-xs uppercase tracking-wider">
                 <a
-                  href="#home"
+                  href="/#home"
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick("home");
@@ -95,7 +108,7 @@ export default function Footer() {
                   Home
                 </a>
                 <a
-                  href="#projects"
+                  href="/#projects"
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick("projects");
@@ -105,7 +118,7 @@ export default function Footer() {
                   Selected Work
                 </a>
                 <a
-                  href="#team"
+                  href="/#team"
                   onClick={(e) => {
                     e.preventDefault();
                     handleNavClick("team");
@@ -114,16 +127,13 @@ export default function Footer() {
                 >
                   Core Team &apos;26
                 </a>
-                <a
-                  href="/contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNavClick("contact");
-                  }}
+                <Link
+                  to="/contact"
+                  onClick={scrollToTop}
                   className="text-[#262626]/70 hover:text-[#2547FF] transition-colors"
                 >
                   Collaborate
-                </a>
+                </Link>
                 <a
                   href="https://psgtech.edu"
                   target="_blank"

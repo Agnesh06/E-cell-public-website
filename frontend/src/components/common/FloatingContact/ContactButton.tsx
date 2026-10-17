@@ -21,14 +21,14 @@ export function ContactButton({ isMenuOpen = false, className }: ContactButtonPr
       onClick={openContact}
       className={cn(
         'contact-button inline-flex items-center justify-center font-medium text-[14px] leading-none text-white select-none cursor-pointer',
-        'h-10 rounded-full bg-[#2340FF] hover:bg-[#2340FF]/90 transition-opacity duration-150 motion-reduce:transition-none',
-        'px-3 min-[480px]:px-[18px]',
+        'h-8 w-8 min-[360px]:h-9 min-[360px]:w-9 min-[400px]:h-10 min-[400px]:w-10 min-[480px]:h-10 min-[480px]:w-auto rounded-full bg-[#2340FF] hover:bg-[#2340FF]/90 transition-opacity duration-150 motion-reduce:transition-none',
+        'p-0 min-[480px]:px-[18px]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2340FF] focus-visible:ring-offset-2',
         isHidden ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto',
         className
       )}
     >
-      <span><MailPen className="w-6 h-6" /></span>
+      <span><MailPen className="w-4 h-4 min-[360px]:w-5 min-[360px]:h-5 min-[480px]:w-6 min-[480px]:h-6" /></span>
     </button>
   )
 }

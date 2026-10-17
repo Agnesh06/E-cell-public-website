@@ -33,16 +33,16 @@ export const site = {
   logos: [
     { src: logo1, alt: 'Logo 1 (placeholder)' },
     { src: logo2, alt: 'Logo 2 (placeholder)' },
-    { src: logo3, alt: 'Logo 3 (placeholder)' },
-    { src: logo4, alt: 'Logo 4 (placeholder)' },
-    { src: logo5, alt: 'Logo 5 (placeholder)' },
+    { src: logo3, alt: 'Logo 3 (placeholder)', href: '/' },
+    { src: logo4, alt: 'Logo 4 (placeholder)', href: 'https://csea.psgtech.ac.in'},
+    { src: logo5, alt: 'Logo 5 (placeholder)', href: 'https://psgtech.edu' },
   ] as SiteLogo[],
   socials: [
     {
       label: 'LinkedIn',
       href: 'https://www.linkedin.com/company/cse-association-psg-tech/',
     },
-    { label: 'Instagram', href: '#' },
+    { label: 'Instagram', href: 'https://www.instagram.com/ecell.cseapsgtech/' },
     { label: 'GitHub', href: 'https://github.com/CSEA-PSGTech' },
     { label: 'CSEA', href: 'https://csea.psgtech.ac.in' },
   ] satisfies SiteSocial[],

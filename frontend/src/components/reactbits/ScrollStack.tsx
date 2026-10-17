@@ -361,7 +361,7 @@ const ScrollStack = ({
       ref={rootRef}
       className={`relative w-full ${useWindowScroll ? '' : 'h-full overflow-x-hidden overflow-y-auto'} ${className}`.trim()}
     >
-      <div ref={innerRef} className="relative px-[clamp(1rem,6%,5rem)]">
+      <div ref={innerRef} className="relative px-0 md:px-[clamp(1rem,6%,5rem)]">
         {items.map((child, index) => {
           const gap = itemDistance - (items.length - index) * itemStackDistance;
           return (

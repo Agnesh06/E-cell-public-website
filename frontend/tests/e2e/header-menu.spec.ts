@@ -9,11 +9,11 @@ async function makePageScrollable(page: Page) {
 }
 
 test.describe('Header and LogoGroup', () => {
-  test('4 logo images are present in the header on /', async ({ page }) => {
+  test('5 logo images are present in the header on /', async ({ page }) => {
     await page.goto('/')
     const logos = page.locator('header img[alt*="Logo"]')
-    await expect(logos).toHaveCount(4)
-    for (let i = 0; i < 4; i++) {
+    await expect(logos).toHaveCount(5)
+    for (let i = 0; i < 5; i++) {
       await expect(logos.nth(i)).toBeVisible()
     }
   })

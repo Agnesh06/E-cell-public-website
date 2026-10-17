@@ -200,7 +200,7 @@ export default function ProjectsPage() {
       </header>
 
       {/* 3. Row: Sidebar + Stack */}
-      <div className="container-site mt-8 md:mt-12">
+      <div className="container-site max-md:px-0 mt-8 md:mt-12">
         {sortedProjects.length === 0 ? (
           <div
             data-testid="projects-empty-state"
@@ -233,7 +233,7 @@ export default function ProjectsPage() {
               />
             </aside>
 
-            <div ref={stackRef} className="w-full min-w-0">
+            <div ref={stackRef} className="w-full min-w-0 max-md:w-[calc(100%-48px)] max-md:max-w-[88vw] max-md:mx-auto">
               <ScrollStack
                 useWindowScroll
                 smoothScroll={false}
@@ -252,14 +252,27 @@ export default function ProjectsPage() {
                 {sortedProjects.map((project) => (
                   <ScrollStackItem
                     key={project.slug}
-                    itemClassName="!bg-white !rounded-[24px] border border-[var(--color-hairline)] !h-[min(60vh,420px)] lg:!h-[min(56vh,380px)] !p-[clamp(20px,3vw,40px)] !text-[var(--color-ink)] shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)]"
+                    itemClassName="!bg-white !rounded-[24px] border border-[var(--color-hairline)] !h-auto md:!h-[min(60vh,420px)] lg:!h-[min(56vh,380px)] !p-5 sm:!p-6 md:!p-[clamp(20px,3vw,40px)] !text-[var(--color-ink)] shadow-[0_24px_60px_-28px_rgba(35,64,255,0.35)]"
                     style={{
                       backgroundColor: '#FFFFFF',
                       borderRadius: '24px',
                       boxShadow: '0 24px 60px -28px rgba(35, 64, 255, 0.35)',
                     }}
                   >
-                    <div className="flex flex-row items-stretch justify-between h-full w-full gap-4 sm:gap-6 md:gap-8">
+                    <div className="flex flex-col md:flex-row items-stretch justify-between w-full md:h-full gap-0 md:gap-8">
+                      {/* Mobile Image: rendered as FIRST element inside the card, above all text */}
+                      <div className="block md:hidden w-full aspect-[16/10] rounded-xl overflow-hidden border border-[var(--color-hairline)] bg-slate-100 shrink-0 mb-4 sm:mb-5">
+                        <img
+                          src={project.image || placeholderImage(project.order)}
+                          alt={project.title}
+                          width={600}
+                          height={375}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+
+                      {/* Text below the image on mobile */}
                       <div className="flex flex-col justify-between flex-1 min-w-0">
                         <div>
                           <span className="font-mono text-sm md:text-base font-medium text-[var(--color-blue)] tracking-wider">
@@ -278,7 +291,7 @@ export default function ProjectsPage() {
                           </p>
                         </div>
 
-                        <div className="pt-4 mt-auto">
+                        <div className="pt-4 md:mt-auto">
                           <Link
                             to={`/projects/${project.slug}`}
                             className="relative z-20 inline-flex items-center gap-1.5 text-sm md:text-base font-medium text-[var(--color-blue)] transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-blue)] rounded"
@@ -288,7 +301,8 @@ export default function ProjectsPage() {
                         </div>
                       </div>
 
-                      <div className="hidden sm:block shrink-0 w-[180px] sm:w-[220px] md:w-[260px] lg:w-[280px] h-full rounded-2xl overflow-hidden border border-[var(--color-hairline)] bg-slate-100">
+                      {/* Desktop Image: visible only on desktop (md:) */}
+                      <div className="hidden md:block shrink-0 md:w-[260px] lg:w-[280px] h-full rounded-2xl overflow-hidden border border-[var(--color-hairline)] bg-slate-100">
                         <img
                           src={project.image || placeholderImage(project.order)}
                           alt={project.title}

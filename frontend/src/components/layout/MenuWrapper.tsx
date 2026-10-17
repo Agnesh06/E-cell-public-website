@@ -211,8 +211,8 @@ export function MenuWrapper({ onMenuOpen, onMenuClose }: MenuWrapperProps) {
         /* ── Toggle header shares the logo row's position and alignment. ── */
         .menu-wrapper .sm-scope .staggered-menu-header {
           box-sizing: border-box !important;
-          height: 84px !important;
-          padding: 24px var(--header-gutter) !important;
+          height: var(--header-row-height, 92px) !important;
+          padding: 16px var(--header-gutter) 24px !important;
           align-items: center !important;
         }
 

@@ -133,9 +133,9 @@ for (const viewport of viewports) {
     await page.getByRole('heading', { level: 1 }).waitFor()
     await waitForViewportWidth(page)
 
-    const images = page.getByRole('img', { name: /Logo [1-4]/ })
-    await expect(images).toHaveCount(4)
-    for (let index = 0; index < 4; index++) {
+    const images = page.getByRole('img', { name: /Logo [1-5]/ })
+    await expect(images).toHaveCount(5)
+    for (let index = 0; index < 5; index++) {
       await expect(images.nth(index)).toBeVisible()
     }
 
