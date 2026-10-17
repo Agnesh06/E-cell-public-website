@@ -112,7 +112,7 @@ function TeamMemberCard({ member }: { member: TeamMember }) {
           height={448}
           loading="lazy"
           className={cn(
-            "h-full w-full object-cover grayscale transition-all duration-500 ease-out",
+            "h-full w-full object-cover transition-all duration-500 ease-out",
             "will-change-transform will-change-[filter]",
             "[@media(hover:hover)_and_(pointer:fine)]:group-hover/card:grayscale-0",
             "[@media(hover:hover)_and_(pointer:fine)]:group-hover/card:scale-105",
@@ -256,7 +256,7 @@ export function TeamSection({
 
         {/* Bottom smooth scroll link to Collaboration */}
         <div className="mt-4 sm:mt-6 md:mt-8 flex justify-center px-4 sm:px-0">
-          <button
+          {/*<button
             type="button"
             onClick={() =>
               document.getElementById("collaboration")?.scrollIntoView({ behavior: "smooth" })
@@ -265,7 +265,7 @@ export function TeamSection({
           >
             <span>Partner With E-Cell</span>
             <span className="text-[#2547FF] transition-transform group-hover:translate-y-0.5">↓</span>
-          </button>
+          </button>*/}
         </div>
       </div>
     </div>
