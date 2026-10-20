@@ -1,4 +1,4 @@
-export type TeamVertical = 'Management' | 'Technical' | 'Outreach' | 'Core Team';
+export type TeamVertical = 'Heads' | 'Technical' | 'Core Team';
 
 export interface TeamMember {
   id: string;
@@ -15,110 +15,176 @@ export interface TeamMember {
 
 export const teamVerticals: { id: 'All' | TeamVertical; label: string }[] = [
   { id: 'All', label: 'All Members' },
-  { id: 'Management', label: 'Management' },
+  { id: 'Heads', label: 'Heads' },
   { id: 'Technical', label: 'Technical' },
-  { id: 'Outreach', label: 'Industry & Outreach' },
   { id: 'Core Team', label: 'Core Team' },
 ];
 
 export const teamMembers: TeamMember[] = [
-  // --- VERTICAL 1: MANAGEMENT ---
+  // ==========================================
+  // --- VERTICAL 1: HEADS & LEADS (9) ---
+  // ==========================================
   {
-    id: 'm1',
+    id: 'h1',
     name: 'Sanjay J',
     role: 'Director',
-    vertical: 'Management',
+    vertical: 'Heads',
     initials: 'SJ',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/snc8rhlo/image/upload/v1789280975/IMG-20260820-WA0019.jpg',
   },
   {
-    id: 'm2',
+    id: 'h2',
     name: 'Sai Karthi Balaji G',
     role: 'Deputy Director',
-    vertical: 'Management',
+    vertical: 'Heads',
     initials: 'SK',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23n243_Sai_Karthi_-_23N243_-_SAI_KARTHI_BALAJI_G_hsmiyb.jpg',
   },
   {
-    id: 'm3',
+    id: 'h3',
     name: 'Arrvindh P K',
     role: 'Program Manager',
-    vertical: 'Management',
+    vertical: 'Heads',
     initials: 'AP',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281958/24Z209_Arrvindh_PK_-_24Z209_-_ARRVINDH_PERIYAR_KHAVIYAA_gozubk.jpg',
   },
   {
-    id: 'm4',
+    id: 'h4',
     name: 'Pravin Ramanaa S',
     role: 'Associate Program Manager',
-    vertical: 'Management',
+    vertical: 'Heads',
     initials: 'PR',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281953/Pravin_Ramanaa_24Z255_-_24Z255_-_PRAVIN_RAMANAA_S_mmodta.png',
   },
-
-  // --- VERTICAL 2: TECHNICAL ---
   {
-    id: 't1',
+    id: 'h5',
     name: 'Pravith N',
     role: 'Head (Technical)',
-    vertical: 'Technical',
+    vertical: 'Heads',
     initials: 'PN',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281961/23N237_pravith_-_23N237_-_PRAVITH_N_fzwqqo.jpg',
   },
   {
-    id: 't2',
+    id: 'h6',
     name: 'Dharaneesh S L',
     role: 'Associate Head (Technical)',
-    vertical: 'Technical',
+    vertical: 'Heads',
     initials: 'DS',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281956/24Z218_Dharaneeshsl_-_24Z218_-_DHARANEESH_S_L_aqixwd.jpg',
   },
   {
-    id: 't3',
+    id: 'h7',
     name: 'Hari Keshav',
     role: 'Associate Head (Technical)',
-    vertical: 'Technical',
+    vertical: 'Heads',
     initials: 'HK',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281960/24N211_HarikesavaVB_-_24N211_-_HARIKESAVA_V_B_tmxubi.jpg',
   },
-
-  // --- VERTICAL 3: INDUSTRY & COMMUNITY OUTREACH ---
   {
-    id: 'o1',
+    id: 'h8',
     name: 'Santhosh M',
     role: 'Head (Industry and Community Outreach)',
-    vertical: 'Outreach',
+    vertical: 'Heads',
     initials: 'SM',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281982/22N248_Santhosh_-_22N248_-_SANTHOSH_M_xksxy4.jpg',
   },
   {
-    id: 'o2',
+    id: 'h9',
     name: 'Rithan Pranaov R',
     role: 'Associate Head (Industry and Community Outreach)',
-    vertical: 'Outreach',
+    vertical: 'Heads',
     initials: 'RP',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
     image: 'https://res.cloudinary.com/drxmhgudx/image/upload/v1789281954/24z261_Rithan_pranaov_R_-_24Z261_-_RITHAN_PRANAOV_R_fuum2b.jpg',
   },
 
-  // --- PLACEHOLDER MEMBERS (10 to 30) ---
+  // ==========================================
+  // --- VERTICAL 2: TECHNICAL TEAM (7) ---
+  // ==========================================
+  {
+    id: 't1',
+    name: 'Tech Member 01',
+    role: 'Full Stack Engineer',
+    vertical: 'Technical',
+    initials: 'T1',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't2',
+    name: 'Tech Member 02',
+    role: 'Frontend Developer',
+    vertical: 'Technical',
+    initials: 'T2',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't3',
+    name: 'Tech Member 03',
+    role: 'Backend & Cloud Engineer',
+    vertical: 'Technical',
+    initials: 'T3',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't4',
+    name: 'Tech Member 04',
+    role: 'UI/UX & Product Designer',
+    vertical: 'Technical',
+    initials: 'T4',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't5',
+    name: 'Tech Member 05',
+    role: 'Mobile App Developer',
+    vertical: 'Technical',
+    initials: 'T5',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't6',
+    name: 'Tech Member 06',
+    role: 'DevOps & Systems Architect',
+    vertical: 'Technical',
+    initials: 'T6',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+  {
+    id: 't7',
+    name: 'Tech Member 07',
+    role: 'AI / Machine Learning Developer',
+    vertical: 'Technical',
+    initials: 'T7',
+    department: 'PSG Tech E-Cell',
+    location: 'Coimbatore',
+  },
+
+  // ==========================================
+  // --- VERTICAL 3: CORE TEAM (14) ---
+  // ==========================================
   {
     id: 'c1',
     name: 'Core Member 01',
@@ -167,7 +233,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c6',
     name: 'Core Member 06',
-    role: 'Technical Developer',
+    role: 'Incubation Associate',
     vertical: 'Core Team',
     initials: 'C6',
     department: 'PSG Tech E-Cell',
@@ -176,7 +242,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c7',
     name: 'Core Member 07',
-    role: 'Design & Visual Identity',
+    role: 'Content & Editorial Lead',
     vertical: 'Core Team',
     initials: 'C7',
     department: 'PSG Tech E-Cell',
@@ -185,7 +251,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c8',
     name: 'Core Member 08',
-    role: 'Incubation Associate',
+    role: 'Corporate Engagement Lead',
     vertical: 'Core Team',
     initials: 'C8',
     department: 'PSG Tech E-Cell',
@@ -194,7 +260,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c9',
     name: 'Core Member 09',
-    role: 'Content & Editorial Lead',
+    role: 'Workshops & Hackathons Coordinator',
     vertical: 'Core Team',
     initials: 'C9',
     department: 'PSG Tech E-Cell',
@@ -203,7 +269,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c10',
     name: 'Core Member 10',
-    role: 'Corporate Engagement Lead',
+    role: 'Outreach Coordinator',
     vertical: 'Core Team',
     initials: 'C10',
     department: 'PSG Tech E-Cell',
@@ -212,7 +278,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c11',
     name: 'Core Member 11',
-    role: 'Workshops & Hackathons Coordinator',
+    role: 'Logistics Manager',
     vertical: 'Core Team',
     initials: 'C11',
     department: 'PSG Tech E-Cell',
@@ -221,7 +287,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c12',
     name: 'Core Member 12',
-    role: 'Outreach Coordinator',
+    role: 'Partnerships Associate',
     vertical: 'Core Team',
     initials: 'C12',
     department: 'PSG Tech E-Cell',
@@ -230,7 +296,7 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c13',
     name: 'Core Member 13',
-    role: 'Logistics Manager',
+    role: 'Alumni Network Coordinator',
     vertical: 'Core Team',
     initials: 'C13',
     department: 'PSG Tech E-Cell',
@@ -239,72 +305,9 @@ export const teamMembers: TeamMember[] = [
   {
     id: 'c14',
     name: 'Core Member 14',
-    role: 'Full Stack Engineer',
-    vertical: 'Core Team',
-    initials: 'C14',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c15',
-    name: 'Core Member 15',
-    role: 'UI/UX Researcher',
-    vertical: 'Core Team',
-    initials: 'C15',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c16',
-    name: 'Core Member 16',
-    role: 'Partnerships Associate',
-    vertical: 'Core Team',
-    initials: 'C16',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c17',
-    name: 'Core Member 17',
-    role: 'Alumni Network Coordinator',
-    vertical: 'Core Team',
-    initials: 'C17',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c18',
-    name: 'Core Member 18',
     role: 'Social Media & Brand Lead',
     vertical: 'Core Team',
-    initials: 'C18',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c19',
-    name: 'Core Member 19',
-    role: 'Student Mentor Coordinator',
-    vertical: 'Core Team',
-    initials: 'C19',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c20',
-    name: 'Core Member 20',
-    role: 'Strategy & Growth Analyst',
-    vertical: 'Core Team',
-    initials: 'C20',
-    department: 'PSG Tech E-Cell',
-    location: 'Coimbatore',
-  },
-  {
-    id: 'c21',
-    name: 'Core Member 21',
-    role: 'Executive Council Member',
-    vertical: 'Core Team',
-    initials: 'C21',
+    initials: 'C14',
     department: 'PSG Tech E-Cell',
     location: 'Coimbatore',
   },
