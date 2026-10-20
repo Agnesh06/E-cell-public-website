@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { ArrowRight, ArrowDown } from "lucide-react";
 import { useLandingTeamMembers } from "@/hooks/useLandingTeamMembers";
 
 export interface TeamMember {
@@ -68,7 +69,7 @@ interface TeamSectionProps {
 export function TeamSection({
   id = "team",
   catchphrase = "The minds building the future at PSG Tech E-Cell",
-  subtitle = "CORE TEAM '26",
+  subtitle = "MEMBERS OF E-CELL",
   members: propMembers,
   className = "",
   showMeetTeamButton = true,
@@ -433,9 +434,11 @@ export function TeamSection({
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 w-full">
         {/* Realigned Balanced Catchphrase Header */}
         <div className="mx-auto mb-6 sm:mb-8 text-center max-w-3xl">
-          <p className="font-mono text-[11px] sm:text-xs font-medium tracking-[0.2em] text-[#2547FF] uppercase mb-2">
-            {subtitle}
-          </p>
+          {subtitle && (
+            <p className="font-mono text-[11px] sm:text-xs font-semibold tracking-[0.2em] text-[#2547FF] uppercase mb-2 sm:mb-2.5">
+              {subtitle}
+            </p>
+          )}
           <h2
             id="team-heading"
             className="font-display font-bold text-3xl sm:text-4xl md:text-[42px] lg:text-[44px] text-[#0A0A0A] tracking-[-0.025em] leading-[1.3] sm:leading-[1.35] text-balance mx-auto"
@@ -452,9 +455,6 @@ export function TeamSection({
               </>
             )}
           </h2>
-          <p className="font-sans text-xs sm:text-sm text-[#262626]/60 mt-2 sm:mt-2.5 max-w-md mx-auto hidden sm:block">
-            Drag or swipe horizontally to discover the team
-          </p>
         </div>
 
         {/* Interactive Draggable & Swipeable Carousel with Edge Fading Masks */}
@@ -565,7 +565,7 @@ export function TeamSection({
                           alt={member.name}
                           loading="lazy"
                           draggable={false}
-                          className={`h-full w-full object-cover transition-all duration-500 ease-out md:group-hover/card:grayscale-0 md:group-hover/card:scale-105 select-none pointer-events-none ${isSelectedOnMobile ? "grayscale-0 scale-105" : "grayscale"
+                          className={`h-full w-full object-cover transition-transform duration-500 ease-out md:group-hover/card:scale-105 select-none pointer-events-none ${isSelectedOnMobile ? "scale-105" : ""
                             }`}
                         />
                       ) : (
@@ -622,26 +622,30 @@ export function TeamSection({
         </div>
 
         {/* Action Buttons: "Meet the Team" and "Partner With E-Cell" */}
-        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4">
+        <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 px-4">
           {showMeetTeamButton && (
             <Link
               to="/teams"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-sans font-semibold tracking-wider text-white uppercase transition-all cursor-pointer group py-3 px-7 rounded-full bg-[#2547FF] hover:bg-[#1B3AE5] shadow-sm hover:shadow-md hover:shadow-[#2547FF]/25 active:scale-95 text-center"
+              className="w-auto h-11 sm:h-12 px-6 sm:px-7 rounded-full inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm font-sans font-semibold uppercase tracking-[0.06em] text-white bg-[#2547FF] hover:bg-[#1B3AE5] border border-[#2547FF] shadow-xs hover:shadow-lg hover:shadow-[#2547FF]/25 active:scale-95 transition-all group cursor-pointer text-center"
             >
               <span>Meet the Team</span>
-              <span className="transition-transform group-hover:translate-x-1">→</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Link>
           )}
 
           <button
             type="button"
             onClick={() => {
-              document.getElementById("collaboration")?.scrollIntoView({ behavior: "smooth" });
+              const el = document.getElementById("collaboration");
+              if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+                window.history.pushState(null, "", "#collaboration");
+              }
             }}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-sans font-medium tracking-wider text-[#262626]/80 hover:text-[#2547FF] uppercase transition-all cursor-pointer group py-3 px-7 rounded-full border border-black/10 bg-white/90 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center"
+            className="w-auto h-11 sm:h-12 px-6 sm:px-7 rounded-full inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm font-sans font-semibold uppercase tracking-[0.06em] text-[#0A0A0A] hover:text-[#2547FF] bg-white/95 hover:bg-white border border-black/10 hover:border-[#2547FF]/40 shadow-xs hover:shadow-md active:scale-95 transition-all group cursor-pointer backdrop-blur-md text-center"
           >
             <span>Partner With E-Cell</span>
-            <span className="text-[#2547FF] transition-transform group-hover:translate-y-0.5">↓</span>
+            <ArrowDown className="w-4 h-4 text-[#2547FF] transition-transform group-hover:translate-y-0.5" />
           </button>
         </div>
       </div>

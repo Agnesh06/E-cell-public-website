@@ -14,14 +14,14 @@ export interface HeroProps {
   word?: string;
   /** The letter to zoom into. Default: "E" */
   focusChar?: string;
-  /** Scroll travel length in container heights. Default: 3.2 */
+  /** Scroll travel length in container heights. Default: 5.2 */
   scrollLength?: number;
 }
 
 export default function Hero({
   word = "READY",
   focusChar = "E",
-  scrollLength = 3.2,
+  scrollLength = 4.8,
 }: HeroProps) {
   const [fontReady, setFontReady] = useState(false);
   const heroContainerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +37,7 @@ export default function Hero({
 
     if (typeof document !== "undefined" && document.fonts) {
       document.fonts
-        .load(fontSpec, "Build before you're READY.")
+        .load(fontSpec, "Build before you're READY")
         .then(() => {
           if (active) setFontReady(true);
         })
@@ -51,6 +51,7 @@ export default function Hero({
     return () => {
       active = false;
       clearTimeout(timer);
+      delete document.body.dataset.portalBlue;
     };
   }, []);
 
@@ -150,6 +151,15 @@ export default function Hero({
           display: inline-flex;
           align-items: center;
           gap: 14px;
+          z-index: 20;
+          pointer-events: auto;
+          will-change: opacity;
+          opacity: var(--hero-aux-opacity, 1);
+          transition: opacity 0.15s ease;
+        }
+
+        /* Top-Middle: 4 Institutional Affiliation Logos */
+        .hero-center-logos {
           z-index: 20;
           pointer-events: auto;
           will-change: opacity;
@@ -621,54 +631,54 @@ export default function Hero({
           const portalOpacity = clampVal((p - 0.16) / 0.12);
 
           // Step 2: Sequential One-By-One Rising Flow starting AFTER READY zoom finishes (p >= 0.36)
-          // 1. Eyebrow + Headline (0.36 -> 0.48)
-          const tHead = ease(0.36, 0.48, p);
+          // 1. Eyebrow + Headline (0.36 -> 0.44)
+          const tHead = ease(0.36, 0.44, p);
           const headOpacity = tHead;
           const headY = (1 - tHead) * 90;
 
-          // Grid top border line (0.46 -> 0.54)
-          const gridBorderOpacity = ease(0.46, 0.54, p);
+          // Grid top border line (0.42 -> 0.46)
+          const gridBorderOpacity = ease(0.42, 0.46, p);
 
-          // 2. Pillar 1: Our Vision (Header: 0.48 -> 0.56, Body: 0.54 -> 0.62)
-          const tC1Head = ease(0.48, 0.56, p);
+          // 2. Pillar 1: Our Vision (Header: 0.42 -> 0.46, Body: 0.44 -> 0.48)
+          const tC1Head = ease(0.42, 0.46, p);
           const c1HeadOpacity = tC1Head;
           const c1HeadY = (1 - tC1Head) * 60;
 
-          const tC1Body = ease(0.54, 0.62, p);
+          const tC1Body = ease(0.44, 0.48, p);
           const c1BodyOpacity = tC1Body;
           const c1BodyY = (1 - tC1Body) * 50;
 
-          // Divider 1 (0.58 -> 0.66)
-          const div1Opacity = ease(0.58, 0.66, p);
+          // Divider 1 (0.46 -> 0.50)
+          const div1Opacity = ease(0.46, 0.50, p);
 
-          // 3. Pillar 2: Our Mission (Header: 0.60 -> 0.68, Body: 0.66 -> 0.74)
-          const tC2Head = ease(0.60, 0.68, p);
+          // 3. Pillar 2: Our Mission (Header: 0.48 -> 0.52, Body: 0.50 -> 0.54)
+          const tC2Head = ease(0.48, 0.52, p);
           const c2HeadOpacity = tC2Head;
           const c2HeadY = (1 - tC2Head) * 60;
 
-          const tC2Body = ease(0.66, 0.74, p);
+          const tC2Body = ease(0.50, 0.54, p);
           const c2BodyOpacity = tC2Body;
           const c2BodyY = (1 - tC2Body) * 50;
 
-          // Divider 2 (0.70 -> 0.78)
-          const div2Opacity = ease(0.70, 0.78, p);
+          // Divider 2 (0.52 -> 0.56)
+          const div2Opacity = ease(0.52, 0.56, p);
 
-          // 4. Pillar 3: About Us (Header: 0.72 -> 0.80, Body: 0.78 -> 0.86)
-          const tC3Head = ease(0.72, 0.80, p);
+          // 4. Pillar 3: About Us (Header: 0.54 -> 0.58, Body: 0.56 -> 0.60)
+          const tC3Head = ease(0.54, 0.58, p);
           const c3HeadOpacity = tC3Head;
           const c3HeadY = (1 - tC3Head) * 60;
 
-          const tC3Body = ease(0.78, 0.86, p);
+          const tC3Body = ease(0.56, 0.60, p);
           const c3BodyOpacity = tC3Body;
           const c3BodyY = (1 - tC3Body) * 50;
 
-          // 5. Pill CTA: Explore our projects -> (0.84 -> 0.94)
-          const tCta = ease(0.84, 0.94, p);
+          // 5. Pill CTA: Explore our projects -> (0.58 -> 0.62)
+          const tCta = ease(0.58, 0.62, p);
           const ctaOpacity = tCta;
           const ctaY = (1 - tCta) * 45;
 
-          // 6. Seamless Exit & Handoff to Projects (0.95 -> 1.00)
-          const tExit = ease(0.95, 1.00, p);
+          // 6. Seamless Exit & Handoff to Projects (0.98 -> 1.00)
+          const tExit = ease(0.98, 1.00, p);
           const exitY = -tExit * 24;
 
           hero.style.setProperty("--hero-headline-opacity", headlineOpacity.toFixed(4));
@@ -702,9 +712,15 @@ export default function Hero({
           hero.style.setProperty("--hero-cta-y", `${ctaY.toFixed(2)}px`);
           hero.style.setProperty("--hero-exit-y", `${exitY.toFixed(2)}px`);
 
-          // Pillars become interactive ONLY once all 3 pillars have fully settled into place (p >= 0.84)
-          const isPillarsReady = p >= 0.84 && p <= 0.98;
+          // Pillars become interactive once all 3 pillars have fully settled into place (p >= 0.62)
+          const isPillarsReady = p >= 0.62 && p <= 0.99;
           hero.dataset.pillarsReady = isPillarsReady ? "true" : "false";
+
+          // Sync blue portal theme to document.body for dynamic ContactFAB color inversion
+          const isPortalBlue = p >= 0.28 && p <= 0.99;
+          if (document.body.dataset.portalBlue !== (isPortalBlue ? "true" : "false")) {
+            document.body.dataset.portalBlue = isPortalBlue ? "true" : "false";
+          }
         }}
         style={{
           "--gp-paper": "transparent",
@@ -740,29 +756,82 @@ export default function Hero({
         }
         front={
           <div className="absolute inset-0 pointer-events-none select-text flex flex-col justify-between min-h-[100svh] h-full pt-8 pb-4 md:pb-6">
-            {/* Top Bar: Brand Logo on Left */}
-            <div className="w-full px-6 md:px-10 lg:px-12 pointer-events-auto">
-              <a
-                href="#home"
-                className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer"
-                aria-label="PSG Tech E-Cell Home"
-              >
-                <div className="hero-logo-box">
+            {/* Top Bar: Brand Logo on Left & 4 Circular Affiliation Badges in Top Middle */}
+            <div className="relative w-full px-5 sm:px-8 md:px-10 lg:px-12 pointer-events-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
+              {/* Left: Brand Logo & Text */}
+              <div className="flex items-center justify-between w-full sm:w-auto">
+                <a
+                  href="#home"
+                  className="hero-brand-block group transition-transform hover:scale-[1.02] cursor-pointer shrink-0"
+                  aria-label="PSG Tech E-Cell Home"
+                >
+                  <div className="hero-logo-box">
+                    <img
+                      src="/images/ecell-logo.png"
+                      alt="PSG Tech E-Cell Logo"
+                      className="hero-logo-img"
+                    />
+                  </div>
+                  <div className="hero-brand-text">
+                    <span className="hero-logo-text">
+                      E-Cell
+                    </span>
+                    <span className="hero-college-text">
+                      PSG College of Technology
+                    </span>
+                  </div>
+                </a>
+              </div>
+
+              {/* Top Middle: 4 Circular Institutional Logo Discs (Larger & Centered) */}
+              <div className="hero-center-logos sm:absolute sm:left-1/2 sm:-translate-x-1/2 sm:top-1/2 sm:-translate-y-1/2 flex items-center justify-center gap-2.5 sm:gap-3.5 md:gap-4 shrink-0 mx-auto sm:mx-0">
+                <div
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-white border border-black/[0.05] shadow-[0_6px_22px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center p-2 sm:p-2.5 md:p-3 transition-all duration-200 hover:scale-108 cursor-pointer"
+                  title="PSG Centenary (1926 - 2026)"
+                >
                   <img
-                    src="/images/ecell-logo.png"
-                    alt="PSG Tech E-Cell Logo"
-                    className="hero-logo-img"
+                    src="/images/psg-centenary.png"
+                    alt="PSG Centenary Logo"
+                    className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="hero-brand-text">
-                  <span className="hero-logo-text">
-                    E-Cell
-                  </span>
-                  <span className="hero-college-text">
-                    PSG College of Technology
-                  </span>
+
+                <div
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-white border border-black/[0.05] shadow-[0_6px_22px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center p-2 sm:p-2.5 md:p-3 transition-all duration-200 hover:scale-108 cursor-pointer"
+                  title="PSG - In Nation Building since 1926"
+                >
+                  <img
+                    src="/images/psg-diamond.png"
+                    alt="PSG Logo"
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-              </a>
+
+                <div
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-white border border-black/[0.05] shadow-[0_6px_22px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center p-1.5 sm:p-2 md:p-2.5 transition-all duration-200 hover:scale-108 cursor-pointer"
+                  title="CSEA - Computer Science & Engineering Association"
+                >
+                  <img
+                    src="/images/csea-logo.png"
+                    alt="CSEA Logo"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+
+                <div
+                  className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-[68px] lg:h-[68px] rounded-full bg-white border border-black/[0.05] shadow-[0_6px_22px_rgba(0,0,0,0.08)] hover:shadow-[0_10px_30px_rgba(0,0,0,0.12)] flex items-center justify-center p-2 sm:p-2.5 md:p-3 transition-all duration-200 hover:scale-108 cursor-pointer"
+                  title="PSG College of Technology Crest (Est. 1951)"
+                >
+                  <img
+                    src="/images/psg-tech-crest.png"
+                    alt="PSG Tech Crest Logo"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Right spacer for symmetrical desktop centering (compensates for fixed hamburger menu) */}
+              <div className="hidden sm:block w-12 h-12 shrink-0 pointer-events-none" aria-hidden="true" />
             </div>
 
             {/* Main Content Area: my-auto vertically centers between top bar and bottom bar */}
@@ -777,7 +846,6 @@ export default function Hero({
                   <span className="block">
                     you&apos;re{" "}
                     <ReadyWord ref={readyWordRef} word={word} focusChar={focusChar} />
-                    <span className="text-[#2547FF]">.</span>
                   </span>
                 </h1>
 

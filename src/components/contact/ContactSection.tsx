@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { ContactCard } from '@/components/ui/contact-card';
-import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { contactSectionConfig } from '@/data/contact';
+import { submitContactForm } from '@/services/contactService';
+import type { ContactFormData } from '@/types/contact';
 
 interface ContactSectionProps {
   id?: string;
@@ -12,8 +15,8 @@ interface ContactSectionProps {
 }
 
 export function ContactSection({ id = "contact", className = "" }: ContactSectionProps) {
-  const [formData, setFormData] = useState({
-    name: '',
+  const [formData, setFormData] = useState<ContactFormData>({
+    fullName: '',
     email: '',
     phone: '',
     message: '',
@@ -22,20 +25,27 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const validate = () => {
     const errs: { [key: string]: string } = {};
-    if (!formData.name.trim()) errs.name = 'Please provide your name.';
+    if (!formData.fullName.trim()) {
+      errs.fullName = 'Please provide your full name.';
+    }
     if (!formData.email.trim()) {
       errs.email = 'Please provide your email address.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       errs.email = 'Please enter a valid email address.';
     }
-    if (!formData.message.trim()) errs.message = 'Please enter your message.';
+    if (!formData.message.trim()) {
+      errs.message = 'Please enter your message.';
+    } else if (formData.message.trim().length < 10) {
+      errs.message = 'Please provide a message with at least 10 characters.';
+    }
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -44,17 +54,24 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
     }
 
     setErrors({});
+    setApiError(null);
     setIsSubmitting(true);
 
-    // Simulate reliable dispatch
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await submitContactForm(formData);
       setIsSubmitted(true);
-      setFormData({ name: '', email: '', phone: '', message: '' });
-    }, 900);
+      setFormData({ fullName: '', email: '', phone: '', message: '' });
+    } catch (err: any) {
+      setApiError(
+        err?.message ||
+          'Failed to transmit your message. Please check your network connection and try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof ContactFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => {
@@ -63,40 +80,50 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
         return next;
       });
     }
+    if (apiError) {
+      setApiError(null);
+    }
+  };
+
+  const iconMap = {
+    mail: Mail,
+    phone: Phone,
+    location: MapPin,
+  };
+
+  const contactInfo = contactSectionConfig.contactCards.map((card) => ({
+    icon: iconMap[card.icon] || Mail,
+    label: card.label,
+    value: card.value,
+    className: card.id === 'campus-desk' ? 'sm:col-span-2 lg:col-span-1' : undefined,
+  }));
+
+  const renderTitle = () => {
+    const { title, highlightedWord } = contactSectionConfig.section;
+    if (!highlightedWord || !title.includes(highlightedWord)) {
+      return title;
+    }
+    const parts = title.split(highlightedWord);
+    return (
+      <>
+        {parts[0]}
+        <span className="text-[#2547FF]">{highlightedWord}</span>
+        {parts[1]}
+      </>
+    );
   };
 
   return (
     <section
       id={id}
-      className={`relative w-full min-h-screen flex flex-col justify-center py-16 sm:py-24 px-4 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] scroll-mt-0 ${className}`}
+      className={`relative w-full min-h-screen flex flex-col justify-center py-16 sm:py-24 px-3 sm:px-6 md:px-8 bg-transparent text-[#0A0A0A] scroll-mt-0 overflow-x-clip ${className}`}
       aria-label="Direct Contact Section"
     >
       <div className="mx-auto w-full max-w-6xl">
         <ContactCard
-          title={
-            <>
-              Get in <span className="text-[#2547FF]">Touch</span>
-            </>
-          }
-          description="Have questions about our initiatives, incubation facilities, corporate partnerships, or flagship events? Leave us a message or visit our campus office."
-          contactInfo={[
-            {
-              icon: Mail,
-              label: 'Email',
-              value: 'csea.cse@psgtech.ac.in',
-            },
-            {
-              icon: Phone,
-              label: 'Phone',
-              value: '+91 422 257 2177',
-            },
-            {
-              icon: MapPin,
-              label: 'Campus Desk',
-              value: 'PSG Tech, Peelamedu, Coimbatore - 641004',
-              className: 'sm:col-span-2 lg:col-span-1',
-            },
-          ]}
+          title={renderTitle()}
+          description={contactSectionConfig.section.description}
+          contactInfo={contactInfo}
         >
           {isSubmitted ? (
             <div className="flex flex-col items-center justify-center text-center py-8 space-y-4 animate-fadeIn">
@@ -120,17 +147,27 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="w-full space-y-4">
+              {apiError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5 animate-fadeIn">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-medium">Transmission Error</p>
+                    <p className="mt-0.5 text-red-600/90 leading-relaxed">{apiError}</p>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-1.5">
-                <Label htmlFor="contact-name" className="text-xs font-mono uppercase tracking-wider text-[#0A0A0A]/70">
+                <Label htmlFor="contact-fullName" className="text-xs font-mono uppercase tracking-wider text-[#0A0A0A]/70">
                   Full Name <span className="text-[#2547FF]">*</span>
                 </Label>
                 <Input
-                  id="contact-name"
+                  id="contact-fullName"
                   type="text"
                   placeholder="e.g. Alex Henderson"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  error={errors.name}
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  error={errors.fullName}
                   disabled={isSubmitting}
                 />
               </div>
@@ -192,7 +229,7 @@ export function ContactSection({ id = "contact", className = "" }: ContactSectio
                   </span>
                 ) : (
                   <>
-                    <span>Submit Message</span>
+                    <span>{contactSectionConfig.form.submitButtonText}</span>
                     <Send className="w-3.5 h-3.5" />
                   </>
                 )}

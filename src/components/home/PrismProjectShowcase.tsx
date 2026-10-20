@@ -49,7 +49,7 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
   const activeProject = projects[currentIndex] || projects[0];
 
   return (
-    <div className="w-full min-h-[100dvh] flex flex-col justify-center items-center py-6 px-4 sm:px-8 max-w-lg mx-auto select-none gap-4 sm:gap-5">
+    <div className="w-full min-h-[100dvh] flex flex-col justify-center items-center py-3 sm:py-6 px-4 sm:px-8 max-w-lg mx-auto select-none gap-3 sm:gap-5">
       {/* 1. Section Heading: "Our Projects" */}
       <div className="text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[-0.02em] text-[#0A0A0A]">
@@ -59,7 +59,7 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
 
       {/* 2. 3D Peek-Card Carousel Container */}
       <div
-        className="relative w-full h-[220px] sm:h-[260px] md:h-[290px] flex items-center justify-center overflow-hidden touch-pan-y"
+        className="relative w-full h-[200px] sm:h-[260px] md:h-[290px] flex items-center justify-center overflow-hidden touch-pan-y"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -191,14 +191,14 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
         </button>
       </div>
 
-      {/* 5. Bottom Action Buttons: Sleek side-by-side pill pair */}
-      <div className="w-full flex flex-row items-center justify-center gap-3 px-3 max-w-sm mx-auto">
+      {/* 5. Bottom Action Buttons: Sleek pair matching Team Section across all views */}
+      <div className="w-full flex flex-col sm:flex-row items-center justify-center gap-3.5 px-4 max-w-sm sm:max-w-none mx-auto">
         <Link
           to="/projects"
-          className="flex-1 h-11 inline-flex items-center justify-center gap-2 text-xs font-sans font-semibold tracking-wider text-white uppercase transition-all cursor-pointer px-4 rounded-full bg-[#2547FF] hover:bg-[#1B3AE5] border border-[#2547FF] shadow-xs hover:shadow-md hover:shadow-[#2547FF]/25 active:scale-95 text-center group"
+          className="w-auto h-11 sm:h-12 px-6 sm:px-7 rounded-full inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm font-sans font-semibold uppercase tracking-[0.06em] text-white bg-[#2547FF] hover:bg-[#1B3AE5] border border-[#2547FF] shadow-xs hover:shadow-lg hover:shadow-[#2547FF]/25 active:scale-95 transition-all group cursor-pointer text-center"
         >
-          <span>View All</span>
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+          <span>View All Projects</span>
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </Link>
 
         <button
@@ -206,10 +206,10 @@ export default function PrismProjectShowcase({ limit = 6 }: PrismProjectShowcase
           onClick={() => {
             document.getElementById("team")?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="flex-1 h-11 inline-flex items-center justify-center gap-2 text-xs font-sans font-semibold tracking-wider text-[#0A0A0A] hover:text-[#2547FF] uppercase transition-all cursor-pointer px-4 rounded-full border border-black/10 bg-white/95 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center group backdrop-blur-md"
+          className="w-auto h-11 sm:h-12 px-6 sm:px-7 rounded-full inline-flex items-center justify-center gap-2.5 text-xs sm:text-sm font-sans font-semibold uppercase tracking-[0.06em] text-[#0A0A0A] hover:text-[#2547FF] bg-white/95 hover:bg-white border border-black/10 hover:border-[#2547FF]/40 shadow-xs hover:shadow-md active:scale-95 transition-all group cursor-pointer backdrop-blur-md text-center"
         >
-          <span>Meet Team</span>
-          <ArrowDown className="w-3.5 h-3.5 text-[#2547FF] transition-transform group-hover:translate-y-0.5" />
+          <span>Meet The Team</span>
+          <ArrowDown className="w-4 h-4 text-[#2547FF] transition-transform group-hover:translate-y-0.5" />
         </button>
       </div>
     </div>

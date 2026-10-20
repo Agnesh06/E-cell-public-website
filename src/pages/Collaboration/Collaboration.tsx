@@ -126,16 +126,16 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
   ];
 
   return (
-    <section id={id} className="min-h-screen w-full flex flex-col justify-center bg-transparent text-[#0A0A0A] py-10 sm:py-14 px-4 sm:px-6 relative overflow-hidden scroll-mt-0">
+    <section id={id} className="min-h-screen w-full flex flex-col justify-start lg:justify-center bg-transparent text-[#0A0A0A] pt-4 pb-8 sm:pt-6 sm:pb-8 px-4 sm:px-6 relative overflow-hidden scroll-mt-2 sm:scroll-mt-4">
 
       <div ref={formCardRef} className="max-w-4xl mx-auto flex flex-col items-center w-full">
         {/* Streamlined Clean Header */}
-        <div className="text-center max-w-2xl mb-6">
-          <h1 className="font-display font-bold text-3xl sm:text-4xl md:text-5xl tracking-[-0.025em] text-[#0A0A0A] leading-[1.1]">
+        <div className="text-center max-w-2xl mb-3 sm:mb-4">
+          <h1 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl lg:text-[40px] tracking-[-0.025em] text-[#0A0A0A] leading-[1.15]">
             Let’s Build <span className="text-[#2547FF]">Together</span>
           </h1>
 
-          <p className="font-sans font-normal mt-2.5 text-base text-[#262626]/75 leading-[1.6] max-w-lg mx-auto">
+          <p className="font-sans font-normal mt-1 sm:mt-1.5 text-xs sm:text-sm md:text-base text-[#262626]/75 leading-[1.5] max-w-lg mx-auto">
             Connect with student innovators and startups at PSG Tech.
           </p>
         </div>
@@ -176,12 +176,12 @@ export default function Collaboration({ id = "collaboration" }: { id?: string })
           )}
         </div>
 
-        {/* Laptop View Only: Indication button for 'Get in Touch' section below */}
-        <div className="hidden lg:flex justify-center mt-8">
+        {/* Indication button for 'Get in Touch' section below */}
+        <div className="flex justify-center mt-3.5 sm:mt-4">
           <button
             type="button"
             onClick={handleScrollToContact}
-            className="inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-sans font-medium tracking-wider text-[#262626]/80 hover:text-[#2547FF] uppercase transition-all cursor-pointer group py-3 px-7 rounded-full border border-black/10 bg-white/90 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center"
+            className="inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-sans font-medium tracking-wider text-[#262626]/80 hover:text-[#2547FF] uppercase transition-all cursor-pointer group py-2 px-6 rounded-full border border-black/10 bg-white/90 hover:bg-white shadow-xs hover:shadow-md hover:border-[#2547FF]/30 active:scale-95 text-center"
             aria-label="Scroll down to contact section"
           >
             <span>looking for queries?</span>

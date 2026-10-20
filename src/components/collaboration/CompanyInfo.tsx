@@ -36,7 +36,7 @@ export interface CompanyInfoProps {
 
 export function CompanyInfo({ data, errors, onChange }: CompanyInfoProps) {
   return (
-    <div className="space-y-6 animate-fadeIn">
+    <div className="space-y-4 sm:space-y-5 animate-fadeIn">
       {/* 2-Column Responsive Grid: Company Name & Website */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>

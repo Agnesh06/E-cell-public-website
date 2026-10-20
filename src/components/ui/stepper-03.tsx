@@ -125,7 +125,7 @@ export default function Stepper03({
 
   return (
     <div className={cn("mx-auto w-full max-w-4xl", className)}>
-      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-7 md:p-9 flex flex-col gap-7 shadow-sm">
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-6 md:p-7 flex flex-col gap-4 sm:gap-6 shadow-sm">
         {/* Progress track & step circles */}
         <div className="relative">
           <div
@@ -270,7 +270,7 @@ export default function Stepper03({
               transition={{ duration: 0.25, ease: "easeOut" }}
               className="space-y-4"
             >
-              <div className="text-center space-y-1 mb-5">
+              <div className="text-center space-y-0.5 mb-3 sm:mb-4">
                 <h3 className="text-xl sm:text-2xl font-bold font-display text-foreground">
                   {steps[activeStep]?.title}
                 </h3>
@@ -299,25 +299,25 @@ export default function Stepper03({
         <Separator />
 
         {/* Navigation buttons */}
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-2 sm:gap-4">
           <Button
             type="button"
             variant="outline"
             onClick={handleBack}
             disabled={activeStep === 0 || isSubmitting}
-            className="cursor-pointer gap-1"
+            className="cursor-pointer gap-1 px-3 sm:px-4 text-xs sm:text-sm shrink-0"
           >
             <ChevronLeft className="size-4" />
             Back
           </Button>
-          <p className="text-xs sm:text-sm font-medium text-muted-foreground">
+          <p className="text-[11px] sm:text-sm font-medium text-muted-foreground whitespace-nowrap shrink-0 text-center px-1">
             Step <span className="text-foreground font-semibold">{activeStep + 1}</span> of {totalSteps}
           </p>
           <Button
             type="button"
             onClick={handleNext}
             disabled={isSubmitting}
-            className="cursor-pointer gap-1.5 min-w-[110px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
+            className="cursor-pointer gap-1.5 min-w-[90px] sm:min-w-[110px] px-3 sm:px-4 text-xs sm:text-sm shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
           >
             {isSubmitting ? (
               <>
