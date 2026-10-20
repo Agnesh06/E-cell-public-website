@@ -8,7 +8,7 @@ export default function Team() {
   const navigate = useNavigate();
 
   return (
-    <main className="relative min-h-screen bg-[#FAFAFC] text-[#0A0A0A] flex flex-col justify-between selection:bg-[#2547FF] selection:text-white">
+    <main className="relative min-h-screen max-w-full overflow-x-hidden bg-[#FAFAFC] text-[#0A0A0A] flex flex-col justify-between selection:bg-[#2547FF] selection:text-white">
       {/* Pinned Stationary Background */}
       <div
         aria-hidden="true"

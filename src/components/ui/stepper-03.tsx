@@ -129,14 +129,14 @@ export default function Stepper03({
         {/* Progress track & step circles */}
         <div className="relative">
           <div
-            className="absolute top-5 h-0.5 bg-border"
+            className="absolute top-[18px] sm:top-5 h-0.5 bg-border"
             style={{
               left: `${offsetPercent}%`,
               right: `${offsetPercent}%`,
             }}
           />
           <motion.div
-            className="absolute top-5 h-0.5 bg-primary origin-left"
+            className="absolute top-[18px] sm:top-5 h-0.5 bg-primary origin-left"
             style={{
               left: `${offsetPercent}%`,
               right: `${offsetPercent}%`,
@@ -147,7 +147,7 @@ export default function Stepper03({
           />
           <motion.span
             className="absolute size-2 rounded-full bg-primary"
-            style={{ top: 21, x: "-50%", y: "-50%" }}
+            style={{ top: 18, x: "-50%", y: "-50%" }}
             initial={{ left: `${offsetPercent}%` }}
             animate={{ left: `${offsetPercent + progress * spanPercent}%` }}
             transition={{ type: "spring", stiffness: 160, damping: 24 }}
@@ -166,7 +166,7 @@ export default function Stepper03({
                     onClick={() => handleStepClick(index)}
                     aria-current={isActive ? "step" : undefined}
                     aria-label={`${step.title} step`}
-                    className="group relative z-10 flex size-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                    className="group relative z-10 flex size-9 sm:size-10 cursor-pointer items-center justify-center rounded-full transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <span
                       className={cn(
@@ -215,7 +215,7 @@ export default function Stepper03({
                             }}
                             className="flex items-center justify-center text-primary-foreground"
                           >
-                            <Check className="size-5" strokeWidth={3} />
+                            <Check className="size-4 sm:size-5" strokeWidth={3} />
                           </motion.span>
                         ) : (
                           <motion.span
@@ -232,7 +232,7 @@ export default function Stepper03({
                           >
                             <step.icon
                               className={cn(
-                                "size-5",
+                                "size-4 sm:size-5",
                                 isActive
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"

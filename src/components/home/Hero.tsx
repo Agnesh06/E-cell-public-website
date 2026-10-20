@@ -735,6 +735,7 @@ export default function Hero({
             style={{
               position: "absolute",
               inset: 0,
+              overflow: "hidden",
               transform: "scale(var(--gp-field-scale,1))",
               background: "radial-gradient(circle at 85% 15%, #2547FF 0%, #1636DB 45%, #0B1E8A 100%)",
             }}

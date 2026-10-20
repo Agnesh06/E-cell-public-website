@@ -268,7 +268,7 @@ export const CurvedNavbar: React.FC<
       initial="initial"
       animate="enter"
       exit="exit"
-      className="h-[100dvh] w-screen max-w-screen-sm fixed right-0 top-0 z-40 bg-white"
+      className="h-[100dvh] w-full max-w-[340px] sm:max-w-screen-sm fixed right-0 top-0 z-40 bg-white shadow-2xl"
     >
       <div
         className="h-full pt-8 sm:pt-10 flex flex-col justify-between"
@@ -329,7 +329,7 @@ export const Header: React.FC<iHeaderProps> = ({
       <div className="relative">
         <div
           onClick={handleClick}
-          className="fixed -right-1 top-0 md:-right-1 m-5 z-50 w-12 h-12 rounded-none flex items-center justify-center cursor-pointer bg-white shadow-xs"
+          className="fixed right-4 top-4 sm:right-6 sm:top-5 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-none flex items-center justify-center cursor-pointer bg-white shadow-xs"
         >
           <div className="relative w-8 h-6 flex flex-col justify-between items-center pointer-events-none">
             <span

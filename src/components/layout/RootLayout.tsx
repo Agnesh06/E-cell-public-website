@@ -5,7 +5,7 @@ import ContactFAB from "../common/ContactFAB";
 
 export default function RootLayout() {
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="relative min-h-screen w-full max-w-[100vw] overflow-x-hidden">
       <ScrollToTop />
       <Navbar />
       <Outlet />

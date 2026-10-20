@@ -119,7 +119,7 @@ export default function Projects() {
   }, []);
 
   return (
-    <main className="relative w-full min-h-screen bg-[#FAFAFC] text-[#0A0A0A] selection:bg-[#2547FF] selection:text-white">
+    <main className="relative w-full max-w-full overflow-x-hidden min-h-screen bg-[#FAFAFC] text-[#0A0A0A] selection:bg-[#2547FF] selection:text-white">
       {/* Pinned Sticky Background: Exactly identical look, feel, speed, and parameters as Home Page */}
       <div
         aria-hidden="true"
