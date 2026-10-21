@@ -328,22 +328,34 @@ export const Header: React.FC<iHeaderProps> = ({
     <>
       <div className="relative">
         <div
+          role="button"
+          tabIndex={0}
+          aria-label={isActive ? "Close navigation menu" : "Open navigation menu"}
           onClick={handleClick}
-          className="fixed right-4 top-4 sm:right-6 sm:top-5 z-50 w-11 h-11 sm:w-12 sm:h-12 rounded-none flex items-center justify-center cursor-pointer bg-white shadow-xs"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleClick();
+            }
+          }}
+          className="fixed right-4 top-4 md:right-6 md:top-6 z-50 w-12 h-12 rounded-full flex items-center justify-center cursor-pointer bg-white/95 backdrop-blur-md border border-black/10 shadow-[0_4px_20px_rgba(0,0,0,0.1)] hover:shadow-[0_6px_24px_rgba(0,0,0,0.16)] transition-all duration-200 hover:scale-105 active:scale-95 select-none"
         >
-          <div className="relative w-8 h-6 flex flex-col justify-between items-center pointer-events-none">
+          <div className="relative w-5 h-4 flex flex-col justify-between items-center pointer-events-none">
             <span
-              className={`block h-1 w-7 bg-black transition-transform duration-300 ${isActive ? "rotate-45 translate-y-2" : ""
-                }`}
-            ></span>
+              className={`block h-[2px] w-5 bg-[#0A0A0A] rounded-full transition-transform duration-300 ${
+                isActive ? "rotate-45 translate-y-[7px]" : ""
+              }`}
+            />
             <span
-              className={`block h-1 w-7 bg-black transition-opacity duration-300 ${isActive ? "opacity-0" : ""
-                }`}
-            ></span>
+              className={`block h-[2px] w-5 bg-[#0A0A0A] rounded-full transition-opacity duration-300 ${
+                isActive ? "opacity-0" : ""
+              }`}
+            />
             <span
-              className={`block h-1 w-7 bg-black transition-transform duration-300 ${isActive ? "-rotate-45 -translate-y-3" : ""
-                }`}
-            ></span>
+              className={`block h-[2px] w-5 bg-[#0A0A0A] rounded-full transition-transform duration-300 ${
+                isActive ? "-rotate-45 -translate-y-[7px]" : ""
+              }`}
+            />
           </div>
         </div>
       </div>
