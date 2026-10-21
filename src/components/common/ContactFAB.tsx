@@ -123,7 +123,7 @@ export default function ContactFAB() {
       `}</style>
 
       <div
-        className={`group fixed bottom-6 right-6 md:bottom-8 md:right-8 lg:bottom-auto lg:top-5 lg:right-24 z-40 transition-all duration-300 ease-out flex items-center gap-3 ${showFab
+        className={`group fixed bottom-6 right-6 md:bottom-8 md:right-8 lg:bottom-auto lg:top-6 lg:right-24 z-[35] transition-all duration-300 ease-out flex items-center gap-3 ${showFab
             ? "opacity-100 scale-100 pointer-events-auto translate-y-0"
             : "opacity-0 scale-75 pointer-events-none translate-y-5"
           }`}

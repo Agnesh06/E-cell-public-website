@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, Users, MapPin } from 'lucide-react';
+import { Search, X, Users } from 'lucide-react';
 import { teamMembers, teamVerticals, type TeamMember, type TeamVertical } from '@/data/team';
 
 export function TeamDirectory() {
@@ -153,15 +153,18 @@ export function TeamDirectory() {
                     </div>
                   </div>
 
-                  {/* Right: Location / Vertical Badge */}
-                  <div className="flex items-center gap-2.5 shrink-0 ml-4">
-                    <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-neutral-400 font-sans">
-                      <MapPin className="w-3.5 h-3.5 text-neutral-400" />
-                      <span>{member.location || 'Coimbatore'}</span>
-                    </span>
-
+                  {/* Right: Vertical Badge */}
+                  <div className="flex items-center shrink-0 ml-4">
                     {/* Vertical Pill Tag */}
-                    <span className="px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-mono tracking-wider uppercase bg-[#EDEFFC] text-[#2547FF] border border-[#CBD5FF]/70 group-hover:border-[#2547FF]/50 transition-colors">
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-[10px] md:text-[11px] font-mono tracking-wider uppercase border transition-colors ${
+                        member.vertical === 'Heads'
+                          ? 'bg-[#EEF2FF] text-[#2547FF] border-[#CBD5FF]'
+                          : member.vertical === 'Technical'
+                          ? 'bg-[#F0F9FF] text-[#0284C7] border-[#BAE6FD]'
+                          : 'bg-[#F8FAFC] text-[#475569] border-[#E2E8F0]'
+                      }`}
+                    >
                       {member.vertical}
                     </span>
                   </div>

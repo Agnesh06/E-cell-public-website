@@ -24,9 +24,20 @@ export default function Hero({
   scrollLength = 4.8,
 }: HeroProps) {
   const [fontReady, setFontReady] = useState(false);
+  const [effectiveScrollLength, setEffectiveScrollLength] = useState(scrollLength);
   const heroContainerRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
   const readyWordRef = useRef<ReadyWordRef>(null);
+
+  useEffect(() => {
+    const updateScrollLength = () => {
+      const isMobile = window.innerWidth < 1024;
+      setEffectiveScrollLength(isMobile ? 2.6 : scrollLength);
+    };
+    updateScrollLength();
+    window.addEventListener("resize", updateScrollLength);
+    return () => window.removeEventListener("resize", updateScrollLength);
+  }, [scrollLength]);
 
   useEffect(() => {
     let active = true;
@@ -91,7 +102,7 @@ export default function Hero({
       <div
         id="about"
         className="absolute left-0 w-px h-px pointer-events-none opacity-0 select-none"
-        style={{ top: "calc(2.2 * 100svh * 0.88)" }}
+        style={{ top: effectiveScrollLength < 3 ? "calc(1.15 * 100svh)" : "calc(2.2 * 100svh * 0.88)" }}
         aria-hidden="true"
       />
       {/* Hero Background: React Bits DotGrid + Flowing Vector Curve (To rollback anytime: swap with <HeroTopographyBackground />) */}
@@ -361,6 +372,79 @@ export default function Hero({
           pointer-events: auto;
         }
 
+        /* Mobile Dynamic Viewport Fix: Ensure pin and field cover full screen even when browser bar hides */
+        [data-slipstream-hero] [data-gp-pin] {
+          height: 100svh !important;
+          height: 100dvh !important;
+          min-height: 100dvh !important;
+        }
+
+        [data-slipstream-hero] [data-gp-field] {
+          min-height: 100dvh !important;
+          height: 100% !important;
+        }
+
+        /* Seamless portal background fallback during blue stage to eliminate bottom white seams */
+        body[data-portal-blue="true"] [data-slipstream-hero] [data-gp-pin] {
+          background-color: #0B1E8A;
+        }
+
+        /* Mobile-Only Responsive Spacing: dynamically occupies 80% to 85% of screen */
+        @media (max-width: 1023px) {
+          [data-slipstream-hero] [data-gp-content] {
+            padding: clamp(1.5rem, 3.5svh, 2.25rem) clamp(1.25rem, 5cqw, 2rem) clamp(1rem, 2.5svh, 1.75rem) !important;
+            min-height: 100dvh !important;
+            height: 100dvh !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .hero-copy-wrapper {
+            height: clamp(520px, 83dvh, 85dvh) !important;
+            min-height: clamp(500px, 80dvh, 83dvh) !important;
+            max-height: 85dvh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            gap: 0 !important;
+            transform: translateY(var(--hero-exit-y, 0px)) !important;
+          }
+
+          .hero-pillars-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-evenly !important;
+            flex: 1 1 auto !important;
+            padding-top: clamp(0.75rem, 1.8svh, 1.25rem) !important;
+            padding-bottom: clamp(0.5rem, 1.5svh, 1rem) !important;
+            gap: clamp(0.75rem, 2svh, 1.5rem) !important;
+            border-top-width: 1px !important;
+          }
+
+          .hero-headline-flow h2 {
+            font-size: clamp(28px, 4.1svh, 38px) !important;
+            line-height: 1.12 !important;
+          }
+
+          .hero-c1-head h3,
+          .hero-c2-head h3,
+          .hero-c3-head h3 {
+            font-size: clamp(19px, 2.4svh, 23px) !important;
+          }
+
+          .hero-pillar-body-text {
+            font-size: clamp(13.5px, 1.75svh, 15px) !important;
+            line-height: 1.58 !important;
+          }
+
+          .hero-badge {
+            width: clamp(38px, 4.8svh, 44px) !important;
+            height: clamp(38px, 4.8svh, 44px) !important;
+          }
+        }
+
         /* Desktop-Only Full-Height Balanced Bento Grid Layout (Leaves Mobile 100% Untouched) */
         @media (min-width: 1024px) {
           [data-slipstream-hero] [data-gp-content] {
@@ -376,8 +460,11 @@ export default function Hero({
           }
 
           .hero-pillars-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             border-top: none !important;
             padding-top: 0 !important;
+            gap: 1.5rem !important;
           }
 
           .hero-col-1, .hero-col-2 {
@@ -607,7 +694,7 @@ export default function Hero({
         word={word}
         focusChar={focusChar}
         interactive={false}
-        scrollLength={scrollLength}
+        scrollLength={effectiveScrollLength}
         fontWeight={800}
         fontFamily='"Plus Jakarta Sans", -apple-system, sans-serif'
         enterLabel=""
@@ -677,8 +764,10 @@ export default function Hero({
           const ctaOpacity = tCta;
           const ctaY = (1 - tCta) * 45;
 
-          // 6. Seamless Exit & Handoff to Projects (0.98 -> 1.00)
-          const tExit = ease(0.98, 1.00, p);
+          // 6. Seamless Exit & Handoff to Projects (0.98 -> 1.00 on desktop, 0.74 -> 1.00 on mobile)
+          const isMobileViewport = typeof window !== "undefined" && window.innerWidth < 1024;
+          const exitStart = isMobileViewport ? 0.74 : 0.98;
+          const tExit = ease(exitStart, 1.00, p);
           const exitY = -tExit * 24;
 
           hero.style.setProperty("--hero-headline-opacity", headlineOpacity.toFixed(4));
@@ -713,11 +802,12 @@ export default function Hero({
           hero.style.setProperty("--hero-exit-y", `${exitY.toFixed(2)}px`);
 
           // Pillars become interactive once all 3 pillars have fully settled into place (p >= 0.62)
-          const isPillarsReady = p >= 0.62 && p <= 0.99;
+          const exitBoundary = isMobileViewport ? 0.95 : 0.99;
+          const isPillarsReady = p >= 0.62 && p <= exitBoundary;
           hero.dataset.pillarsReady = isPillarsReady ? "true" : "false";
 
           // Sync blue portal theme to document.body for dynamic ContactFAB color inversion
-          const isPortalBlue = p >= 0.28 && p <= 0.99;
+          const isPortalBlue = p >= 0.28 && p <= exitBoundary;
           if (document.body.dataset.portalBlue !== (isPortalBlue ? "true" : "false")) {
             document.body.dataset.portalBlue = isPortalBlue ? "true" : "false";
           }
@@ -918,9 +1008,9 @@ export default function Hero({
           >
             {/* Top Tier: Dramatic Headline + Desktop Sub-lead */}
             <div className="flex flex-col items-start gap-4 sm:gap-5 w-full">
-              {/* Bold 2-Line Headline - Rises from Bottom */}
+              {/* Bold 2-Line Headline - Big, authoritative look */}
               <div className="hero-headline-flow">
-                <h2 className="text-white font-display font-normal text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] leading-[1.08] tracking-[-0.03em] text-balance">
+                <h2 className="text-white font-display font-normal text-[32px] sm:text-[42px] md:text-[60px] lg:text-[72px] leading-[1.1] lg:leading-[1.08] tracking-[-0.03em] text-balance">
                   Where student ideas
                   <br />
                   become real ventures.
@@ -933,28 +1023,29 @@ export default function Hero({
               </p>
             </div>
 
-            {/* Middle Tier: 3 Full-Height Bento Cards (Desktop) / Clean Sequential List (Mobile) */}
-            <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-7 sm:pt-9 gap-8 md:gap-0 lg:gap-6 lg:border-t-0 lg:pt-0 transition-colors">
+            {/* Middle Tier: 3 Bento Cards with Subheadings Beside Icons on Mobile */}
+            <div className="hero-pillars-grid grid grid-cols-1 md:grid-cols-3 w-full border-t pt-4 sm:pt-6 lg:pt-0 gap-4 sm:gap-5 md:gap-0 lg:gap-6 lg:border-t-0 transition-colors">
               {/* 01 — Our Vision */}
               <div className="hero-col-1 md:pr-10 md:border-r lg:pr-0 lg:border-r-0 transition-colors">
-                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                <div className="hero-pillar-item hero-bento-card relative p-3 sm:p-3.5 lg:p-4 -m-3 sm:-m-3.5 lg:m-0 rounded-2xl">
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
-                      <div className="hero-c1-head flex items-center justify-between mb-4">
-                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                      <div className="hero-c1-head flex items-center gap-3.5 lg:gap-0 lg:justify-between mb-2 lg:mb-4">
+                        <div className="hero-badge w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Eye className="w-5 h-5 text-white" />
                         </div>
+                        <h3 className="lg:hidden text-white font-sans font-medium text-xl sm:text-2xl tracking-tight">Our Vision</h3>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           01 / INVENT
                         </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Vision</h3>
+                      <h3 className="hidden lg:block text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Vision</h3>
                       <div className="hero-c1-body">
-                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-relaxed lg:leading-[1.65]">
                           To inspire students to think boldly, build fearlessly, and shape the future through technology and venture creation.
                         </p>
                       </div>
@@ -965,24 +1056,25 @@ export default function Hero({
 
               {/* 02 — Our Mission */}
               <div className="hero-col-2 md:px-10 md:border-r lg:px-0 lg:border-r-0 transition-colors">
-                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                <div className="hero-pillar-item hero-bento-card relative p-3 sm:p-3.5 lg:p-4 -m-3 sm:-m-3.5 lg:m-0 rounded-2xl">
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
-                      <div className="hero-c2-head flex items-center justify-between mb-4">
-                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                      <div className="hero-c2-head flex items-center gap-3.5 lg:gap-0 lg:justify-between mb-2 lg:mb-4">
+                        <div className="hero-badge w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Target className="w-5 h-5 text-white" />
                         </div>
+                        <h3 className="lg:hidden text-white font-sans font-medium text-xl sm:text-2xl tracking-tight">Our Mission</h3>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           02 / INCUBATE
                         </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Mission</h3>
+                      <h3 className="hidden lg:block text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">Our Mission</h3>
                       <div className="hero-c2-body">
-                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-relaxed lg:leading-[1.65]">
                           To turn ideas into action through hands-on prototype incubation, structured mentorship, and seed grants.
                         </p>
                       </div>
@@ -993,24 +1085,25 @@ export default function Hero({
 
               {/* 03 — About Us */}
               <div className="hero-col-3 md:pl-10 lg:pl-0 transition-colors">
-                <div className="hero-pillar-item hero-bento-card relative p-3.5 sm:p-4 -m-3.5 sm:-m-4 lg:m-0 rounded-2xl">
+                <div className="hero-pillar-item hero-bento-card relative p-3 sm:p-3.5 lg:p-4 -m-3 sm:-m-3.5 lg:m-0 rounded-2xl">
                   {/* Architectural Spotlight & Hairline Beam (Desktop Hover Only) */}
                   <div className="hero-spotlight-layer" aria-hidden="true" />
                   <div className="hero-spotlight-beam" aria-hidden="true" />
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <div>
-                      <div className="hero-c3-head flex items-center justify-between mb-4">
-                        <div className="hero-badge w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
+                      <div className="hero-c3-head flex items-center gap-3.5 lg:gap-0 lg:justify-between mb-2 lg:mb-4">
+                        <div className="hero-badge w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shrink-0 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-300">
                           <Users className="w-5 h-5 text-white" />
                         </div>
+                        <h3 className="lg:hidden text-white font-sans font-medium text-xl sm:text-2xl tracking-tight">About Us</h3>
                         <span className="hidden lg:inline-flex items-center text-[10px] font-mono font-semibold tracking-[0.2em] text-white/75 bg-white/10 border border-white/15 px-3 py-1 rounded-full uppercase">
                           03 / SCALE
                         </span>
                       </div>
-                      <h3 className="text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">About Us</h3>
+                      <h3 className="hidden lg:block text-white font-sans font-medium text-xl lg:text-2xl tracking-tight mb-2.5">About Us</h3>
                       <div className="hero-c3-body">
-                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-[1.65]">
+                        <p className="hero-pillar-body-text text-white/80 font-sans font-normal text-sm sm:text-base leading-relaxed lg:leading-[1.65]">
                           A student-driven community at PSG Tech connecting aspiring innovators with industry leaders and venture networks.
                         </p>
                       </div>
@@ -1020,8 +1113,8 @@ export default function Hero({
               </div>
             </div>
 
-            {/* Bottom Tier: Left-aligned "Explore our projects" Pill Button */}
-            <div className="hero-cta-flow w-full flex items-center justify-start pt-1">
+            {/* Bottom Tier: Left-aligned "Explore our projects" Pill Button - Full size */}
+            <div className="hero-cta-flow w-full flex items-center justify-start pt-1 sm:pt-2">
               <a
                 href="#projects"
                 onClick={(e) => {

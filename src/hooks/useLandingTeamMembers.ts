@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { TeamMember, defaultTeamMembers } from "@/components/team/TeamSection";
+import { buildApiUrl } from "@/lib/api";
 
 interface ApiMember {
   id?: string;
@@ -33,15 +34,7 @@ export function useLandingTeamMembers() {
     }
 
     try {
-      const rawBase =
-        import.meta.env.VITE_API_BASE_URL ||
-        import.meta.env.VITE_API_URL ||
-        "http://127.0.0.1:5000/api";
-
-      const base = rawBase.replace(/\/+$/, "");
-      // Support base URLs that end with /api or root
-      const endpoint = base.endsWith("/api") ? `${base}/members` : `${base}/api/members`;
-
+      const endpoint = buildApiUrl("/api/members");
       const res = await fetch(endpoint);
       if (!res.ok) {
         throw new Error(`Request failed with status ${res.status}`);
